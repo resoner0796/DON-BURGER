@@ -87,7 +87,7 @@
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.2s ease, border-color 0.3s ease, color 0.3s ease;
         }
-        #theme-toggle-btn svg { width: 20px; height: 20px; fill: currentColor; } /* Usa fill: currentColor */
+        #theme-toggle-btn svg { width: 20px; height: 20px; fill: currentColor; }
         #theme-toggle-btn:hover { transform: scale(1.1); }
 
         /* --- Vistas Principales (Contenedor) --- */
@@ -160,6 +160,7 @@
         .order-card .items-list li.kitchen-item-card { padding: 10px 0; border-bottom: 1px solid var(--color-borde); }
         .order-card .items-list li.kitchen-item-card:last-child { border-bottom: none; }
         .order-card .items-list li.kitchen-item-card strong { font-size: 1.1rem; color: var(--color-texto); }
+        .order-card .items-list li.kitchen-item-card .item-detail { color: var(--color-secundario); font-weight: bold; } /* Para sabor/tamaño */
         .order-card .items-list li.kitchen-item-card ul { list-style: disc; padding-left: 20px; margin: 5px 0 0 0; font-size: 0.9rem; color: var(--color-texto-secundario); }
         .order-card .items-list li.kitchen-item-card ul li { border: none; padding: 2px 0; margin: 0; }
         .order-card .status-buttons { margin-top: 15px; display: flex; gap: 10px; }
@@ -178,7 +179,7 @@
         .admin-section h2 { margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input[type="text"], .form-group input[type="password"], .form-group input[type="number"], .form-group textarea {
+        .form-group input[type="text"], .form-group input[type="password"], .form-group input[type="number"], .form-group textarea, .form-group select {
             width: 100%; padding: 10px; font-size: 1rem;
             border: 1px solid var(--color-borde);
             border-radius: 5px; box-sizing: border-box;
@@ -260,55 +261,24 @@
         #close-panel-btn { background: none; border: none; color: var(--color-blanco); font-size: 2rem; font-weight: bold; cursor: pointer; }
         .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
         
-        /* Contenedor para tarjetas de pedido */
         #order-menu-items {
-            display: grid;
-            grid-template-columns: 1fr; /* Una columna por defecto */
-            gap: 15px;
+            display: grid; grid-template-columns: 1fr; gap: 15px;
         }
-        /* Estilo de Tarjeta de Pedido */
         .order-item-card {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             background-color: var(--color-blanco);
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--color-sombra);
-            padding: 15px;
-            cursor: pointer;
+            border-radius: 8px; box-shadow: 0 2px 5px var(--color-sombra);
+            padding: 15px; cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
         }
-        .order-item-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px var(--color-sombra);
-        }
-        .order-item-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-right: 15px;
-        }
-        .order-item-card .item-info {
-            flex-grow: 1;
-        }
-        .order-item-card h4 {
-            margin: 0 0 5px 0;
-            font-size: 1.2rem;
-            color: var(--color-texto);
-        }
-        .order-item-card .price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--color-secundario);
-            margin: 0;
-        }
+        .order-item-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px var(--color-sombra); }
+        .order-item-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
+        .order-item-card .item-info { flex-grow: 1; }
+        .order-item-card h4 { margin: 0 0 5px 0; font-size: 1.2rem; color: var(--color-texto); }
+        .order-item-card .price { font-size: 1.1rem; font-weight: bold; color: var(--color-secundario); margin: 0; }
         
         #customization-section { margin-top: 20px; border-top: 2px solid var(--color-borde); padding-top: 20px; }
-        #ingredients-list label {
-            display: block; margin-bottom: 10px;
-            font-size: 1.1rem; cursor: pointer;
-            padding: 8px; border-radius: 5px;
-        }
+        #ingredients-list label { display: block; margin-bottom: 10px; font-size: 1.1rem; cursor: pointer; padding: 8px; border-radius: 5px; }
         #ingredients-list label:hover { background-color: var(--color-fondo); }
         #ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); }
         #add-item-to-cart-btn { width: 100%; padding: 12px; margin-top: 15px; background-color: var(--color-primario); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
@@ -316,6 +286,7 @@
         #order-summary-list { max-height: 150px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid var(--color-borde); }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; font-size: 0.95rem; }
         .cart-item .name { font-weight: bold; }
+        .cart-item .detail { font-size: 0.85em; color: var(--color-texto-secundario); }
         .delete-item-btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-weight: bold; font-size: 0.9rem; cursor: pointer; line-height: 20px; text-align: center; margin-left: 10px; }
         #total-display { font-size: 1.5rem; font-weight: bold; color: var(--color-primario); text-align: right; margin-bottom: 15px; }
         #finalize-order-btn { width: 100%; padding: 15px; background-color: var(--color-verde); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
@@ -331,23 +302,14 @@
             transition: left 0.3s ease-in-out;
             padding-top: 80px;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
         }
         #admin-panel.open { left: 0; }
-        #admin-panel-nav-main {
-            flex-grow: 1;
-        }
+        #admin-panel-nav-main { flex-grow: 1; }
         #admin-panel .admin-nav-btn { display: block; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--color-blanco); background-color: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; cursor: pointer; transition: background-color 0.2s; }
         #admin-panel .admin-nav-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
-        #admin-panel .logout-btn {
-            background-color: #a12020;
-            border-bottom: none;
-            border-top: 1px solid rgba(255,255,255,0.3);
-        }
-        #admin-panel .logout-btn:hover {
-            background-color: #8c1b1b;
-        }
+        #admin-panel .logout-btn { background-color: #a12020; border-bottom: none; border-top: 1px solid rgba(255,255,255,0.3); }
+        #admin-panel .logout-btn:hover { background-color: #8c1b1b; }
 
         /* --- Modales --- */
         .modal { display: none; position: fixed; z-index: 250; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; }
@@ -367,11 +329,31 @@
         #login-submit-btn { width: 100%; padding: 12px; background-color: var(--color-primario); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; }
         #admin-password-modal .modal-content { text-align: left; }
         #admin-pass-submit-btn { width: 100%; padding: 12px; background-color: var(--color-admin); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; }
-        
-        #edit-item-save-btn {
-            background-color: var(--color-verde);
-        }
+        #edit-item-save-btn { background-color: var(--color-verde); }
 
+        /* NUEVO: Modal de Opciones de Producto */
+        #product-options-content { text-align: left; }
+        #product-options-content h3 { font-size: 1.5rem; color: var(--color-texto); }
+        #product-options-content p { color: var(--color-texto-secundario); }
+        #modal-options-list { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--color-borde);
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn.selected {
+            border-color: var(--color-primario);
+            background: color-mix(in srgb, var(--color-primario) 15%, transparent);
+            color: var(--color-primario);
+        }
+        .modal-footer-btn { width: 100%; }
+        
     </style>
 </head>
 <body>
@@ -381,7 +363,7 @@
             <button id="auth-btn">PANEL</button>
         </div>
         <div class="logo-container" id="logo-clickable-area">
-            <img src="logo.PNG" alt="Logo del Negocio">
+            <img src="logo.png" alt="Logo del Negocio">
         </div>
         <div class="header-side right">
             <button id="theme-toggle-btn">
@@ -463,21 +445,66 @@
                 <h2>Gestión de Menú</h2>
                 <form id="add-menu-item-form">
                     <h3>Agregar Nuevo Producto</h3>
+                    <!-- NUEVO: Selector de Tipo -->
+                    <div class="form-group">
+                        <label for="item-type">Tipo de Producto</label>
+                        <select id="item-type">
+                            <option value="burger" selected>Hamburguesa</option>
+                            <option value="soda">Refresco</option>
+                            <option value="fries">Papas</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="item-name">Nombre</label>
                         <input type="text" id="item-name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="item-price">Precio (Ej: 85)</label>
-                        <input type="number" id="item-price" required>
+
+                    <!-- Campos Condicionales -->
+                    <div id="burger-fields">
+                        <div class="form-group">
+                            <label for="item-price">Precio</label>
+                            <input type="number" id="item-price" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="item-ingredients">Ingredientes (uno por línea)</label>
+                            <textarea id="item-ingredients" required></textarea>
+                        </div>
                     </div>
+                    <div id="soda-fields" style="display: none;">
+                         <div class="form-group">
+                            <label for="soda-price">Precio</label>
+                            <input type="number" id="soda-price">
+                        </div>
+                        <div class="form-group">
+                            <label for="soda-options">Sabores (uno por línea)</label>
+                            <textarea id="soda-options"></textarea>
+                        </div>
+                    </div>
+                    <div id="fries-fields" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label for="fries-size-1-name">Nombre Tamaño 1</label>
+                                <input type="text" id="fries-size-1-name" placeholder="Ej. Chicas">
+                            </div>
+                            <div class="form-group">
+                                <label for="fries-size-1-price">Precio 1</label>
+                                <input type="number" id="fries-size-1-price">
+                            </div>
+                            <div class="form-group">
+                                <label for="fries-size-2-name">Nombre Tamaño 2</label>
+                                <input type="text" id="fries-size-2-name" placeholder="Ej. Grandes">
+                            </div>
+                            <div class="form-group">
+                                <label for="fries-size-2-price">Precio 2</label>
+                                <input type="number" id="fries-size-2-price">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="item-image-urls">URLs de Imagen (una por línea)</label>
                         <textarea id="item-image-urls" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="item-ingredients">Ingredientes (uno por línea)</label>
-                        <textarea id="item-ingredients" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="item-is-visible">Visible en Menú</label>
@@ -540,31 +567,18 @@
             <span class="modal-close-btn" id="edit-item-close-btn">&times;</span>
             <h2>Editar Producto</h2>
             <form id="edit-menu-item-form">
-                <div class="form-group">
-                    <label for="edit-item-name">Nombre</label>
-                    <input type="text" id="edit-item-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-item-price">Precio</label>
-                    <input type="number" id="edit-item-price" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-item-image-urls">URLs de Imagen (una por línea)</label>
-                    <textarea id="edit-item-image-urls" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-item-ingredients">Ingredientes (uno por línea)</label>
-                    <textarea id="edit-item-ingredients" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-item-is-visible">Visible en Menú</label>
-                    <label class="switch">
-                        <input type="checkbox" id="edit-item-is-visible">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <button type="button" id="edit-item-save-btn" class="form-button">Guardar Cambios</button>
+                <!-- Contenido dinámico con JS -->
             </form>
+        </div>
+    </div>
+
+    <!-- NUEVO: Modal de Opciones de Producto -->
+    <div id="product-options-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-btn" id="product-options-close-btn">&times;</span>
+            <div id="product-options-content">
+                <!-- Contenido dinámico con JS -->
+            </div>
         </div>
     </div>
 
@@ -585,9 +599,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- Cache y Estado ---
-            let menuItemsAdminCache = []; // Cache completo para admin
-            let menuItemsVisibleCache = []; // Cache solo visibles para cliente/pedido
+            let menuItemsAdminCache = [];
+            let menuItemsVisibleCache = [];
             let currentOrderItem = null;
             let fullOrder = [];
             let isLoggedIn = false;
@@ -648,6 +661,7 @@
             // --- DOM Admin: Gestión Menú ---
             const addMenuItemForm = document.getElementById('add-menu-item-form');
             const menuManagementList = document.getElementById('menu-management-list');
+            const itemTypeSelect = document.getElementById('item-type');
             
             // --- DOM Admin: Reporte Ventas ---
             const todaySalesTotalEl = document.getElementById('today-sales-total');
@@ -660,6 +674,11 @@
             const editItemCloseBtn = document.getElementById('edit-item-close-btn');
             const editItemSaveBtn = document.getElementById('edit-item-save-btn');
             
+            // --- DOM Modal Opciones de Producto ---
+            const productOptionsModal = document.getElementById('product-options-modal');
+            const productOptionsCloseBtn = document.getElementById('product-options-close-btn');
+            const productOptionsContent = document.getElementById('product-options-content');
+
             // --- SVG Icons ---
             const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.906 17.834a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59zM7.5 12a.75.75 0 01-.75.75H4.5a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM6.166 7.906a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59z"></path></svg>`;
             const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.568 1.76-6.756 4.528-8.654a.75.75 0 01.819.162z" clip-rule="evenodd"></path></svg>`;
@@ -781,23 +800,55 @@
             }
             
             // --- Lógica de GESTIÓN DE MENÚ ---
+            
+            // (Admin) Cambia el formulario según el tipo de producto
+            itemTypeSelect.addEventListener('change', (e) => {
+                const type = e.target.value;
+                document.getElementById('burger-fields').style.display = type === 'burger' ? 'block' : 'none';
+                document.getElementById('soda-fields').style.display = type === 'soda' ? 'block' : 'none';
+                document.getElementById('fries-fields').style.display = type === 'fries' ? 'block' : 'none';
+            });
+            
+            // (Admin) Guarda un nuevo producto
             addMenuItemForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const newItem = {
+                const type = itemTypeSelect.value;
+                
+                let newItem = {
                     name: document.getElementById('item-name').value,
-                    price: parseFloat(document.getElementById('item-price').value),
+                    type: type,
                     imageUrls: document.getElementById('item-image-urls').value.split('\n').filter(Boolean),
-                    ingredients: document.getElementById('item-ingredients').value.split('\n').filter(Boolean),
                     isVisible: document.getElementById('item-is-visible').checked,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
+
+                if (type === 'burger') {
+                    newItem.price = parseFloat(document.getElementById('item-price').value);
+                    newItem.ingredients = document.getElementById('item-ingredients').value.split('\n').filter(Boolean);
+                } else if (type === 'soda') {
+                    newItem.price = parseFloat(document.getElementById('soda-price').value);
+                    newItem.options = document.getElementById('soda-options').value.split('\n').filter(Boolean);
+                } else if (type === 'fries') {
+                    newItem.sizes = [];
+                    const size1_name = document.getElementById('fries-size-1-name').value;
+                    const size1_price = parseFloat(document.getElementById('fries-size-1-price').value);
+                    if(size1_name && size1_price) newItem.sizes.push({ name: size1_name, price: size1_price });
+
+                    const size2_name = document.getElementById('fries-size-2-name').value;
+                    const size2_price = parseFloat(document.getElementById('fries-size-2-price').value);
+                    if(size2_name && size2_price) newItem.sizes.push({ name: size2_name, price: size2_price });
+                }
+
                 try {
                     await db.collection('menu').add(newItem);
                     showSuccessModal('Producto agregado al menú.');
                     addMenuItemForm.reset();
+                    // Resetea la visibilidad del formulario
+                    itemTypeSelect.dispatchEvent(new Event('change')); 
                 } catch (err) { alert("Error al guardar producto."); }
             });
 
+            // (Admin) Carga los items del menú en el panel de admin
             function loadMenuItemsForAdmin() {
                 db.collection('menu').orderBy('name').onSnapshot(snapshot => {
                     let items = [];
@@ -817,7 +868,7 @@
                             <img src="${displayImage}" alt="${item.name}">
                             <div class="info">
                                 <strong>${item.name}</strong><br>
-                                <span>$${item.price.toFixed(2)} - ${item.isVisible ? 'Visible' : 'Oculto'}</span>
+                                <span>${item.type} - ${item.isVisible ? 'Visible' : 'Oculto'}</span>
                             </div>
                             <div class="actions">
                                 <label class="switch">
@@ -833,6 +884,7 @@
                 });
             }
             
+            // (Admin) Listeners para botones de admin (Editar, Eliminar, Ocultar)
             menuManagementList.addEventListener('click', async (e) => {
                 const target = e.target;
                 const button = target.closest('button, input');
@@ -864,33 +916,118 @@
                     return;
                 }
                 
-                document.getElementById('edit-item-name').value = item.name;
-                document.getElementById('edit-item-price').value = item.price;
-                document.getElementById('edit-item-image-urls').value = (item.imageUrls || []).join('\n');
-                document.getElementById('edit-item-ingredients').value = (item.ingredients || []).join('\n');
-                document.getElementById('edit-item-is-visible').checked = item.isVisible;
+                // Generar dinámicamente el contenido del formulario de edición
+                const formContainer = document.getElementById('edit-menu-item-form');
+                formContainer.innerHTML = `
+                    <div class="form-group">
+                        <label for="edit-item-type">Tipo de Producto</label>
+                        <select id="edit-item-type" disabled>
+                            <option value="burger" ${item.type === 'burger' ? 'selected' : ''}>Hamburguesa</option>
+                            <option value="soda" ${item.type === 'soda' ? 'selected' : ''}>Refresco</option>
+                            <option value="fries" ${item.type === 'fries' ? 'selected' : ''}>Papas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-item-name">Nombre</label>
+                        <input type="text" id="edit-item-name" value="${item.name}" required>
+                    </div>
+                    
+                    <div id="edit-burger-fields" style="display: ${item.type === 'burger' ? 'block' : 'none'}">
+                        <div class="form-group">
+                            <label for="edit-item-price">Precio</label>
+                            <input type="number" id="edit-item-price" value="${item.price || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-item-ingredients">Ingredientes</label>
+                            <textarea id="edit-item-ingredients" required>${(item.ingredients || []).join('\n')}</textarea>
+                        </div>
+                    </div>
+
+                    <div id="edit-soda-fields" style="display: ${item.type === 'soda' ? 'block' : 'none'}">
+                        <div class="form-group">
+                            <label for="edit-soda-price">Precio</label>
+                            <input type="number" id="edit-soda-price" value="${item.price || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-soda-options">Sabores</label>
+                            <textarea id="edit-soda-options">${(item.options || []).join('\n')}</textarea>
+                        </div>
+                    </div>
+
+                    <div id="edit-fries-fields" style="display: ${item.type === 'fries' ? 'block' : 'none'}">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label for="edit-fries-size-1-name">Tamaño 1</label>
+                                <input type="text" id="edit-fries-size-1-name" value="${item.sizes?.[0]?.name || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-fries-size-1-price">Precio 1</label>
+                                <input type="number" id="edit-fries-size-1-price" value="${item.sizes?.[0]?.price || ''}">
+                            </div>
+                             <div class="form-group">
+                                <label for="edit-fries-size-2-name">Tamaño 2</label>
+                                <input type="text" id="edit-fries-size-2-name" value="${item.sizes?.[1]?.name || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-fries-size-2-price">Precio 2</label>
+                                <input type="number" id="edit-fries-size-2-price" value="${item.sizes?.[1]?.price || ''}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-item-image-urls">URLs de Imagen</label>
+                        <textarea id="edit-item-image-urls" required>${(item.imageUrls || []).join('\n')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-item-is-visible">Visible</label>
+                        <label class="switch">
+                            <input type="checkbox" id="edit-item-is-visible" ${item.isVisible ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button type="button" id="edit-item-save-btn" class="form-button">Guardar Cambios</button>
+                `;
                 
-                editItemSaveBtn.dataset.id = id;
+                // Re-asignar el listener al nuevo botón
+                document.getElementById('edit-item-save-btn').dataset.id = id;
+                document.getElementById('edit-item-save-btn').addEventListener('click', saveMedEdit);
                 
                 openModal(editMenuItemModal);
             }
             
             editItemCloseBtn.addEventListener('click', () => closeModal(editMenuItemModal));
             
-            editItemSaveBtn.addEventListener('click', async () => {
-                const id = editItemSaveBtn.dataset.id;
+            async function saveMedEdit() {
+                const id = document.getElementById('edit-item-save-btn').dataset.id;
                 if (!id) return;
                 
-                editItemSaveBtn.disabled = true;
-                editItemSaveBtn.textContent = 'Guardando...';
-
-                const updatedData = {
+                document.getElementById('edit-item-save-btn').disabled = true;
+                
+                const type = document.getElementById('edit-item-type').value;
+                let updatedData = {
                     name: document.getElementById('edit-item-name').value,
-                    price: parseFloat(document.getElementById('edit-item-price').value),
+                    type: type,
                     imageUrls: document.getElementById('edit-item-image-urls').value.split('\n').filter(Boolean),
-                    ingredients: document.getElementById('edit-item-ingredients').value.split('\n').filter(Boolean),
                     isVisible: document.getElementById('edit-item-is-visible').checked
                 };
+
+                if (type === 'burger') {
+                    updatedData.price = parseFloat(document.getElementById('edit-item-price').value);
+                    updatedData.ingredients = document.getElementById('edit-item-ingredients').value.split('\n').filter(Boolean);
+                } else if (type === 'soda') {
+                    updatedData.price = parseFloat(document.getElementById('edit-soda-price').value);
+                    updatedData.options = document.getElementById('edit-soda-options').value.split('\n').filter(Boolean);
+                } else if (type === 'fries') {
+                    updatedData.sizes = [];
+                    const size1_name = document.getElementById('edit-fries-size-1-name').value;
+                    const size1_price = parseFloat(document.getElementById('edit-fries-size-1-price').value);
+                    if(size1_name && size1_price) updatedData.sizes.push({ name: size1_name, price: size1_price });
+
+                    const size2_name = document.getElementById('edit-fries-size-2-name').value;
+                    const size2_price = parseFloat(document.getElementById('edit-fries-size-2-price').value);
+                    if(size2_name && size2_price) updatedData.sizes.push({ name: size2_name, price: size2_price });
+                }
                 
                 try {
                     await db.collection('menu').doc(id).update(updatedData);
@@ -900,10 +1037,10 @@
                     console.error("Error actualizando: ", err);
                     alert("Error al guardar los cambios.");
                 } finally {
-                    editItemSaveBtn.disabled = false;
-                    editItemSaveBtn.textContent = 'Guardar Cambios';
+                    document.getElementById('edit-item-save-btn').disabled = false;
                 }
-            });
+            }
+
 
             // Listener para fetchMenuAndPopulate
             let menuListenerUnsubscribe = null;
@@ -915,17 +1052,17 @@
                     const visibleItems = [];
                     snapshot.forEach(doc => visibleItems.push({ ...doc.data(), id: doc.id }));
                     
-                    menuItemsVisibleCache = visibleItems; // Actualiza cache visible
+                    menuItemsVisibleCache = visibleItems;
                     
                     populateMenuGallery(visibleItems);
-                    populateOrderMenu(visibleItems); // <-- LLAMA A LA FUNCIÓN CORREGIDA
+                    populateOrderMenu(visibleItems);
                 }, error => { console.error("Error fetching menu:", error); });
             }
 
             function populateMenuGallery(items) {
                 menuGalleryContainer.innerHTML = '';
                 items.forEach(item => {
-                    const ingredientsHtml = item.ingredients.map(ing => `<li>${ing}</li>`).join('');
+                    const ingredientsHtml = (item.ingredients || []).map(ing => `<li>${ing}</li>`).join('');
                     
                     const imagesHtml = (item.imageUrls && item.imageUrls.length > 0)
                         ? item.imageUrls.map(url => `<img src="${url}" alt="${item.name}" class="slider-image">`).join('')
@@ -953,7 +1090,7 @@
                         ${sliderHtml}
                         <div class="burger-card-content">
                             <h2>${item.name}</h2>
-                            <div class="price">$${item.price.toFixed(2)}</div>
+                            <div class="price">${item.price ? '$' + item.price.toFixed(2) : 'Varios precios'}</div>
                             <ul>${ingredientsHtml}</ul>
                         </div>
                     `;
@@ -961,30 +1098,28 @@
                 });
             }
             
-            // --- CORRECCIÓN: Función populateOrderMenu ---
             function populateOrderMenu(items) {
-                orderMenuContainer.innerHTML = '<h3>Selecciona un Producto</h3>'; // Limpia antes
+                orderMenuContainer.innerHTML = '<h3>Selecciona un Producto</h3>';
                 if (!items || items.length === 0) {
                     orderMenuContainer.innerHTML += '<p style="text-align:center; color: var(--color-texto-secundario);">No hay productos disponibles.</p>';
                     return;
                 }
                 items.forEach(item => {
-                    const displayImage = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : 'placeholder.png'; // Primera imagen o placeholder
+                    const displayImage = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : 'placeholder.png';
                     
-                    // Crea la tarjeta en lugar del botón
                     const card = document.createElement('div');
                     card.className = 'order-item-card';
-                    card.dataset.itemId = item.id; // Guarda el ID en la tarjeta
+                    card.dataset.itemId = item.id;
                     card.innerHTML = `
                         <img src="${displayImage}" alt="${item.name}">
                         <div class="item-info">
                             <h4>${item.name}</h4>
-                            <p class="price">$${item.price.toFixed(2)}</p>
+                            <p class="price">${item.price ? '$' + item.price.toFixed(2) : 'Varios tamaños'}</p>
                         </div>
                     `;
                     
-                    // Añade el listener a la tarjeta completa
-                    card.addEventListener('click', () => showCustomization(item)); 
+                    // --- CAMBIO: Llama a la nueva función del modal ---
+                    card.addEventListener('click', () => openProductOptionsModal(item)); 
                     orderMenuContainer.appendChild(card);
                 });
             }
@@ -1011,8 +1146,6 @@
                     console.error("showCustomization called with invalid item");
                     return;
                 }
-                
-                // Busca la versión más actualizada del item en el cache visible (por si acaso)
                 const currentItemData = menuItemsVisibleCache.find(i => i.id === item.id) || item;
 
                 currentOrderItem = { ...currentItemData, customIngredients: [...(currentItemData.ingredients || [])] };
@@ -1023,7 +1156,7 @@
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox'; checkbox.value = ingredient; checkbox.checked = true;
                     checkbox.addEventListener('change', (e) => {
-                        if (!currentOrderItem) return; // Seguridad extra
+                        if (!currentOrderItem) return;
                         if (e.target.checked) {
                             currentOrderItem.customIngredients.push(e.target.value);
                         } else {
@@ -1044,13 +1177,13 @@
             }
             
             // --- Lógica del Carrito ---
-            addItemToCartBtn.addEventListener('click', () => {
-                if (!currentOrderItem) return;
-                fullOrder.push(currentOrderItem);
+            function addItemToCart(item) { // Modificado para recibir un objeto
+                if (!item) return;
+                fullOrder.push(item);
                 renderCart();
                 updateTotal();
-                resetCustomizationSection();
-            });
+                resetCustomizationSection(); // Opcional, pero bueno para limpiar
+            }
             
             cartSummaryList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('delete-item-btn')) {
@@ -1069,10 +1202,17 @@
                 fullOrder.forEach((item, index) => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'cart-item';
+                    
+                    // Muestra el sabor o tamaño si existe
+                    const detail = item.selectedOption || item.selectedSize?.name;
+                    
                     itemEl.innerHTML = `
-                        <div><span class="name">${item.name}</span></div>
                         <div>
-                            <span class="price">$${item.price.toFixed(2)}</span>
+                            <span class="name">${item.name}</span>
+                            ${detail ? `<span class="detail">(${detail})</span>` : ''}
+                        </div>
+                        <div>
+                            <span class="price">$${(item.selectedSize?.price || item.price).toFixed(2)}</span>
                             <button class="delete-item-btn" data-index="${index}">&times;</button>
                         </div>
                     `;
@@ -1081,7 +1221,7 @@
             }
 
             function updateTotal() {
-                const total = fullOrder.reduce((sum, item) => sum + item.price, 0);
+                const total = fullOrder.reduce((sum, item) => sum + (item.selectedSize?.price || item.price), 0);
                 totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
                 finalizeOrderBtn.disabled = (fullOrder.length === 0);
                 finalizeOrderBtn.textContent = (fullOrder.length > 0) ? `Finalizar Pedido ($${total.toFixed(2)})` : 'Finalizar Pedido';
@@ -1104,12 +1244,15 @@
                 const cleanItems = fullOrder.map(item => ({
                     id: item.id,
                     name: item.name,
-                    price: item.price,
-                    customIngredients: item.customIngredients
+                    price: item.selectedSize?.price || item.price,
+                    selectedOption: item.selectedOption || null,
+                    selectedSize: item.selectedSize?.name || null,
+                    customIngredients: item.customIngredients || null
                 }));
+
                 const orderData = {
                     items: cleanItems,
-                    total: fullOrder.reduce((sum, item) => sum + item.price, 0),
+                    total: cleanItems.reduce((sum, item) => sum + item.price, 0),
                     status: 'Pendiente',
                     folio: `FOLIO-${Date.now().toString().slice(-6)}`,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1197,12 +1340,13 @@
                 }
 
                 const itemsHtml = order.items.map(item => {
+                    const detail = item.selectedOption || item.selectedSize;
                     const ingredientsListHtml = (item.customIngredients && item.customIngredients.length > 0)
                         ? '<ul>' + item.customIngredients.map(ing => `<li>${ing}</li>`).join('') + '</ul>'
-                        : '<ul><li>Ingredientes por defecto</li></ul>';
+                        : '';
                     
                     return `<li class="kitchen-item-card">
-                        <strong>${item.name}</strong>
+                        <strong>${item.name} ${detail ? `<span class="item-detail">(${detail})</span>` : ''}</strong>
                         ${ingredientsListHtml}
                     </li>`;
                 }).join('');
@@ -1261,7 +1405,11 @@
                             const order = doc.data();
                             total += order.total;
                             
-                            const itemsSummaryHtml = order.items.map(item => `<li>${item.name} ($${item.price.toFixed(2)})</li>`).join('');
+                            const itemsSummaryHtml = order.items.map(item => {
+                                const detail = item.selectedOption || item.selectedSize;
+                                return `<li>${item.name} ${detail ? `(${detail})` : ''} ($${item.price.toFixed(2)})</li>`;
+                            }).join('');
+                            
                             todaySalesListEl.innerHTML += `
                                 <details class="sales-report-item">
                                     <summary>
@@ -1308,7 +1456,11 @@
                     
                     for (const day in salesByDay) {
                         const ordersHtml = salesByDay[day].orders.map(order => {
-                            const itemsSummaryHtml = order.items.map(item => `<li>${item.name} ($${item.price.toFixed(2)})</li>`).join('');
+                            const itemsSummaryHtml = order.items.map(item => {
+                                const detail = item.selectedOption || item.selectedSize;
+                                return `<li>${item.name} ${detail ? `(${detail})` : ''} ($${item.price.toFixed(2)})</li>`;
+                            }).join('');
+
                             return `
                                 <details class="sales-report-item">
                                     <summary>
@@ -1382,6 +1534,7 @@
                 closeModal(successModal);
                 closeModal(adminPasswordModal);
                 closeModal(editMenuItemModal);
+                closeModal(productOptionsModal);
             });
         });
     </script>
