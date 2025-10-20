@@ -475,25 +475,37 @@
     
     // --- Configuración de Firebase ---
     const firebaseConfig = {
-        apiKey: "AIzaSyBF4YpYxe6cSbPAyikxrjU9JpNTPdD_OIE", 
-        authDomain: "don-burger-85dbb.firebaseapp.com",
-        projectId: "don-burger-85dbb",
-        storageBucket: "don-burger-85dbb.appspot.com", 
-        messagingSenderId: "720810288381",
-        appId: "1:720810288381:web:b6535578420074d3804a94"
-    };
-    try {
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        console.log("Firebase inicializado correctamente.");
-    } catch (e) {
-        console.error("Error inicializando Firebase:", e);
-        alert("Error crítico: No se pudo conectar a la base de datos. Revisa la consola.");
-    }
+    apiKey: "AIzaSyBF4YpYxe6cSbPAyikxrjU9JpNTPdD_OIE",
+    authDomain: "don-burger-85dbb.firebaseapp.com",
+    projectId: "don-burger-85dbb",
+    storageBucket: "don-burger-85dbb.appspot.com",
+    messagingSenderId: "720810288381",
+    appId: "1:720810288381:web:b6535578420074d3804a94"
+};
 
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        
+// --- Variables Globales de Firebase ---
+let app; // <--- ¡AQUÍ AFUERA! Se declara con let
+let db;  // <--- ¡AQUÍ AFUERA! Se declara con let
+
+try {
+    app = firebase.initializeApp(firebaseConfig); // <--- Se ASIGNA el valor aquí
+    db = firebase.firestore();                   // <--- Se ASIGNA el valor aquí
+    console.log("Firebase inicializado correctamente.");
+} catch (e) {
+    console.error("Error inicializando Firebase:", e);
+    alert("Error crítico: No se pudo conectar a la base de datos. Revisa la consola.");
+    // Opcional: Detener si Firebase falla
+    // throw new Error("Firebase initialization failed");
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Chequeo MUY IMPORTANTE si db se inicializó ---
+    if (!db) {
+        console.error("¡ERROR GRAVE! La instancia de DB (db) no está definida. La aplicación NO funcionará. Revisa la conexión a Firebase.");
+        alert("Error crítico: Falló la conexión a la base de datos. La app no puede continuar.");
+        // Detiene TODO el script si no hay conexión a la base de datos.
+        return;
+    }
         // --- Cache y Estado Global ---
         let ingredientsCache = []; 
         let menuCache = []; 
