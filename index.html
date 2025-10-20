@@ -11,20 +11,20 @@
     
     <style>
         :root {
-            --color-primario: #D92B2B;
-            --color-secundario: #F2B705;
-            --color-verde: #28a745;
-            --color-azul: #007bff;
+            --color-primario: #D92B2B; /* Rojo Don Burger */
+            --color-secundario: #F2B705; /* Amarillo Mostaza */
+            --color-verde: #28a745; /* Verde Éxito */
+            --color-azul: #007bff; /* Azul Info */
             --color-admin: var(--color-primario);
             
             /* --- Modo Claro (Default) --- */
-            --color-fondo: #F2F2F2;
-            --color-texto: #333333;
-            --color-texto-secundario: #555;
+            --color-fondo: #F8F9FA; /* Un gris muy claro */
+            --color-texto: #212529; /* Negro Suave */
+            --color-texto-secundario: #6C757D; /* Gris Secundario */
             --color-blanco: #FFFFFF;
-            --color-sombra: rgba(0, 0, 0, 0.1);
-            --color-borde: #eee;
-            --color-fondo-hover: #f9f9f9;
+            --color-sombra: rgba(0, 0, 0, 0.075);
+            --color-borde: #DEE2E6; /* Borde más suave */
+            --color-fondo-hover: #E9ECEF; /* Hover más sutil */
             --color-fondo-input: #FFFFFF;
         }
 
@@ -32,8 +32,8 @@
         body.dark-mode {
             --color-fondo: #121212;
             --color-texto: #E0E0E0;
-            --color-texto-secundario: #a0a0a0;
-            --color-blanco: #1E1E1E;
+            --color-texto-secundario: #A0A0A0;
+            --color-blanco: #1E1E1E; /* Fondo de tarjetas en oscuro */
             --color-sombra: rgba(255, 255, 255, 0.05);
             --color-borde: #333;
             --color-fondo-hover: #2a2a2a;
@@ -41,38 +41,42 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0; padding: 0;
             background-color: var(--color-fondo);
             color: var(--color-texto);
             transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.6;
         }
+        
+        button { font-family: inherit; } /* Heredar fuente a botones */
 
         /* --- Header --- */
         header.main-header {
             width: 100%; background-color: var(--color-blanco);
-            padding: 10px 20px; box-shadow: 0 2px 5px var(--color-sombra);
+            padding: 5px 20px; box-shadow: 0 2px 5px var(--color-sombra);
             position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
             box-sizing: border-box;
             transition: background-color 0.3s ease;
+            min-height: 70px;
         }
-        .header-side { min-width: 150px; flex-basis: 150px; }
+        .header-side { min-width: 100px; flex-basis: 100px; }
         .header-side.left { display: flex; justify-content: flex-start; }
         .header-side.right { display: flex; justify-content: flex-end; align-items: center; }
         .logo-container { flex-grow: 1; text-align: center; cursor: pointer; }
-        .logo-container img { max-height: 100px; width: auto; vertical-align: middle; }
+        .logo-container img { max-height: 60px; width: auto; vertical-align: middle; } /* Logo más pequeño */
         
         #auth-btn {
             display: none;
             background-color: var(--color-admin);
-            color: var(--color-blanco);
-            border: none; padding: 12px 20px;
-            font-size: 1rem; font-weight: bold;
+            color: #FFF;
+            border: none; padding: 10px 18px; /* Padding ajustado */
+            font-size: 0.9rem; font-weight: bold; /* Tamaño ajustado */
             cursor: pointer; z-index: 199;
             border-radius: 8px;
             transition: background-color 0.2s;
-            min-width: 150px;
+            min-width: auto; /* Ancho automático */
         }
         #auth-btn.panel-btn { display: block; }
         #auth-btn:hover { opacity: 0.8; }
@@ -81,74 +85,57 @@
             background: none;
             border: 2px solid var(--color-texto-secundario);
             color: var(--color-texto);
-            width: 45px; height: 45px;
+            width: 40px; height: 40px; /* Tamaño ajustado */
             border-radius: 50%;
             cursor: pointer; padding: 0;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.2s ease, border-color 0.3s ease, color 0.3s ease;
         }
-        #theme-toggle-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        #theme-toggle-btn svg { width: 18px; height: 18px; fill: currentColor; } /* Icono ajustado */
         #theme-toggle-btn:hover { transform: scale(1.1); }
 
         /* --- Vistas Principales (Contenedor) --- */
         main { padding: 20px; max-width: 1200px; margin: 20px auto; }
         .main-view-section { display: none; }
-        .main-view-section.active { display: block; }
+        .main-view-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         #menu-gallery-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Tamaño mínimo ajustado */
+            gap: 25px; /* Espacio aumentado */
             min-height: 300px;
         }
         
-        #menu-gallery.active { display: block; }
-
         /* --- Vista: Galería Menú --- */
         .burger-card {
             background-color: var(--color-blanco);
-            border-radius: 10px;
-            box-shadow: 0 4px 10px var(--color-sombra);
+            border-radius: 12px; /* Más redondeado */
+            box-shadow: 0 5px 15px var(--color-sombra); /* Sombra más pronunciada */
             overflow: hidden;
-            transition: transform 0.2s ease, background-color 0.3s ease;
+            transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.2s ease;
         }
+        .burger-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px var(--color-sombra); }
         
-        .slider-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background-color: var(--color-fondo);
-        }
+        .slider-container { position: relative; width: 100%; aspect-ratio: 1 / 1; background-color: var(--color-fondo); }
         .slider-viewport { width: 100%; height: 100%; overflow: hidden; }
         .slider-track { display: flex; height: 100%; transition: transform 0.3s ease-in-out; }
         .slider-image { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; }
-        .slider-btn {
-            position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
-            background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 50%;
-            width: 40px; height: 40px; font-size: 1.5rem; font-weight: bold; cursor: pointer;
-            opacity: 0; transition: opacity 0.2s ease;
-        }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; background-color: rgba(0, 0, 0, 0.4); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 1.2rem; font-weight: bold; cursor: pointer; opacity: 0; transition: opacity 0.2s ease; }
         .burger-card:hover .slider-btn { opacity: 1; }
         .slider-btn.prev { left: 10px; }
         .slider-btn.next { right: 10px; }
 
-        .burger-card-content { padding: 20px; }
-        .burger-card h2 { margin-top: 0; color: var(--color-primario); font-size: 1.5rem; }
-        .burger-card .price { font-size: 1.3rem; font-weight: bold; color: var(--color-secundario); margin-bottom: 15px; }
-        .burger-card ul { list-style: none; padding-left: 0; margin: 0; font-size: 0.95rem; }
-        .burger-card li { margin-bottom: 6px; }
+        .burger-card-content { padding: 15px 20px 20px 20px; } /* Padding ajustado */
+        .burger-card h2 { margin-top: 0; margin-bottom: 8px; color: var(--color-primario); font-size: 1.4rem; }
+        .burger-card .price { font-size: 1.25rem; font-weight: bold; color: var(--color-secundario); margin-bottom: 12px; }
+        .burger-card ul { list-style: none; padding-left: 0; margin: 0; font-size: 0.9rem; color: var(--color-texto-secundario); } /* Texto más pequeño */
+        .burger-card li { margin-bottom: 4px; }
 
         /* --- Vista: Cocina --- */
-        #kitchen-view h1 { color: var(--color-primario); text-align: center; border-bottom: 2px solid var(--color-borde); padding-bottom: 10px; }
+        #kitchen-view h1 { color: var(--color-primario); text-align: center; border-bottom: 2px solid var(--color-borde); padding-bottom: 10px; margin-bottom: 25px; }
         #kitchen-orders-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .order-card {
-            background-color: var(--color-blanco);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px var(--color-sombra);
-            padding: 20px;
-            border-top: 5px solid var(--color-secundario);
-            transition: background-color 0.3s ease;
-        }
+        .order-card { background-color: var(--color-blanco); border-radius: 8px; box-shadow: 0 4px 10px var(--color-sombra); padding: 20px; border-top: 5px solid var(--color-secundario); transition: background-color 0.3s ease; }
         .order-card.status-En-Cocina { border-top-color: var(--color-azul); }
         .order-card.status-Listo { border-top-color: var(--color-verde); }
         .order-card h3 { margin: 0 0 10px 0; font-size: 1.3rem; }
@@ -164,212 +151,157 @@
         .order-card .items-list li.kitchen-item-card ul { list-style: disc; padding-left: 20px; margin: 5px 0 0 0; font-size: 0.9rem; color: var(--color-texto-secundario); }
         .order-card .items-list li.kitchen-item-card ul li { border: none; padding: 2px 0; margin: 0; }
         .order-card .status-buttons { margin-top: 15px; display: flex; gap: 10px; }
-        .status-btn { flex-grow: 1; padding: 10px; border: none; border-radius: 5px; color: var(--color-blanco); font-weight: bold; cursor: pointer; }
+        .status-btn { flex-grow: 1; padding: 10px; border: none; border-radius: 5px; color: #FFF; font-weight: bold; cursor: pointer; transition: opacity 0.2s ease; }
+        .status-btn:hover { opacity: 0.85; }
         .status-btn.to-kitchen { background-color: var(--color-azul); }
         .status-btn.to-ready { background-color: var(--color-verde); }
         #kitchen-history-container { margin-top: 40px; border-top: 2px solid var(--color-texto-secundario); padding-top: 20px; }
         #kitchen-history-container h2 { text-align: center; color: var(--color-texto); }
-        #load-history-btn { display: block; margin: 10px auto 20px auto; padding: 12px 25px; font-size: 1rem; background-color: var(--color-admin); color: var(--color-blanco); border: none; border-radius: 5px; cursor: pointer; }
+        #load-history-btn { display: block; margin: 10px auto 20px auto; padding: 12px 25px; font-size: 1rem; background-color: var(--color-admin); color: #FFF; border: none; border-radius: 5px; cursor: pointer; }
         #kitchen-history-list .history-day-group h3 { background-color: var(--color-blanco); padding: 10px; border-radius: 5px; border-bottom: 2px solid var(--color-primario); margin-top: 20px; }
         
         /* --- Vista: Administración --- */
         #admin-view { padding: 20px; background-color: var(--color-blanco); border-radius: 8px; box-shadow: 0 2px 10px var(--color-sombra); transition: background-color 0.3s ease; }
         #admin-view h1 { color: var(--color-admin); }
-        .admin-section { margin-top: 20px; padding: 20px; border: 1px dashed var(--color-borde); border-radius: 5px; }
-        .admin-section h2 { margin-top: 0; }
+        .admin-section { margin-top: 25px; padding: 20px; border: 1px solid var(--color-borde); border-radius: 8px; transition: border-color 0.3s ease; }
+        .admin-section h2 { margin-top: 0; margin-bottom: 20px; } /* Más espacio */
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input[type="text"], .form-group input[type="password"], .form-group input[type="number"], .form-group textarea, .form-group select {
-            width: 100%; padding: 10px; font-size: 1rem;
-            border: 1px solid var(--color-borde);
-            border-radius: 5px; box-sizing: border-box;
-            background-color: var(--color-fondo-input);
-            color: var(--color-texto);
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-        .form-group textarea { min-height: 80px; }
-        .form-button { background-color: var(--color-admin); color: var(--color-blanco); padding: 12px 20px; border: none; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; }
-        .form-button:hover { opacity: 0.8; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.95rem; } /* Ligeramente más grueso */
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--color-borde); border-radius: 6px; box-sizing: border-box; background-color: var(--color-fondo-input); color: var(--color-texto); transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.2s ease; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--color-primario); box-shadow: 0 0 0 0.2rem rgba(217, 43, 43, 0.25); outline: none; }
+        .form-group small { color: var(--color-texto-secundario); font-size: 0.85rem; margin-top: 4px; display: block; }
+        .form-group textarea { min-height: 80px; resize: vertical; } /* Permitir redimensionar verticalmente */
+        .form-button { background-color: var(--color-admin); color: #FFF; padding: 12px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s ease; }
+        .form-button:hover:not(:disabled) { opacity: 0.85; }
+        .form-button:disabled { background-color: #aaa; cursor: not-allowed; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; vertical-align: middle; } /* Alineación vertical */
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--color-verde); }
+        input:focus + .slider { box-shadow: 0 0 1px var(--color-verde); }
         input:checked + .slider:before { transform: translateX(22px); }
-        #menu-management-list { margin-top: 20px; }
-        .menu-item-admin-card {
-            display: flex; align-items: center; justify-content: space-between;
-            background: var(--color-fondo);
-            padding: 10px; border-radius: 5px; margin-bottom: 10px;
-            transition: background-color 0.3s ease;
-        }
-        .menu-item-admin-card img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
-        .menu-item-admin-card .info { flex-grow: 1; }
-        .menu-item-admin-card .info strong { font-size: 1.1rem; }
-        .menu-item-admin-card .info span { color: var(--color-texto-secundario); }
-        .menu-item-admin-card .actions button { background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: 10px; }
-        .edit-menu-item-btn { color: var(--color-azul); }
-        .delete-menu-item-btn { color: var(--color-primario); }
-        
-        /* Reporte de Ventas */
+
+        /* Reporte de Ventas Mejorado */
         #sales-report-view h3 { color: var(--color-verde); font-size: 1.5rem; }
         #today-sales-total { font-size: 3rem; font-weight: bold; color: var(--color-verde); text-align: center; margin: 10px 0 20px 0; }
-        #today-sales-list .sale-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--color-borde); }
-        #sales-history-list .history-day-group h4 {
-            background-color: var(--color-fondo);
-            padding: 10px; border-radius: 5px;
-            margin: 15px 0 10px 0; display: flex; justify-content: space-between;
-            transition: background-color 0.3s ease;
-        }
-        .sales-report-item {
-            background: var(--color-blanco);
-            border: 1px solid var(--color-borde);
-            border-radius: 5px; margin-bottom: 8px;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;} /* Minimo más pequeño */
+        .analytics-card { background: var(--color-fondo); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--color-borde); }
+        .analytics-card h4 { margin: 0 0 10px 0; color: var(--color-texto-secundario); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; } /* Estilo título */
+        .analytics-card p { font-size: 1.4rem; font-weight: bold; margin: 0; word-wrap: break-word; } /* Evitar overflow */
+        .analytics-card .best { color: var(--color-verde); }
+        .analytics-card .worst { color: var(--color-primario); }
+        .analytics-card span { color: var(--color-texto-secundario); font-size: 0.85rem; margin-top: 5px; display: block; }
+        /* Historial Ventas */
+        .sales-report-item { background: var(--color-blanco); border: 1px solid var(--color-borde); border-radius: 5px; margin-bottom: 8px; transition: background-color 0.3s ease, border-color 0.3s ease; }
         .sales-report-item summary { display: flex; justify-content: space-between; padding: 10px 15px; cursor: pointer; font-size: 1.1rem; }
         .sales-report-item summary:hover { background: var(--color-fondo-hover); }
         .sales-report-item summary span { color: var(--color-primario); font-weight: 500; }
         .sales-report-item summary strong { color: var(--color-verde); }
-        .sales-item-details {
-            padding: 10px 20px 15px 40px;
-            background: var(--color-blanco);
-            border-top: 1px dashed var(--color-borde);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
+        .sales-item-details { padding: 10px 20px 15px 40px; background: var(--color-blanco); border-top: 1px dashed var(--color-borde); transition: background-color 0.3s ease, border-color 0.3s ease; }
         .sales-item-details ul { list-style: disc; padding-left: 20px; margin: 0; }
+        #sales-history-list .history-day-group h4 { background-color: var(--color-fondo); padding: 10px; border-radius: 5px; margin: 15px 0 10px 0; display: flex; justify-content: space-between; transition: background-color 0.3s ease; }
         .sales-day-details { padding-left: 15px; border-left: 3px solid var(--color-fondo); margin-top: 10px; }
+        
+        /* Gestión de Ingredientes */
+        #ingredient-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--color-borde); border-radius: 5px; padding: 10px; margin-top: 15px; }
+        .admin-item-card { display: flex; align-items: center; justify-content: space-between; background: var(--color-fondo); padding: 10px; border-radius: 5px; margin-bottom: 10px; transition: background-color 0.3s ease; }
+        .admin-item-card img { width: 40px; height: 40px; object-fit: cover; border-radius: 5px; margin-right: 15px; } /* Imagen más pequeña */
+        .admin-item-card .info { flex-grow: 1; overflow: hidden; /* Evitar overflow */ }
+        .admin-item-card .info strong { font-size: 1rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Evitar overflow nombre largo */ }
+        .admin-item-card .info span { color: var(--color-texto-secundario); font-size: 0.85rem; }
+        .admin-item-card .info small { font-size: 0.8em; display: block; } /* Para costo/ganancia en menú */
+        .admin-item-card .actions { display: flex; align-items: center; }
+        .admin-item-card .actions button { background: none; border: none; font-size: 1.1rem; cursor: pointer; margin-left: 8px; padding: 5px; } /* Padding para clic fácil */
+        .edit-btn { color: var(--color-azul); }
+        .delete-btn { color: var(--color-primario); }
+        
+        /* Recipe Builder */
+        #recipe-builder-list { margin-top: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;}
+        .recipe-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 8px; background-color: var(--color-fondo); border-radius: 5px; font-size: 0.9rem;}
+        .recipe-item span { flex-grow: 1; color: var(--color-texto-secundario); }
+        .recipe-item span strong { color: var(--color-texto); }
+        .recipe-item .remove-recipe-item-btn { color: var(--color-primario); background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0 5px; }
+        #calculated-cost, #calculated-profit, #direct-profit { font-weight: bold; }
+        #calculated-cost { color: var(--color-azul); }
+        #calculated-profit { color: var(--color-verde); }
+        #direct-profit { color: var(--color-verde); }
+        
+        /* Tamaños Papas */
+        #sizes-list { margin-top: 10px; }
+        .size-item { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 8px; align-items: center;}
+        .size-item input { margin-bottom: 0; }
+        .remove-size-btn { color: var(--color-primario); background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
+        
+        /* Gestión Menú Lista */
+        #menu-management-list { margin-top: 20px; }
 
-        /* --- Overlay (Fondo oscuro) --- */
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 198; }
+        /* Overlay, Paneles Laterales, Modales (sin cambios estructurales) */
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 198; } /* Aumentado z-index */
         #overlay.show { display: block; }
-        
-        /* --- Panel Lateral de Pedido (Izquierdo) --- */
-        #side-panel {
-            position: fixed; top: 0; left: -450px;
-            width: 450px; height: 100vh;
-            background-color: var(--color-blanco);
-            box-shadow: 4px 0px 15px var(--color-sombra);
-            z-index: 200;
-            transition: left 0.3s ease-in-out, background-color 0.3s ease;
-            display: flex; flex-direction: column;
-        }
+        #side-panel { position: fixed; top: 0; left: -100%; width: 100%; max-width: 450px; height: 100vh; background-color: var(--color-blanco); box-shadow: 2px 0px 10px var(--color-sombra); z-index: 200; transition: left 0.3s ease-in-out, background-color 0.3s ease; display: flex; flex-direction: column; }
         #side-panel.open { left: 0; }
-        
-        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--color-primario); color: var(--color-blanco); }
-        .panel-header h2 { margin: 0; font-size: 1.5rem; }
-        #close-panel-btn { background: none; border: none; color: var(--color-blanco); font-size: 2rem; font-weight: bold; cursor: pointer; }
-        .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        
-        #order-menu-items {
-            display: grid; grid-template-columns: 1fr; gap: 15px;
-        }
-        .order-item-card {
-            display: flex; align-items: center;
-            background-color: var(--color-blanco);
-            border-radius: 8px; box-shadow: 0 2px 5px var(--color-sombra);
-            padding: 15px; cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-        }
-        .order-item-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px var(--color-sombra); }
-        .order-item-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
-        .order-item-card .item-info { flex-grow: 1; }
-        .order-item-card h4 { margin: 0 0 5px 0; font-size: 1.2rem; color: var(--color-texto); }
-        .order-item-card .price { font-size: 1.1rem; font-weight: bold; color: var(--color-secundario); margin: 0; }
-        
-        #customization-section { margin-top: 20px; border-top: 2px solid var(--color-borde); padding-top: 20px; }
-        #ingredients-list label { display: block; margin-bottom: 10px; font-size: 1.1rem; cursor: pointer; padding: 8px; border-radius: 5px; }
-        #ingredients-list label:hover { background-color: var(--color-fondo); }
-        #ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); }
-        #add-item-to-cart-btn { width: 100%; padding: 12px; margin-top: 15px; background-color: var(--color-primario); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
-        .panel-footer { padding: 20px; border-top: 2px solid var(--color-borde); background-color: var(--color-blanco); transition: background-color 0.3s ease, border-color 0.3s ease; }
-        #order-summary-list { max-height: 150px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid var(--color-borde); }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; font-size: 0.95rem; }
-        .cart-item .name { font-weight: bold; }
-        .cart-item .detail { font-size: 0.85em; color: var(--color-texto-secundario); }
-        .delete-item-btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-weight: bold; font-size: 0.9rem; cursor: pointer; line-height: 20px; text-align: center; margin-left: 10px; }
-        #total-display { font-size: 1.5rem; font-weight: bold; color: var(--color-primario); text-align: right; margin-bottom: 15px; }
-        #finalize-order-btn { width: 100%; padding: 15px; background-color: var(--color-verde); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
-        #finalize-order-btn:disabled { background-color: #aaa; cursor: not-allowed; }
-        
-        /* --- Panel Lateral de Admin (Izquierdo) --- */
-        #admin-panel {
-            position: fixed; top: 0; left: -300px;
-            width: 300px; height: 100vh;
-            background-color: var(--color-admin);
-            box-shadow: 4px 0px 15px var(--color-sombra);
-            z-index: 200;
-            transition: left 0.3s ease-in-out;
-            padding-top: 80px;
-            box-sizing: border-box;
-            display: flex; flex-direction: column;
-        }
+        #admin-panel { position: fixed; top: 0; left: -300px; width: 300px; height: 100vh; background-color: var(--color-admin); box-shadow: 2px 0px 10px var(--color-sombra); z-index: 200; transition: left 0.3s ease-in-out; padding-top: 80px; box-sizing: border-box; display: flex; flex-direction: column; }
         #admin-panel.open { left: 0; }
-        #admin-panel-nav-main { flex-grow: 1; }
-        #admin-panel .admin-nav-btn { display: block; width: 100%; padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--color-blanco); background-color: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; cursor: pointer; transition: background-color 0.2s; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--color-primario); color: var(--color-blanco); flex-shrink: 0; /* Evitar que se encoja */}
+        .panel-header h2 { margin: 0; font-size: 1.5rem; }
+        #close-panel-btn { background: none; border: none; color: var(--color-blanco); font-size: 2rem; font-weight: bold; cursor: pointer; padding: 0 5px; /* Área de clic */}
+        .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        #order-menu-items { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .order-item-card { display: flex; align-items: center; background-color: var(--color-blanco); border-radius: 8px; box-shadow: 0 2px 5px var(--color-sombra); padding: 15px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease; }
+        .order-item-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px var(--color-sombra); }
+        .order-item-card img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 15px; flex-shrink: 0; } /* Evitar que se encoja */
+        .order-item-card .item-info { flex-grow: 1; overflow: hidden; }
+        .order-item-card h4 { margin: 0 0 5px 0; font-size: 1.1rem; color: var(--color-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;} /* Ajuste tamaño y overflow */
+        .order-item-card .price { font-size: 1rem; font-weight: bold; color: var(--color-secundario); margin: 0; }
+        #customization-section { margin-top: 20px; border-top: 2px solid var(--color-borde); padding-top: 20px; }
+        #ingredients-list label { display: block; margin-bottom: 10px; font-size: 1rem; cursor: pointer; padding: 8px; border-radius: 5px; } /* Tamaño ajustado */
+        #ingredients-list label:hover { background-color: var(--color-fondo); }
+        #ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); vertical-align: middle;} /* Alineación */
+        #add-item-to-cart-btn { width: 100%; padding: 12px; margin-top: 15px; background-color: var(--color-primario); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .panel-footer { padding: 15px 20px; border-top: 2px solid var(--color-borde); background-color: var(--color-blanco); transition: background-color 0.3s ease, border-color 0.3s ease; flex-shrink: 0; /* Evitar que se encoja */}
+        #order-summary h3 { margin: 0 0 10px 0; font-size: 1.2rem;} /* Título resumen */
+        #order-summary-list { max-height: 120px; overflow-y: auto; margin-bottom: 10px; border-bottom: 1px solid var(--color-borde); padding-bottom: 5px;} /* Altura ajustada */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 5px; font-size: 0.9rem; } /* Padding y tamaño ajustado */
+        .cart-item .name { font-weight: bold; flex-grow: 1; margin-right: 10px; } /* Espacio para botón */
+        .cart-item .detail { font-size: 0.8em; color: var(--color-texto-secundario); }
+        .delete-item-btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; line-height: 18px; text-align: center; flex-shrink: 0; } /* Tamaño ajustado */
+        #total-display { font-size: 1.4rem; font-weight: bold; color: var(--color-primario); text-align: right; margin-bottom: 10px; } /* Tamaño ajustado */
+        #finalize-order-btn { width: 100%; padding: 12px; font-size: 1.1rem; } /* Padding y tamaño ajustado */
+        
+        #admin-panel .admin-nav-btn { display: block; width: 100%; padding: 18px 20px; font-size: 1.1rem; font-weight: bold; color: var(--color-blanco); background-color: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; cursor: pointer; transition: background-color 0.2s; } /* Padding y tamaño ajustado */
         #admin-panel .admin-nav-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
-        #admin-panel .logout-btn { background-color: #a12020; border-bottom: none; border-top: 1px solid rgba(255,255,255,0.3); }
+        #admin-panel .logout-btn { background-color: #a12020; border-bottom: none; border-top: 1px solid rgba(255,255,255,0.3); margin-top: auto; /* Empujar al fondo */}
         #admin-panel .logout-btn:hover { background-color: #8c1b1b; }
 
-        /* --- Modales --- */
-        .modal { display: none; position: fixed; z-index: 250; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; z-index: 250; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.7); /* Más oscuro */ justify-content: center; align-items: center; }
         .modal.show { display: flex; }
-        .modal-content {
-            background-color: var(--color-blanco);
-            margin: auto; padding: 30px; border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center; max-width: 400px; width: 90%; position: relative;
-            transition: background-color 0.3s ease;
-        }
-        .modal-close-btn { position: absolute; top: 10px; right: 15px; font-size: 2.5rem; font-weight: bold; color: #aaa; cursor: pointer; }
-        .modal-content h2 { margin-top: 0; color: var(--color-texto); }
-        #success-modal .icon { font-size: 4rem; color: var(--color-verde); }
-        #login-modal .modal-content { text-align: left; }
-        .error-msg { color: var(--color-primario); text-align: center; display: none; margin-top: 10px; }
-        #login-submit-btn { width: 100%; padding: 12px; background-color: var(--color-primario); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; }
-        #admin-password-modal .modal-content { text-align: left; }
-        #admin-pass-submit-btn { width: 100%; padding: 12px; background-color: var(--color-admin); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; }
-        #edit-item-save-btn { background-color: var(--color-verde); }
-
-        /* Modal de Opciones de Producto */
+        .modal-content { background-color: var(--color-blanco); margin: auto; padding: 25px 30px 30px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 500px; width: 90%; position: relative; transition: background-color 0.3s ease; max-height: 90vh; overflow-y: auto; } /* Max width aumentado */
+        .modal-close-btn { position: absolute; top: 10px; right: 15px; font-size: 2.5rem; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; } /* Alineación */
+        .modal-content h2 { margin-top: 0; margin-bottom: 15px; color: var(--color-texto); }
+        .error-msg { color: var(--color-primario); text-align: center; display: none; margin-top: 10px; font-size: 0.9rem; }
+        /* Modal Opciones */
         #product-options-content { text-align: left; }
-        #product-options-content h3 { font-size: 1.5rem; color: var(--color-texto); }
-        #product-options-content p { color: var(--color-texto-secundario); }
-        #modal-options-list { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
-        .option-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid var(--color-borde);
-            background: var(--color-fondo);
-            color: var(--color-texto);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-sizing: border-box; /* Añadido */
-        }
-        .option-btn.selected {
-            border-color: var(--color-primario);
-            background: color-mix(in srgb, var(--color-primario) 15%, transparent);
-            color: var(--color-primario);
-        }
-        .modal-footer-btn { width: 100%; margin-top: 10px; }
+        #product-options-content h3 { font-size: 1.4rem; color: var(--color-texto); margin-bottom: 5px;}
+        #product-options-content p { color: var(--color-texto-secundario); margin-top: 0; margin-bottom: 15px; font-size: 0.95rem; }
+        #modal-options-list { margin: 15px 0; display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--color-borde); background: var(--color-fondo); color: var(--color-texto); font-weight: 600; cursor: pointer; transition: all 0.2s; box-sizing: border-box; text-align: left; } /* Alineación texto */
+        .option-btn.selected { border-color: var(--color-primario); background: color-mix(in srgb, var(--color-primario) 15%, transparent); color: var(--color-primario); }
+        .modal-footer-btn { width: 100%; margin-top: 15px; padding: 12px 20px; font-size: 1rem; } /* Padding y tamaño ajustado */
         
+        /* Utilidades */
+        .btn-primary { background-color: var(--color-primario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
+        .btn-secondary { background-color: var(--color-texto-secundario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
+        .btn-primary:disabled { background-color: #aaa; cursor: not-allowed; opacity: 0.7;} /* Opacidad en disabled */
+        .btn-primary:hover:not(:disabled), .btn-secondary:hover { opacity: 0.85; }
+
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <div class="header-side left">
-            <button id="auth-btn">PANEL</button>
-        </div>
-        <div class="logo-container" id="logo-clickable-area">
-            <img src="logo.png" alt="Logo del Negocio">
-        </div>
-        <div class="header-side right">
-            <button id="theme-toggle-btn">
-                </button>
-        </div>
+        <div class="header-side left"><button id="auth-btn">PANEL</button></div>
+        <div class="logo-container" id="logo-clickable-area"><img src="logo.png" alt="Logo Don Burger"></div> <div class="header-side right"><button id="theme-toggle-btn"></button></div>
     </header>
 
     <div id="overlay"></div>
@@ -380,47 +312,44 @@
             <button id="close-panel-btn">&times;</button>
         </div>
         <div class="panel-content">
-            <div id="order-menu-items"></div>
-            
+            <div id="order-menu-items"><p style="text-align: center; color: var(--color-texto-secundario);">Cargando menú...</p></div>
             <div id="customization-section" style="display: none;">
                 <h3 id="custom-burger-name">Personalizar</h3>
                 <div id="ingredients-list"></div>
-                <button id="add-item-to-cart-btn">Agregar al Carrito</button>
+                <button id="add-item-to-cart-btn" class="form-button">Agregar al Carrito</button>
             </div>
         </div>
         <div class="panel-footer">
             <div id="order-summary">
                 <h3>Resumen del Pedido</h3>
-                <div id="order-summary-list"></div>
+                <div id="order-summary-list"><p style="text-align: center; color: var(--color-texto-secundario);">El carrito está vacío</p></div>
             </div>
             <div id="total-display">Total: $0.00</div>
-            <button id="finalize-order-btn" disabled>Finalizar Pedido</button>
+            <button id="finalize-order-btn" class="btn-primary" style="width: 100%; background-color: var(--color-verde); font-size: 1.1rem;" disabled>Finalizar Pedido</button>
         </div>
     </aside>
     
     <aside id="admin-panel">
         <div id="admin-panel-nav-main">
-            <button class="admin-nav-btn" id="admin-nav-menu">Ver Menú</button>
-            <button class="admin-nav-btn" id="admin-nav-create">Crear Pedido</button>
-            <button class="admin-nav-btn" id="admin-nav-kitchen">Ver Cocina</button>
-            <button class="admin-nav-btn" id="admin-nav-admin">Administración</button>
+            <button class="admin-nav-btn" data-view="menu-gallery">Ver Menú</button>
+            <button class="admin-nav-btn" data-action="create-order">Crear Pedido</button>
+            <button class="admin-nav-btn" data-view="kitchen-view">Ver Cocina</button>
+            <button class="admin-nav-btn" data-view="admin-view">Administración</button>
         </div>
         <button class="admin-nav-btn logout-btn" id="admin-nav-logout">Cerrar Sesión</button>
     </aside>
 
     <main>
-        
         <section id="menu-gallery" class="main-view-section active">
-            <div id="menu-gallery-container">
-                </div>
+            <div id="menu-gallery-container"><p style="text-align: center; color: var(--color-texto-secundario);">Cargando menú...</p></div>
         </section>
         
         <section id="kitchen-view" class="main-view-section">
             <h1>Pedidos del Día</h1>
-            <div id="kitchen-orders-list"></div>
+            <div id="kitchen-orders-list"><p style="text-align: center; color: var(--color-texto-secundario);">Cargando pedidos...</p></div>
             <div id="kitchen-history-container">
                 <h2>Historial de Pedidos</h2>
-                <button id="load-history-btn">Cargar Historial (Días Anteriores)</button>
+                <button id="load-history-btn" class="form-button">Cargar Historial</button>
                 <div id="kitchen-history-list"></div>
             </div>
         </section>
@@ -429,1243 +358,1533 @@
             <h1>Panel de Administración</h1>
             
             <div id="sales-report-view" class="admin-section">
-                <h2>Reporte de Ventas</h2>
+                <h2>Reporte de Ventas y Análisis</h2>
                 <h3>Ventas de Hoy (Tiempo Real)</h3>
                 <div id="today-sales-total">$0.00</div>
-                <h4>Pedidos Completados Hoy:</h4>
-                <div id="today-sales-list">
-                    <p>Esperando pedidos...</p>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>🔥 Producto Estrella</h4>
+                        <p id="best-selling-item" class="best">--</p>
+                        <span id="best-selling-count"></span>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>🥶 Producto Menos Vendido</h4>
+                        <p id="least-selling-item" class="worst">--</p>
+                        <span id="least-selling-count"></span>
+                    </div>
                 </div>
-                
+                <h4>Pedidos Completados Hoy:</h4>
+                <div id="today-sales-list"><p>Esperando pedidos...</p></div>
                 <h3 style="margin-top: 30px;">Historial de Ventas</h3>
                 <button id="load-sales-history-btn" class="form-button">Cargar Historial</button>
                 <div id="sales-history-list" style="margin-top: 15px;"></div>
+            </div>
+
+            <div id="ingredient-management-view" class="admin-section">
+                <h2>Gestión de Ingredientes</h2>
+                <form id="add-ingredient-form">
+                    <h3>Agregar/Editar Ingrediente</h3>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label for="ingredient-name">Nombre</label>
+                            <input type="text" id="ingredient-name" placeholder="Ej. Carne Golden Bull" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ingredient-unit">Unidad Compra</label>
+                            <select id="ingredient-unit" required>
+                                <option value="kg">Kilogramo (kg)</option>
+                                <option value="g">Gramo (g)</option>
+                                <option value="l">Litro (l)</option>
+                                <option value="ml">Mililitro (ml)</option>
+                                <option value="pieza">Pieza</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ingredient-cost">Costo x Unidad</label>
+                            <input type="number" step="0.01" id="ingredient-cost" placeholder="Ej. 111.00" required>
+                        </div>
+                    </div>
+                    <input type="hidden" id="edit-ingredient-id">
+                    <button type="submit" class="form-button" id="add-ingredient-btn">Guardar Ingrediente</button>
+                    <button type="button" class="form-button" id="cancel-edit-ingredient-btn" style="display: none; background-color: #777;">Cancelar Edición</button>
+                </form>
+                <h3 style="margin-top: 30px;">Inventario de Ingredientes</h3>
+                <div id="ingredient-list"><p>Cargando ingredientes...</p></div>
             </div>
             
             <div id="menu-management-view" class="admin-section">
                 <h2>Gestión de Menú</h2>
                 <form id="add-menu-item-form">
-                    <h3>Agregar Nuevo Producto</h3>
+                    <h3>Agregar/Editar Producto</h3>
+                    <input type="hidden" id="edit-menu-item-id">
+                    <div class="form-group"><label for="item-name">Nombre del Producto</label><input type="text" id="item-name" required></div>
                     <div class="form-group">
                         <label for="item-type">Tipo de Producto</label>
-                        <select id="item-type">
-                            <option value="burger" selected>Hamburguesa</option>
-                            <option value="soda">Refresco</option>
-                            <option value="fries">Papas</option>
+                        <select id="item-type" required>
+                            <option value="" disabled selected>-- Selecciona Tipo --</option>
+                            <option value="burger">Hamburguesa (con receta)</option>
+                            <option value="fries">Papas (con tamaños)</option>
+                            <option value="soda">Refresco (con opciones)</option>
+                            <option value="extra">Extra (costo directo)</option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label for="item-name">Nombre</label>
-                        <input type="text" id="item-name" required>
-                    </div>
-
-                    <div id="burger-fields">
-                        <div class="form-group">
-                            <label for="item-price">Precio</label>
-                            <input type="number" id="item-price" required> </div>
-                         <div class="form-group">
-                            <label for="item-ingredients">Ingredientes (uno por línea)</label>
-                            <textarea id="item-ingredients" required></textarea> </div>
-                    </div>
-                    <div id="soda-fields" style="display: none;">
-                         <div class="form-group">
-                            <label for="soda-price">Precio</label>
-                            <input type="number" id="soda-price">
+                    
+                    <div id="recipe-fields" style="display: none;">
+                        <h4>Receta del Producto</h4>
+                        <div id="recipe-builder-list"></div>
+                        <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div style="flex-grow: 1;"><label for="ingredient-selector">Agregar Ingrediente</label><select id="ingredient-selector"><option value="">-- Carga ingredientes --</option></select></div>
+                            <div><label for="ingredient-quantity">Cantidad</label><input type="number" step="any" id="ingredient-quantity" style="width: 80px;"></div>
+                             <div><label for="ingredient-quantity-unit">Unidad Receta</label><select id="ingredient-quantity-unit"><option value="g">g</option><option value="ml">ml</option><option value="pieza">pieza</option></select></div>
+                            <button type="button" id="add-to-recipe-btn" class="form-button" style="padding: 10px 15px;" title="Agregar a receta">+</button>
                         </div>
-                        <div class="form-group">
-                            <label for="soda-options">Sabores (uno por línea)</label>
-                            <textarea id="soda-options"></textarea>
-                        </div>
+                        <div class="form-group"><label for="item-price">Precio de Venta</label><input type="number" step="0.01" id="item-price" required><small>Costo Calculado: <b id="calculated-cost">$0.00</b> | Ganancia: <b id="calculated-profit">$0.00</b> (0%)</small></div>
                     </div>
-                    <div id="fries-fields" style="display: none;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="form-group">
-                                <label for="fries-size-1-name">Nombre Tamaño 1</label>
-                                <input type="text" id="fries-size-1-name" placeholder="Ej. Chicas">
-                            </div>
-                            <div class="form-group">
-                                <label for="fries-size-1-price">Precio 1</label>
-                                <input type="number" id="fries-size-1-price">
-                            </div>
-                            <div class="form-group">
-                                <label for="fries-size-2-name">Nombre Tamaño 2</label>
-                                <input type="text" id="fries-size-2-name" placeholder="Ej. Grandes">
-                            </div>
-                            <div class="form-group">
-                                <label for="fries-size-2-price">Precio 2</label>
-                                <input type="number" id="fries-size-2-price">
-                            </div>
-                        </div>
+                    
+                    <div id="direct-cost-fields" style="display: none;">
+                        <div class="form-group"><label for="item-price-direct">Precio de Venta</label><input type="number" step="0.01" id="item-price-direct"></div>
+                        <div class="form-group"><label for="item-cost-direct">Costo del Producto</label><input type="number" step="0.01" id="item-cost-direct"><small>Ganancia: <b id="direct-profit">$0.00</b> (0%)</small></div>
+                    </div>
+                    <div id="options-fields" style="display: none;"><div class="form-group"><label for="item-options">Opciones / Sabores (uno por línea)</label><textarea id="item-options"></textarea></div></div>
+                    <div id="sizes-fields" style="display: none;">
+                        <h4>Tamaños y Precios</h4><div id="sizes-list"></div><button type="button" id="add-size-btn" class="form-button" style="background-color: var(--color-azul); margin-top: 5px;">+ Agregar Tamaño</button>
                     </div>
 
-                    <div class="form-group">
-                        <label for="item-image-urls">URLs de Imagen (una por línea)</label>
-                        <textarea id="item-image-urls" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="item-is-visible">Visible en Menú</label>
-                        <label class="switch">
-                            <input type="checkbox" id="item-is-visible" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <button type="submit" class="form-button">Guardar Producto</button>
+                    <div class="form-group"><label for="item-image-urls">URLs de Imagen (una por línea)</label><textarea id="item-image-urls" required></textarea></div>
+                    <div class="form-group"><label>Visible en Menú</label><label class="switch"><input type="checkbox" id="item-is-visible" checked><span class="slider"></span></label></div>
+                    
+                    <button type="submit" class="form-button" id="save-menu-item-btn">Guardar Producto</button>
+                    <button type="button" class="form-button" id="cancel-edit-menu-btn" style="display: none; background-color: #777;">Cancelar Edición</button>
                 </form>
                 
                 <h3 style="margin-top: 30px;">Menú Actual</h3>
-                <div id="menu-management-list"></div>
+                <div id="menu-management-list"><p>Cargando menú...</p></div>
             </div>
         </section>
-    
     </main>
     
-    <div id="success-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn" id="close-modal-btn">&times;</span>
-            <div class="icon">✅</div> <h2>¡Éxito!</h2>
-            <p id="success-modal-message">La operación se completó.</p>
-        </div>
-    </div>
-    
-    <div id="login-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn" id="login-close-btn">&times;</span>
-            <h2>Iniciar Sesión</h2>
-            <div class="form-group">
-                <label for="username">Usuario</label>
-                <input type="text" id="username" placeholder="Usuario">
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="Contraseña">
-            </div>
-            <p id="login-error-msg" class="error-msg">Usuario o contraseña incorrectos</p>
-            <button id="login-submit-btn">Entrar</button>
-        </div>
-    </div>
-    
-    <div id="admin-password-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn" id="admin-pass-close-btn">&times;</span>
-            <h2>Acceso de Administrador</h2>
-            <p>Esta sección requiere una contraseña adicional.</p>
-            <div class="form-group">
-                <label for="admin-password">Contraseña de Admin</label>
-                <input type="password" id="admin-password" placeholder="Contraseña">
-            </div>
-            <p id="admin-pass-error-msg" class="error-msg">Contraseña incorrecta</p>
-            <button id="admin-pass-submit-btn">Desbloquear</button>
-        </div>
-    </div>
-    
-    <div id="edit-menu-item-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn" id="edit-item-close-btn">&times;</span>
-            <h2>Editar Producto</h2>
-            <form id="edit-menu-item-form">
-                </form>
-        </div>
-    </div>
-
-    <div id="product-options-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close-btn" id="product-options-close-btn">&times;</span>
-            <div id="product-options-content">
-                </div>
-        </div>
-    </div>
-
+    <div id="success-modal" class="modal"><div class="modal-content"><span class="modal-close-btn">&times;</span><div class="icon" style="font-size: 4rem; color: var(--color-verde);">✅</div><h2>¡Éxito!</h2><p id="success-modal-message">La operación se completó.</p></div></div>
+    <div id="login-modal" class="modal"><div class="modal-content"><span class="modal-close-btn">&times;</span><h2>Iniciar Sesión</h2><div class="form-group"><label for="username">Usuario</label><input type="text" id="username" placeholder="Usuario"></div><div class="form-group"><label for="password">Contraseña</label><input type="password" id="password" placeholder="Contraseña"></div><p id="login-error-msg" class="error-msg">Usuario o contraseña incorrectos</p><button id="login-submit-btn" class="btn-primary" style="width: 100%;">Entrar</button></div></div>
+    <div id="admin-password-modal" class="modal"><div class="modal-content"><span class="modal-close-btn">&times;</span><h2>Acceso de Administrador</h2><p>Esta sección requiere una contraseña adicional.</p><div class="form-group"><label for="admin-password">Contraseña de Admin</label><input type="password" id="admin-password" placeholder="Contraseña"></div><p id="admin-pass-error-msg" class="error-msg">Contraseña incorrecta</p><button id="admin-pass-submit-btn" class="form-button" style="width: 100%;">Desbloquear</button></div></div>
+    <div id="product-options-modal" class="modal"><div class="modal-content"><span class="modal-close-btn">&times;</span><div id="product-options-content"></div></div></div>
 
     <script>
-        // --- Configuración de Firebase (Don Burger) ---
-        const firebaseConfig = {
-          apiKey: "AIzaSyBF4YpYxe6cSbPAyikxrjU9JpNTPdD_OIE",
-          authDomain: "don-burger-85dbb.firebaseapp.com",
-          projectId: "don-burger-85dbb",
-          storageBucket: "don-burger-85dbb.firebasestorage.app",
-          messagingSenderId: "720810288381",
-          appId: "1:720810288381:web:b6535578420074d3804a94"
-        };
+    // ######################################################################
+    // ### INICIO DEL SCRIPT COMPLETO - DON BURGER CENTRO DE CONTROL ###
+    // ######################################################################
+    
+    // --- Configuración de Firebase ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBF4YpYxe6cSbPAyikxrjU9JpNTPdD_OIE", 
+        authDomain: "don-burger-85dbb.firebaseapp.com",
+        projectId: "don-burger-85dbb",
+        storageBucket: "don-burger-85dbb.appspot.com", 
+        messagingSenderId: "720810288381",
+        appId: "1:720810288381:web:b6535578420074d3804a94"
+    };
+    try {
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        console.log("Firebase inicializado correctamente.");
+    } catch (e) {
+        console.error("Error inicializando Firebase:", e);
+        alert("Error crítico: No se pudo conectar a la base de datos. Revisa la consola.");
+    }
+
+    
+    document.addEventListener('DOMContentLoaded', () => {
         
+        // --- Cache y Estado Global ---
+        let ingredientsCache = []; 
+        let menuCache = []; 
+        let currentRecipe = [];
+        let isLoggedIn = false;
+        let isAdminViewUnlocked = false;
+        let listeners = {
+            ingredients: null,
+            menuAdmin: null,
+            menuClient: null,
+            kitchen: null,
+            sales: null
+        };
+        let currentItemWithOptions = null; 
+        let fullOrder = [];
+        let currentOrderItem = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- Cache y Estado ---
-            let menuItemsAdminCache = [];
-            let menuItemsVisibleCache = [];
-            let currentOrderItem = null; // Usado solo para personalización de hamburguesa
-            let fullOrder = [];
-            let isLoggedIn = false;
-            let isAdminViewUnlocked = false;
-            let kitchenOrderListener = null;
-            let salesListener = null;
-            let currentItemWithOptions = null; // NUEVO: Guarda el item para el modal de opciones
+        // --- Formateador de Moneda ---
+        const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 
-            // --- DOM Generales ---
-            const overlay = document.getElementById('overlay');
-            const authBtn = document.getElementById('auth-btn');
-            const logoClickableArea = document.getElementById('logo-clickable-area');
-            const themeToggleBtn = document.getElementById('theme-toggle-btn');
-            
-            // --- DOM Vistas ---
-            const mainViews = document.querySelectorAll('.main-view-section');
-            const menuGalleryContainer = document.getElementById('menu-gallery-container');
-            const kitchenOrdersList = document.getElementById('kitchen-orders-list');
-            const loadHistoryBtn = document.getElementById('load-history-btn');
-            const kitchenHistoryList = document.getElementById('kitchen-history-list');
-            
-            // --- DOM Paneles ---
-            const sidePanel = document.getElementById('side-panel');
-            const closePanelBtn = document.getElementById('close-panel-btn');
-            const adminPanel = document.getElementById('admin-panel');
-            
-            // --- DOM Navegación Admin ---
-            const navMenuBtn = document.getElementById('admin-nav-menu');
-            const navCreateBtn = document.getElementById('admin-nav-create');
-            const navKitchenBtn = document.getElementById('admin-nav-kitchen');
-            const navAdminBtn = document.getElementById('admin-nav-admin');
-            const navLogoutBtn = document.getElementById('admin-nav-logout');
-            
-            // --- DOM Panel Pedido ---
-            const orderMenuContainer = document.getElementById('order-menu-items');
-            const customizationSection = document.getElementById('customization-section');
-            const customBurgerName = document.getElementById('custom-burger-name');
-            const ingredientsList = document.getElementById('ingredients-list');
-            const addItemToCartBtn = document.getElementById('add-item-to-cart-btn');
-            const cartSummaryList = document.getElementById('order-summary-list');
-            const totalDisplay = document.getElementById('total-display');
-            const finalizeOrderBtn = document.getElementById('finalize-order-btn');
-            
-            // --- DOM Modales ---
-            const successModal = document.getElementById('success-modal');
-            const successModalMessage = document.getElementById('success-modal-message');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const loginModal = document.getElementById('login-modal');
-            const loginCloseBtn = document.getElementById('login-close-btn');
-            const loginSubmitBtn = document.getElementById('login-submit-btn');
-            const loginErrorMsg = document.getElementById('login-error-msg');
-            const passwordInput = document.getElementById('password');
-            const adminPasswordModal = document.getElementById('admin-password-modal');
-            const adminPassCloseBtn = document.getElementById('admin-pass-close-btn');
-            const adminPassSubmitBtn = document.getElementById('admin-pass-submit-btn');
-            const adminPasswordInput = document.getElementById('admin-password');
-            const adminPassErrorMsg = document.getElementById('admin-pass-error-msg');
-            
-            // --- DOM Admin: Gestión Menú ---
-            const addMenuItemForm = document.getElementById('add-menu-item-form');
-            const menuManagementList = document.getElementById('menu-management-list');
-            const itemTypeSelect = document.getElementById('item-type');
-            
-            // --- DOM Admin: Reporte Ventas ---
-            const todaySalesTotalEl = document.getElementById('today-sales-total');
-            const todaySalesListEl = document.getElementById('today-sales-list');
-            const loadSalesHistoryBtn = document.getElementById('load-sales-history-btn');
-            const salesHistoryListEl = document.getElementById('sales-history-list');
-            
-            // --- DOM Modal Editar ---
-            const editMenuItemModal = document.getElementById('edit-menu-item-modal');
-            const editItemCloseBtn = document.getElementById('edit-item-close-btn');
-            
-            // --- DOM Modal Opciones de Producto ---
-            const productOptionsModal = document.getElementById('product-options-modal');
-            const productOptionsCloseBtn = document.getElementById('product-options-close-btn');
-            const productOptionsContent = document.getElementById('product-options-content');
+        // --- Selectores DOM (Principales) ---
+        const overlay = document.getElementById('overlay');
+        const authBtn = document.getElementById('auth-btn');
+        const logoClickableArea = document.getElementById('logo-clickable-area');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const mainViews = document.querySelectorAll('.main-view-section');
+        const adminPanel = document.getElementById('admin-panel');
+        const sidePanel = document.getElementById('side-panel');
 
-            // --- SVG Icons ---
-            const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.906 17.834a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59zM7.5 12a.75.75 0 01-.75.75H4.5a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM6.166 7.906a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59z"></path></svg>`;
-            const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.568 1.76-6.756 4.528-8.654a.75.75 0 01.819.162z" clip-rule="evenodd"></path></svg>`;
+        // --- Selectores Admin ---
+        const adminView = document.getElementById('admin-view');
+        const bestSellingItemEl = document.getElementById('best-selling-item');
+        const bestSellingCountEl = document.getElementById('best-selling-count');
+        const leastSellingItemEl = document.getElementById('least-selling-item');
+        const leastSellingCountEl = document.getElementById('least-selling-count');
+        const todaySalesTotalEl = document.getElementById('today-sales-total');
+        const todaySalesListEl = document.getElementById('today-sales-list');
+        const loadSalesHistoryBtn = document.getElementById('load-sales-history-btn');
+        const salesHistoryListEl = document.getElementById('sales-history-list');
+        const addIngredientForm = document.getElementById('add-ingredient-form');
+        const ingredientListEl = document.getElementById('ingredient-list');
+        const ingredientNameInput = document.getElementById('ingredient-name');
+        const ingredientUnitSelect = document.getElementById('ingredient-unit');
+        const ingredientCostInput = document.getElementById('ingredient-cost');
+        const editIngredientIdInput = document.getElementById('edit-ingredient-id');
+        const addIngredientBtn = document.getElementById('add-ingredient-btn');
+        const cancelEditIngredientBtn = document.getElementById('cancel-edit-ingredient-btn');
+        const addMenuItemForm = document.getElementById('add-menu-item-form');
+        const menuManagementList = document.getElementById('menu-management-list');
+        const itemNameInput = document.getElementById('item-name');
+        const itemTypeSelect = document.getElementById('item-type');
+        const recipeFields = document.getElementById('recipe-fields');
+        const recipeBuilderList = document.getElementById('recipe-builder-list');
+        const ingredientSelector = document.getElementById('ingredient-selector');
+        const ingredientQuantityInput = document.getElementById('ingredient-quantity');
+        const ingredientQuantityUnitSelect = document.getElementById('ingredient-quantity-unit');
+        const addToRecipeBtn = document.getElementById('add-to-recipe-btn');
+        const calculatedCostEl = document.getElementById('calculated-cost');
+        const calculatedProfitEl = document.getElementById('calculated-profit');
+        const itemPriceInput = document.getElementById('item-price');
+        const directCostFields = document.getElementById('direct-cost-fields');
+        const itemPriceDirectInput = document.getElementById('item-price-direct');
+        const itemCostDirectInput = document.getElementById('item-cost-direct');
+        const directProfitEl = document.getElementById('direct-profit');
+        const optionsFields = document.getElementById('options-fields');
+        const itemOptionsTextarea = document.getElementById('item-options');
+        const sizesFields = document.getElementById('sizes-fields');
+        const sizesListEl = document.getElementById('sizes-list');
+        const addSizeBtn = document.getElementById('add-size-btn');
+        const itemImageUrlsTextarea = document.getElementById('item-image-urls');
+        const itemIsVisibleCheckbox = document.getElementById('item-is-visible');
+        const editMenuItemIdInput = document.getElementById('edit-menu-item-id');
+        const saveMenuItemBtn = document.getElementById('save-menu-item-btn');
+        const cancelEditMenuBtn = document.getElementById('cancel-edit-menu-btn');
 
+        // --- Selectores Cocina ---
+        const kitchenView = document.getElementById('kitchen-view');
+        const kitchenOrdersList = document.getElementById('kitchen-orders-list');
+        const loadHistoryBtn = document.getElementById('load-history-btn');
+        const kitchenHistoryList = document.getElementById('kitchen-history-list');
 
-            // --- Funciones de Modales y Paneles ---
-            function openPanel(panel) { panel.classList.add('open'); overlay.classList.add('show'); }
-            function closePanel(panel) { panel.classList.remove('open'); checkOverlay(); }
-            function openModal(modal) { modal.classList.add('show'); overlay.classList.add('show'); }
-            function closeModal(modal) { modal.classList.remove('show'); checkOverlay(); }
-            function checkOverlay() {
-                const isOpen = document.querySelector('.modal.show') || document.querySelector('aside.open');
-                if (!isOpen) overlay.classList.remove('show');
+        // --- Selectores Panel Pedido ---
+        const closePanelBtn = document.getElementById('close-panel-btn');
+        const orderMenuContainer = document.getElementById('order-menu-items');
+        const customizationSection = document.getElementById('customization-section');
+        const customBurgerName = document.getElementById('custom-burger-name');
+        const ingredientsList = document.getElementById('ingredients-list');
+        const addItemToCartBtn = document.getElementById('add-item-to-cart-btn');
+        const cartSummaryList = document.getElementById('order-summary-list');
+        const totalDisplay = document.getElementById('total-display');
+        const finalizeOrderBtn = document.getElementById('finalize-order-btn');
+
+        // --- Selectores Modales ---
+        const successModal = document.getElementById('success-modal');
+        const successModalMessage = document.getElementById('success-modal-message');
+        const closeModalBtn = successModal.querySelector('.modal-close-btn');
+        const loginModal = document.getElementById('login-modal');
+        const loginCloseBtn = loginModal.querySelector('.modal-close-btn');
+        const loginSubmitBtn = document.getElementById('login-submit-btn');
+        const loginErrorMsg = document.getElementById('login-error-msg');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const adminPasswordModal = document.getElementById('admin-password-modal');
+        const adminPassCloseBtn = adminPasswordModal.querySelector('.modal-close-btn');
+        const adminPassSubmitBtn = document.getElementById('admin-pass-submit-btn');
+        const adminPasswordInput = document.getElementById('admin-password');
+        const adminPassErrorMsg = document.getElementById('admin-pass-error-msg');
+        const productOptionsModal = document.getElementById('product-options-modal');
+        const productOptionsCloseBtn = productOptionsModal.querySelector('.modal-close-btn');
+        const productOptionsContent = document.getElementById('product-options-content');
+
+        // --- Selectores Navegación Admin Panel ---
+        const adminNavBtns = adminPanel.querySelectorAll('.admin-nav-btn');
+
+        // --- SVG Icons ---
+        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.906 17.834a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59zM7.5 12a.75.75 0 01-.75.75H4.5a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM6.166 7.906a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061l-1.591-1.59z"></path></svg>`;
+        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.568 1.76-6.756 4.528-8.654a.75.75 0 01.819.162z" clip-rule="evenodd"></path></svg>`;
+
+        // --- Funciones Helper ---
+        function openPanel(panel) { if(panel) { panel.classList.add('open'); overlay?.classList.add('show'); } }
+        function closePanel(panel) { if(panel) { panel.classList.remove('open'); checkOverlay(); } }
+        function openModal(modal) { if(modal) { modal.classList.add('show'); overlay?.classList.add('show'); } }
+        function closeModal(modal) { if(modal) { modal.classList.remove('show'); checkOverlay(); } }
+        function checkOverlay() {
+            const isOpen = document.querySelector('.modal.show') || document.querySelector('aside.open');
+            if (!isOpen && overlay) overlay.classList.remove('show');
+        }
+        function showSuccessModal(message) {
+            if (!successModal || !successModalMessage) return; 
+            successModalMessage.textContent = message;
+            openModal(successModal);
+            setTimeout(() => closeModal(successModal), 2500); 
+        }
+        function getStartOfToday() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return firebase.firestore.Timestamp.fromDate(today);
+        }
+        // Función de conversión de unidades
+        function convertUnit(quantity, fromUnit, toUnit, costPerBaseUnit, baseUnit) {
+            let quantityInBase;
+            if (fromUnit === baseUnit) quantityInBase = quantity;
+            else if ((baseUnit === 'kg' && fromUnit === 'g') || (baseUnit === 'l' && fromUnit === 'ml')) quantityInBase = quantity / 1000;
+            else if ((baseUnit === 'g' && fromUnit === 'kg') || (baseUnit === 'ml' && fromUnit === 'l')) quantityInBase = quantity * 1000;
+            else if (baseUnit === 'pieza' && fromUnit === 'pieza') quantityInBase = quantity;
+            else { console.error(`Conversión no soportada: ${fromUnit} a ${baseUnit}`); return 0; } 
+            return quantityInBase * costPerBaseUnit;
+        }
+
+        // --- Lógica de Vistas (Router) ---
+        function showView(viewId) {
+            closePanel(sidePanel);
+            closePanel(adminPanel);
+            
+            Object.keys(listeners).forEach(key => {
+                if (listeners[key]) { listeners[key](); listeners[key] = null; console.log(`Listener ${key} detenido.`); }
+            });
+
+            mainViews.forEach(view => view.classList.remove('active'));
+            const targetView = document.getElementById(viewId);
+            if(targetView) {
+                targetView.classList.add('active');
+                console.log(`Mostrando vista: ${viewId}`);
+            } else {
+                console.error(`Vista no encontrada: ${viewId}. Mostrando menú por defecto.`);
+                const menuGallery = document.getElementById('menu-gallery');
+                if(menuGallery) menuGallery.classList.add('active'); 
+                viewId = 'menu-gallery'; 
             }
-            function showSuccessModal(message) {
-                successModalMessage.textContent = message;
-                openModal(successModal);
+
+            if (viewId === 'admin-view') {
+                 if (isLoggedIn) {
+                     if (isAdminViewUnlocked) {
+                         initializeAdminView(); 
+                     } else {
+                         openModal(adminPasswordModal);
+                     }
+                 } else {
+                    showView('menu-gallery'); 
+                 }
+            } else if (viewId === 'kitchen-view') {
+                 if (isLoggedIn) {
+                     listenToKitchenOrders(); 
+                 } else {
+                    showView('menu-gallery');
+                 }
+            } else if (viewId === 'menu-gallery') {
+                listenToMenuForClient(); 
+            }
+        }
+
+        // --- Lógica de Autenticación (Login) ---
+        if(logoClickableArea) logoClickableArea.addEventListener('click', () => { if (!isLoggedIn) openModal(loginModal); });
+        if(authBtn) authBtn.addEventListener('click', () => { if (isLoggedIn) openPanel(adminPanel); });
+        if(loginCloseBtn) loginCloseBtn.addEventListener('click', () => closeModal(loginModal)); 
+        if(loginSubmitBtn) loginSubmitBtn.addEventListener('click', attemptLogin); 
+        if(passwordInput) passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); }); 
+        function attemptLogin() {
+            if(!usernameInput || !passwordInput || !loginErrorMsg) return; 
+            const user = usernameInput.value;
+            const pass = passwordInput.value;
+            if (user === 'CHEPINAS' && pass === 'BURGUERS') { 
+                isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                if(authBtn) authBtn.classList.add('panel-btn'); 
+                closeModal(loginModal);
+                loginErrorMsg.style.display = 'none';
+                usernameInput.value = ''; passwordInput.value = '';
+            } else { loginErrorMsg.style.display = 'block'; }
+        }
+        
+        const logoutButton = adminPanel?.querySelector('.logout-btn');
+        if(logoutButton) logoutButton.addEventListener('click', logout); 
+        function logout() {
+            isLoggedIn = false; isAdminViewUnlocked = false;
+            localStorage.removeItem('isLoggedIn');
+            if(authBtn) authBtn.classList.remove('panel-btn'); 
+            closePanel(adminPanel);
+            showView('menu-gallery'); 
+        }
+        function checkPersistentLogin() {
+            if (localStorage.getItem('isLoggedIn') === 'true') { isLoggedIn = true; if(authBtn) authBtn.classList.add('panel-btn'); } 
+        }
+        
+        // --- Lógica del Panel de Admin (Navegación y Contraseña) ---
+         adminNavBtns.forEach(btn => {
+             btn.addEventListener('click', () => {
+                 const view = btn.dataset.view;
+                 const action = btn.dataset.action;
+                 if (view) {
+                     showView(view);
+                 } else if (action === 'create-order') {
+                     if (isLoggedIn) {
+                         closePanel(adminPanel);
+                         listenToMenuForClient(); // Asegurar que el menú esté cargado para el panel de pedido
+                         openPanel(sidePanel); 
+                     }
+                 } 
+                 // El listener de logout ya está asignado
+             });
+         });
+        if(adminPassCloseBtn) adminPassCloseBtn.addEventListener('click', () => closeModal(adminPasswordModal)); 
+        if(adminPassSubmitBtn) adminPassSubmitBtn.addEventListener('click', attemptAdminUnlock); 
+        if(adminPasswordInput) adminPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptAdminUnlock(); }); 
+        function attemptAdminUnlock() {
+             if(!adminPasswordInput || !adminPassErrorMsg) return; 
+            if (adminPasswordInput.value === 'password') { 
+                isAdminViewUnlocked = true;
+                closeModal(adminPasswordModal);
+                initializeAdminView(); // Llama a la inicialización DIRECTAMENTE
+                adminPasswordInput.value = ''; adminPassErrorMsg.style.display = 'none';
+            } else { adminPassErrorMsg.style.display = 'block'; }
+        }
+
+        // --- Función de Inicialización Vista Admin ---
+        function initializeAdminView() {
+            if (!adminView?.classList.contains('active')) return; 
+            console.log("Inicializando vista de Admin...");
+            listenToIngredients();
+            listenToMenuForAdmin();
+            listenToTodaySales();
+            resetMenuItemForm(); 
+            resetIngredientForm(); 
+        }
+
+        // #############################################
+        // ### LÓGICA DE GESTIÓN DE INGREDIENTES ###
+        // #############################################
+        
+        function listenToIngredients() {
+            if (listeners.ingredients) listeners.ingredients(); 
+            console.log("Activando listener: Ingredients");
+            listeners.ingredients = db.collection('ingredients').orderBy('name').onSnapshot(snapshot => {
+                console.log("Recibidos datos de ingredientes.");
+                ingredientsCache = [];
+                snapshot.forEach(doc => ingredientsCache.push({ id: doc.id, ...doc.data() }));
+                renderIngredientsList();
+                populateIngredientSelector();
+                if (menuCache.length > 0 && adminView?.classList.contains('active')) {
+                     renderMenuManagementList(); 
+                }
+            }, error => console.error("Error escuchando ingredientes:", error));
+        }
+
+        function renderIngredientsList() {
+            if (!ingredientListEl) return;
+            ingredientListEl.innerHTML = '';
+            if (ingredientsCache.length === 0) {
+                ingredientListEl.innerHTML = '<p>No hay ingredientes. ¡Agrega el primero!</p>'; return;
+            }
+            ingredientsCache.forEach(ing => {
+                const item = document.createElement('div');
+                item.className = 'admin-item-card'; 
+                item.innerHTML = `
+                    <div class="info">
+                        <strong>${ing.name}</strong><br>
+                        <span>Costo: ${fmt.format(ing.costPerUnit)} / ${ing.unit}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="edit-btn" data-id="${ing.id}" title="Editar">✏️</button>
+                        <button class="delete-btn" data-id="${ing.id}" title="Eliminar">🗑️</button>
+                    </div>
+                `;
+                ingredientListEl.appendChild(item);
+            });
+        }
+
+        function populateIngredientSelector() {
+            if (!ingredientSelector) return;
+            ingredientSelector.innerHTML = '<option value="">-- Selecciona Ingrediente --</option>';
+            ingredientsCache.forEach(ing => {
+                ingredientSelector.innerHTML += `<option value="${ing.id}" data-unit="${ing.unit}">${ing.name} (${ing.unit})</option>`;
+            });
+        }
+
+        if(addIngredientForm) addIngredientForm.addEventListener('submit', async e => { 
+            e.preventDefault();
+            if(!ingredientNameInput || !ingredientUnitSelect || !ingredientCostInput || !editIngredientIdInput) return; 
+            
+            const id = editIngredientIdInput.value;
+            const name = ingredientNameInput.value.trim();
+            const unit = ingredientUnitSelect.value;
+            const cost = parseFloat(ingredientCostInput.value);
+
+            if (!name || !unit || isNaN(cost) || cost < 0) {
+                alert("Por favor, completa todos los campos correctamente."); return;
             }
             
-            // --- Lógica de Vistas (Router) ---
-            function showView(viewId) {
-                closePanel(sidePanel);
-                closePanel(adminPanel);
-                
-                if (viewId !== 'kitchen-view' && kitchenOrderListener) {
-                    kitchenOrderListener(); kitchenOrderListener = null;
+            const data = { name, unit, costPerUnit: cost };
+            
+            if(addIngredientBtn) addIngredientBtn.disabled = true; 
+            try {
+                if (id) { 
+                    await db.collection('ingredients').doc(id).update(data);
+                    showSuccessModal('Ingrediente actualizado.');
+                } else { 
+                    await db.collection('ingredients').add(data);
+                    showSuccessModal('Ingrediente agregado.');
                 }
-                if (viewId !== 'admin-view' && salesListener) {
-                    salesListener(); salesListener = null;
+                resetIngredientForm();
+            } catch (error) { console.error("Error guardando ingrediente:", error); alert('Error al guardar.'); }
+            finally { if(addIngredientBtn) addIngredientBtn.disabled = false; } 
+        });
+
+        if(ingredientListEl) ingredientListEl.addEventListener('click', async e => { 
+            const button = e.target.closest('button');
+            if (!button) return;
+            const id = button.dataset.id;
+            if (!id) return;
+
+            if (button.classList.contains('delete-btn')) {
+                const ingredientName = ingredientsCache.find(i => i.id === id)?.name || 'este ingrediente';
+                if (confirm(`¿Seguro que quieres eliminar "${ingredientName}"?`)) {
+                    try { await db.collection('ingredients').doc(id).delete(); showSuccessModal('Ingrediente eliminado.'); }
+                    catch (error) { console.error("Error eliminando ingrediente:", error); alert('Error al eliminar.'); }
                 }
-                
-                if (viewId === 'admin-view') {
-                    if (isAdminViewUnlocked) {
-                        setActiveView(viewId);
-                        listenToTodaySales();
-                        loadMenuItemsForAdmin();
-                    } else {
-                        openModal(adminPasswordModal);
+            } else if (button.classList.contains('edit-btn')) {
+                const ing = ingredientsCache.find(i => i.id === id);
+                if (ing && ingredientNameInput && ingredientUnitSelect && ingredientCostInput && editIngredientIdInput && addIngredientBtn && cancelEditIngredientBtn) { 
+                    ingredientNameInput.value = ing.name;
+                    ingredientUnitSelect.value = ing.unit;
+                    ingredientCostInput.value = ing.costPerUnit;
+                    editIngredientIdInput.value = id;
+                    addIngredientBtn.textContent = 'Actualizar Ingrediente';
+                    cancelEditIngredientBtn.style.display = 'inline-block';
+                    ingredientNameInput.focus(); 
+                }
+            }
+        });
+        
+        if(cancelEditIngredientBtn) cancelEditIngredientBtn.addEventListener('click', resetIngredientForm); 
+
+        function resetIngredientForm() {
+            if(!addIngredientForm || !editIngredientIdInput || !addIngredientBtn || !cancelEditIngredientBtn) return; 
+            addIngredientForm.reset();
+            editIngredientIdInput.value = '';
+            addIngredientBtn.textContent = 'Guardar Ingrediente';
+            addIngredientBtn.disabled = false; 
+            cancelEditIngredientBtn.style.display = 'none';
+        }
+
+        // #############################################
+        // ### LÓGICA DE GESTIÓN DE MENÚ (MEJORADA) ###
+        // #############################################
+
+        if(itemTypeSelect) itemTypeSelect.addEventListener('change', updateMenuItemFormView); 
+
+        function updateMenuItemFormView() {
+            if(!itemTypeSelect || !recipeFields || !directCostFields || !optionsFields || !sizesFields || !itemPriceInput || !itemPriceDirectInput || !itemCostDirectInput || !itemOptionsTextarea) return; 
+            
+            const type = itemTypeSelect.value;
+            recipeFields.style.display = type === 'burger' ? 'block' : 'none';
+            directCostFields.style.display = (type === 'extra' || type === 'soda' || type === 'fries') ? 'block' : 'none'; 
+            optionsFields.style.display = type === 'soda' ? 'block' : 'none';
+            sizesFields.style.display = type === 'fries' ? 'block' : 'none';
+
+            [itemPriceInput, itemPriceDirectInput, itemCostDirectInput, itemOptionsTextarea].forEach(el => { if(el) el.required = false; });
+            document.querySelectorAll('#sizes-list input').forEach(el => el.required = false);
+
+            if (type === 'burger' && itemPriceInput) itemPriceInput.required = true;
+            if (type === 'extra' && itemPriceDirectInput && itemCostDirectInput) { itemPriceDirectInput.required = true; itemCostDirectInput.required = true; }
+            if (type === 'soda' && itemPriceDirectInput && itemOptionsTextarea) { itemPriceDirectInput.required = true; itemOptionsTextarea.required = true; } 
+            if (type === 'fries') {
+                const firstSizeName = sizesListEl?.querySelector('.size-item:first-child input[name="size-name"]');
+                const firstSizePrice = sizesListEl?.querySelector('.size-item:first-child input[name="size-price"]');
+                if(firstSizeName) firstSizeName.required = true;
+                if(firstSizePrice) firstSizePrice.required = true;
+            }
+            updateCalculatedCostAndProfit(); 
+            updateDirectProfit();
+        }
+
+        // --- Constructor de Recetas ---
+        if(addToRecipeBtn) addToRecipeBtn.addEventListener('click', () => { 
+            if(!ingredientSelector || !ingredientQuantityInput || !ingredientQuantityUnitSelect) return; 
+            
+            const id = ingredientSelector.value;
+            const quantity = parseFloat(ingredientQuantityInput.value);
+            const unit = ingredientQuantityUnitSelect.value;
+            const selectedOptionEl = ingredientSelector.options[ingredientSelector.selectedIndex];
+            const name = selectedOptionEl ? selectedOptionEl.text.split(' (')[0] : 'Desconocido'; 
+            const baseUnit = selectedOptionEl ? selectedOptionEl.dataset.unit : null; 
+
+            if (!id || !quantity || quantity <= 0 || !unit || !baseUnit) { 
+                alert('Selecciona un ingrediente, cantidad y unidad válidos.'); return; 
+            }
+            
+            if (currentRecipe.some(item => item.ingredientId === id)) {
+                alert('Este ingrediente ya está en la receta. Edítalo o elimínalo.'); return;
+            }
+
+            currentRecipe.push({ ingredientId: id, name: name, quantity: quantity, unit: unit, baseUnit: baseUnit }); 
+            renderRecipeBuilder();
+            updateCalculatedCostAndProfit();
+            
+            ingredientSelector.value = '';
+            ingredientQuantityInput.value = '';
+            ingredientQuantityUnitSelect.value = 'g'; 
+        });
+
+        if(recipeBuilderList) recipeBuilderList.addEventListener('click', e => { 
+            const button = e.target.closest('.remove-recipe-item-btn');
+            if (!button) return;
+            const index = parseInt(button.dataset.index, 10);
+            if (!isNaN(index) && index >= 0 && index < currentRecipe.length) {
+                currentRecipe.splice(index, 1);
+                renderRecipeBuilder();
+                updateCalculatedCostAndProfit();
+            }
+        });
+
+        function renderRecipeBuilder() {
+            if (!recipeBuilderList) return;
+            recipeBuilderList.innerHTML = '';
+            if (currentRecipe.length === 0) {
+                recipeBuilderList.innerHTML = '<p style="font-size: 0.9em; color: var(--color-texto-secundario);">Agrega ingredientes a la receta...</p>';
+            }
+            currentRecipe.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'recipe-item';
+                div.innerHTML = `
+                    <span><strong>${item.name}</strong> - ${item.quantity} ${item.unit}</span>
+                    <button type="button" class="remove-recipe-item-btn" data-index="${index}" title="Eliminar">&times;</button>
+                `;
+                recipeBuilderList.appendChild(div);
+            });
+        }
+        
+        // --- Constructor de Tamaños (Papas) ---
+        if(addSizeBtn) addSizeBtn.addEventListener('click', () => addSizeInput()); 
+
+        if(sizesListEl) sizesListEl.addEventListener('click', e => { 
+             const button = e.target.closest('.remove-size-btn');
+             if (button) {
+                 button.closest('.size-item')?.remove(); 
+                 updateMenuItemFormView(); 
+             }
+         });
+
+        function addSizeInput(size = { name: '', price: '' }) {
+            if (!sizesListEl) return; 
+             const div = document.createElement('div');
+             div.className = 'size-item';
+             // Asegurarse que el primer input tenga required dinámicamente
+             const isFirst = sizesListEl.children.length === 0;
+             div.innerHTML = `
+                 <input type="text" name="size-name" placeholder="Nombre (Ej. Chicas)" value="${size.name || ''}" ${isFirst ? 'required' : ''}>
+                 <input type="number" step="0.01" name="size-price" placeholder="Precio" value="${size.price || ''}" ${isFirst ? 'required' : ''}>
+                 <button type="button" class="remove-size-btn" title="Eliminar">&times;</button>
+             `;
+             sizesListEl.appendChild(div);
+             updateMenuItemFormView(); // Llamar para asegurar que required se aplique/quite bien
+        }
+        
+        function getSizesFromForm() {
+            const sizes = [];
+            if (!sizesListEl) return sizes; 
+            sizesListEl.querySelectorAll('.size-item').forEach(item => {
+                const nameInput = item.querySelector('input[name="size-name"]');
+                const priceInput = item.querySelector('input[name="size-price"]');
+                if(nameInput && priceInput) { 
+                    const name = nameInput.value.trim();
+                    const price = parseFloat(priceInput.value);
+                    if (name && !isNaN(price) && price > 0) {
+                        sizes.push({ name, price });
                     }
-                } else if (viewId === 'kitchen-view') {
-                    setActiveView(viewId);
-                    listenToKitchenOrders();
-                } else {
-                    setActiveView(viewId);
                 }
-            }
-            function setActiveView(viewId) {
-                mainViews.forEach(view => view.classList.remove('active'));
-                document.getElementById(viewId).classList.add('active');
-            }
-
-            // --- Lógica de Autenticación (Login) ---
-            logoClickableArea.addEventListener('click', () => {
-                if (!isLoggedIn) openModal(loginModal);
             });
-            authBtn.addEventListener('click', () => {
-                if (isLoggedIn) openPanel(adminPanel);
+            // Ordenar por precio ascendente por si acaso
+            sizes.sort((a, b) => a.price - b.price);
+            return sizes;
+        }
+
+        // --- Cálculo de Costo y Ganancia (Automático) ---
+        if(itemPriceInput) itemPriceInput.addEventListener('input', updateCalculatedCostAndProfit); 
+        if(itemPriceDirectInput) itemPriceDirectInput.addEventListener('input', updateDirectProfit); 
+        if(itemCostDirectInput) itemCostDirectInput.addEventListener('input', updateDirectProfit); 
+
+        function updateCalculatedCostAndProfit() {
+            if(!itemPriceInput || !calculatedCostEl || !calculatedProfitEl) return; 
+            const price = parseFloat(itemPriceInput.value) || 0;
+            const cost = calculateRecipeCost(currentRecipe);
+            calculatedCostEl.textContent = fmt.format(cost);
+            const profit = price - cost;
+            const margin = price > 0 ? (profit / price) * 100 : 0;
+            calculatedProfitEl.textContent = `${fmt.format(profit)} (${margin.toFixed(0)}%)`;
+        }
+        
+         function updateDirectProfit() {
+             if(!itemPriceDirectInput || !itemCostDirectInput || !directProfitEl) return; 
+             const price = parseFloat(itemPriceDirectInput.value) || 0;
+             const cost = parseFloat(itemCostDirectInput.value) || 0;
+             const profit = price - cost;
+             const margin = price > 0 ? (profit / price) * 100 : 0;
+             directProfitEl.textContent = `${fmt.format(profit)} (${margin.toFixed(0)}%)`;
+         }
+
+        function calculateRecipeCost(recipe) {
+            if (!recipe || recipe.length === 0 || ingredientsCache.length === 0) return 0;
+            let totalCost = 0;
+            
+            recipe.forEach(item => {
+                const masterIngredient = ingredientsCache.find(ing => ing.id === item.ingredientId);
+                if (!masterIngredient) {
+                    console.warn(`Ingrediente con ID ${item.ingredientId} no encontrado en caché.`);
+                    return; 
+                }
+                const itemCost = convertUnit(item.quantity, item.unit, masterIngredient.unit, masterIngredient.costPerUnit, masterIngredient.unit);
+                totalCost += itemCost;
             });
-            loginCloseBtn.addEventListener('click', () => closeModal(loginModal));
-            loginSubmitBtn.addEventListener('click', attemptLogin);
-            passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+            return totalCost;
+        }
 
-            function attemptLogin() {
-                const user = document.getElementById('username').value;
-                const pass = passwordInput.value;
-                if (user === 'CHEPINAS' && pass === 'BURGUERS') {
-                    isLoggedIn = true;
-                    localStorage.setItem('isLoggedIn', 'true');
-                    authBtn.classList.add('panel-btn');
-                    closeModal(loginModal);
-                    loginErrorMsg.style.display = 'none';
-                    document.getElementById('username').value = '';
-                    passwordInput.value = '';
-                } else {
-                    loginErrorMsg.style.display = 'block';
-                }
-            }
+        // --- Guardar Producto (Con Nueva Lógica) ---
+        if(addMenuItemForm) addMenuItemForm.addEventListener('submit', async (e) => { 
+            e.preventDefault();
+            if(!editMenuItemIdInput || !itemTypeSelect || !itemNameInput || !itemImageUrlsTextarea || !itemIsVisibleCheckbox || !saveMenuItemBtn) return; 
             
-            navLogoutBtn.addEventListener('click', logout);
-            
-            function logout() {
-                isLoggedIn = false;
-                isAdminViewUnlocked = false;
-                localStorage.removeItem('isLoggedIn');
-                
-                authBtn.classList.remove('panel-btn');
-                closePanel(adminPanel);
-                showView('menu-gallery');
-            }
+            const id = editMenuItemIdInput.value;
+            const type = itemTypeSelect.value;
+            let data = {
+                name: itemNameInput.value.trim(),
+                type: type,
+                imageUrls: itemImageUrlsTextarea.value.split('\n').filter(Boolean).map(url => url.trim()), 
+                isVisible: itemIsVisibleCheckbox.checked,
+            };
 
-            function checkPersistentLogin() {
-                if (localStorage.getItem('isLoggedIn') === 'true') {
-                    isLoggedIn = true;
-                    authBtn.classList.add('panel-btn');
-                }
-            }
-            
-            // --- Lógica del Panel de Admin (Navegación) ---
-            navMenuBtn.addEventListener('click', () => showView('menu-gallery'));
-            navCreateBtn.addEventListener('click', () => { closePanel(adminPanel); openPanel(sidePanel); });
-            navKitchenBtn.addEventListener('click', () => showView('kitchen-view'));
-            navAdminBtn.addEventListener('click', () => showView('admin-view'));
+            // Validaciones básicas
+            if (!data.name) { alert('El nombre del producto es obligatorio.'); return; }
+            if (!data.type) { alert('Selecciona un tipo de producto.'); return; }
+            if (data.imageUrls.length === 0) { alert('Agrega al menos una URL de imagen.'); return; }
 
-            // --- Lógica de Contraseña de Admin ---
-            adminPassCloseBtn.addEventListener('click', () => closeModal(adminPasswordModal));
-            adminPassSubmitBtn.addEventListener('click', attemptAdminUnlock);
-            adminPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptAdminUnlock(); });
-            
-            function attemptAdminUnlock() {
-                if (adminPasswordInput.value === 'password') {
-                    isAdminViewUnlocked = true;
-                    closeModal(adminPasswordModal);
-                    showView('admin-view');
-                    adminPasswordInput.value = '';
-                    adminPassErrorMsg.style.display = 'none';
-                } else {
-                    adminPassErrorMsg.style.display = 'block';
-                }
-            }
-            
-            // --- Lógica de GESTIÓN DE MENÚ ---
-            
-            // (Admin) Cambia el formulario según el tipo de producto
-            itemTypeSelect.addEventListener('change', (e) => {
-                const type = e.target.value;
-                document.getElementById('burger-fields').style.display = type === 'burger' ? 'block' : 'none';
-                document.getElementById('soda-fields').style.display = type === 'soda' ? 'block' : 'none';
-                document.getElementById('fries-fields').style.display = type === 'fries' ? 'block' : 'none';
-                
-                // CORRECCIÓN: Manejo dinámico de 'required'
-                const burgerPrice = document.getElementById('item-price');
-                const burgerIngredients = document.getElementById('item-ingredients');
-                const sodaPrice = document.getElementById('soda-price');
-                const sodaOptions = document.getElementById('soda-options');
-                const friesName1 = document.getElementById('fries-size-1-name');
-                const friesPrice1 = document.getElementById('fries-size-1-price');
-
-                // Resetea todos
-                burgerPrice.required = false;
-                burgerIngredients.required = false;
-                sodaPrice.required = false;
-                sodaOptions.required = false;
-                friesName1.required = false;
-                friesPrice1.required = false;
-                
-                // Asigna 'required' solo a los campos del tipo seleccionado
+            // Añadir campos específicos y validar
+            try {
                 if (type === 'burger') {
-                    burgerPrice.required = true;
-                    burgerIngredients.required = true;
+                    data.price = parseFloat(itemPriceInput.value);
+                    if (isNaN(data.price) || data.price <= 0) throw new Error('Ingresa un precio de venta válido para la hamburguesa.');
+                    if (currentRecipe.length === 0) throw new Error('Agrega al menos un ingrediente a la receta.');
+                    data.recipe = currentRecipe; 
+                    data.calculatedCost = calculateRecipeCost(currentRecipe); 
+                } else if (type === 'extra') {
+                    data.price = parseFloat(itemPriceDirectInput.value);
+                    data.cost = parseFloat(itemCostDirectInput.value); 
+                    if (isNaN(data.price) || data.price <= 0 || isNaN(data.cost) || data.cost < 0) throw new Error('Ingresa precio y costo válidos para el extra.');
                 } else if (type === 'soda') {
-                    sodaPrice.required = true;
-                    sodaOptions.required = true;
+                    data.price = parseFloat(itemPriceDirectInput.value); 
+                    data.options = itemOptionsTextarea.value.split('\n').filter(Boolean).map(opt => opt.trim());
+                    if (isNaN(data.price) || data.price <= 0) throw new Error('Ingresa un precio de venta válido para el refresco.');
+                    if (data.options.length === 0) throw new Error('Agrega al menos una opción/sabor para el refresco.');
+                    data.cost = parseFloat(itemCostDirectInput.value || 0); 
                 } else if (type === 'fries') {
-                    friesName1.required = true;
-                    friesPrice1.required = true;
+                    data.sizes = getSizesFromForm();
+                    if (data.sizes.length === 0) throw new Error('Agrega al menos un tamaño para las papas.');
+                    if (!data.sizes[0].name || isNaN(data.sizes[0].price) || data.sizes[0].price <= 0) throw new Error('El primer tamaño debe tener nombre y precio válido.');
+                    data.cost = parseFloat(itemCostDirectInput.value || 0); 
+                } else {
+                     throw new Error('Tipo de producto no válido seleccionado.'); 
                 }
-            });
-            
-            // (Admin) Guarda un nuevo producto
-            addMenuItemForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const type = itemTypeSelect.value;
-                
-                let newItem = {
-                    name: document.getElementById('item-name').value,
-                    type: type,
-                    imageUrls: document.getElementById('item-image-urls').value.split('\n').filter(Boolean),
-                    isVisible: document.getElementById('item-is-visible').checked,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                if (type === 'burger') {
-                    newItem.price = parseFloat(document.getElementById('item-price').value);
-                    newItem.ingredients = document.getElementById('item-ingredients').value.split('\n').filter(Boolean);
-                } else if (type === 'soda') {
-                    newItem.price = parseFloat(document.getElementById('soda-price').value);
-                    newItem.options = document.getElementById('soda-options').value.split('\n').filter(Boolean);
-                } else if (type === 'fries') {
-                    newItem.sizes = [];
-                    const size1_name = document.getElementById('fries-size-1-name').value;
-                    const size1_price = parseFloat(document.getElementById('fries-size-1-price').value);
-                    if(size1_name && size1_price) newItem.sizes.push({ name: size1_name, price: size1_price });
-
-                    const size2_name = document.getElementById('fries-size-2-name').value;
-                    const size2_price = parseFloat(document.getElementById('fries-size-2-price').value);
-                    if(size2_name && size2_price) newItem.sizes.push({ name: size2_name, price: size2_price });
-                }
-
-                try {
-                    await db.collection('menu').add(newItem);
-                    showSuccessModal('Producto agregado al menú.');
-                    addMenuItemForm.reset();
-                    itemTypeSelect.dispatchEvent(new Event('change')); 
-                } catch (err) { alert("Error al guardar producto."); }
-            });
-
-            function loadMenuItemsForAdmin() {
-                db.collection('menu').orderBy('name').onSnapshot(snapshot => {
-                    let items = [];
-                    snapshot.forEach(doc => {
-                        items.push({ ...doc.data(), id: doc.id });
-                    });
-                    
-                    menuItemsAdminCache = items; 
-                    
-                    menuManagementList.innerHTML = '';
-                    items.forEach(item => {
-                        const displayImage = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : 'placeholder.png';
-                        
-                        const card = document.createElement('div');
-                        card.className = 'menu-item-admin-card';
-                        card.innerHTML = `
-                            <img src="${displayImage}" alt="${item.name}">
-                            <div class="info">
-                                <strong>${item.name}</strong><br>
-                                <span>${item.type} - ${item.isVisible ? 'Visible' : 'Oculto'}</span>
-                            </div>
-                            <div class="actions">
-                                <label class="switch">
-                                    <input type="checkbox" class="toggle-visibility-btn" data-id="${item.id}" ${item.isVisible ? 'checked' : ''}>
-                                    <span class="slider"></span>
-                                </label>
-                                <button class="edit-menu-item-btn" data-id="${item.id}">✏️</button>
-                                <button class="delete-menu-item-btn" data-id="${item.id}">🗑️</button>
-                            </div>
-                        `;
-                        menuManagementList.appendChild(card);
-                    });
-                });
+            } catch (validationError) {
+                alert(`Error en el formulario: ${validationError.message}`);
+                return; 
             }
             
-            menuManagementList.addEventListener('click', async (e) => {
-                const target = e.target;
-                const button = target.closest('button, input');
-                if (!button) return;
-                
-                const id = button.dataset.id;
-                if (!id) return;
-                
-                if (button.classList.contains('toggle-visibility-btn')) {
-                    await db.collection('menu').doc(id).update({ isVisible: button.checked });
+            // Proceso de guardado
+            saveMenuItemBtn.disabled = true;
+            saveMenuItemBtn.textContent = 'Guardando...';
+            try {
+                if (id) { 
+                    await db.collection('menu').doc(id).update(data);
+                    showSuccessModal('Producto actualizado.');
+                } else { 
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('menu').add(data);
+                    showSuccessModal('Producto agregado.');
                 }
-                
-                if (button.classList.contains('edit-menu-item-btn')) {
-                    openEditModal(id);
-                }
-                
-                if (button.classList.contains('delete-menu-item-btn')) {
-                    if (confirm('¿Seguro que quieres eliminar este producto?')) {
-                        await db.collection('menu').doc(id).delete();
-                        showSuccessModal('Producto eliminado.');
-                    }
-                }
-            });
-            
-            function openEditModal(id) {
-                const item = menuItemsAdminCache.find(i => i.id === id);
-                if (!item) {
-                    alert('Error: No se encontró el producto.');
-                    return;
-                }
-                
-                const formContainer = document.getElementById('edit-menu-item-form');
-                // CORRECCIÓN: Añadir 'required' dinámicamente
-                formContainer.innerHTML = `
-                    <div class="form-group">
-                        <label for="edit-item-type">Tipo de Producto</label>
-                        <select id="edit-item-type" disabled>
-                            <option value="burger" ${item.type === 'burger' ? 'selected' : ''}>Hamburguesa</option>
-                            <option value="soda" ${item.type === 'soda' ? 'selected' : ''}>Refresco</option>
-                            <option value="fries" ${item.type === 'fries' ? 'selected' : ''}>Papas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-item-name">Nombre</label>
-                        <input type="text" id="edit-item-name" value="${item.name}" required>
-                    </div>
-                    
-                    <div id="edit-burger-fields" style="display: ${item.type === 'burger' ? 'block' : 'none'}">
-                        <div class="form-group">
-                            <label for="edit-item-price">Precio</label>
-                            <input type="number" id="edit-item-price" value="${item.price || ''}" ${item.type === 'burger' ? 'required' : ''}>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-item-ingredients">Ingredientes</label>
-                            <textarea id="edit-item-ingredients" ${item.type === 'burger' ? 'required' : ''}>${(item.ingredients || []).join('\n')}</textarea>
-                        </div>
-                    </div>
+                resetMenuItemForm();
+            } catch (error) { console.error("Error guardando producto:", error); alert('Error al guardar.'); }
+            finally {
+                if(saveMenuItemBtn) { saveMenuItemBtn.disabled = false; saveMenuItemBtn.textContent = 'Guardar Producto'; } 
+            }
+        });
 
-                    <div id="edit-soda-fields" style="display: ${item.type === 'soda' ? 'block' : 'none'}">
-                        <div class="form-group">
-                            <label for="edit-soda-price">Precio</label>
-                            <input type="number" id="edit-soda-price" value="${item.price || ''}" ${item.type === 'soda' ? 'required' : ''}>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-soda-options">Sabores</label>
-                            <textarea id="edit-soda-options" ${item.type === 'soda' ? 'required' : ''}>${(item.options || []).join('\n')}</textarea>
-                        </div>
-                    </div>
+        // --- Cargar y Mostrar Menú en Admin ---
+        function listenToMenuForAdmin() {
+            if (listeners.menuAdmin) listeners.menuAdmin();
+            if (!adminView?.classList.contains('active')) return; // No activar si no está en admin
+            console.log("Activando listener: Menu Admin");
+            listeners.menuAdmin = db.collection('menu').orderBy('name').onSnapshot(snapshot => {
+                console.log("Recibidos datos de menú admin.");
+                menuCache = [];
+                snapshot.forEach(doc => menuCache.push({ id: doc.id, ...doc.data() }));
+                renderMenuManagementList(); 
+            }, error => console.error("Error escuchando menú admin:", error));
+        }
 
-                    <div id="edit-fries-fields" style="display: ${item.type === 'fries' ? 'block' : 'none'}">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="form-group">
-                                <label for="edit-fries-size-1-name">Tamaño 1</label>
-                                <input type="text" id="edit-fries-size-1-name" value="${item.sizes?.[0]?.name || ''}" ${item.type === 'fries' ? 'required' : ''}>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-fries-size-1-price">Precio 1</label>
-                                <input type="number" id="edit-fries-size-1-price" value="${item.sizes?.[0]?.price || ''}" ${item.type === 'fries' ? 'required' : ''}>
-                            </div>
-                             <div class="form-group">
-                                <label for="edit-fries-size-2-name">Tamaño 2</label>
-                                <input type="text" id="edit-fries-size-2-name" value="${item.sizes?.[1]?.name || ''}">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-fries-size-2-price">Precio 2</label>
-                                <input type="number" id="edit-fries-size-2-price" value="${item.sizes?.[1]?.price || ''}">
-                            </div>
-                        </div>
-                    </div>
+        function renderMenuManagementList() {
+            if (!menuManagementList) return; 
+            menuManagementList.innerHTML = '';
+            if (menuCache.length === 0) { menuManagementList.innerHTML = '<p>No hay productos en el menú.</p>'; return; }
 
-                    <div class="form-group">
-                        <label for="edit-item-image-urls">URLs de Imagen</label>
-                        <textarea id="edit-item-image-urls" required>${(item.imageUrls || []).join('\n')}</textarea>
+            menuCache.forEach(item => {
+                const displayImage = item.imageUrls?.[0] || 'placeholder.png'; 
+                
+                let cost = 0;
+                let price = 0;
+                if (item.type === 'burger') {
+                    cost = item.calculatedCost !== undefined ? item.calculatedCost : calculateRecipeCost(item.recipe || []); 
+                    price = item.price || 0;
+                } else if (item.type === 'extra' || item.type === 'soda') {
+                    cost = item.cost || 0;
+                    price = item.price || 0;
+                } else if (item.type === 'fries' && item.sizes?.length > 0) {
+                    price = item.sizes[0].price; 
+                    cost = item.cost || 0; 
+                }
+
+                const profit = price - cost;
+                const margin = price > 0 && cost >= 0 ? (profit / price) * 100 : 0; // Permitir costo 0
+                const costDisplay = cost >= 0 ? `Costo: ${fmt.format(cost)}` : 'Costo: N/A'; // Mostrar si es 0
+                const profitDisplay = (price > 0 && cost >= 0) ? ` | Ganancia: ${fmt.format(profit)} (${margin.toFixed(0)}%)` : '';
+
+                const card = document.createElement('div');
+                card.className = 'admin-item-card'; 
+                card.innerHTML = `
+                    <img src="${displayImage}" alt="${item.name}">
+                    <div class="info">
+                        <strong>${item.name}</strong><br>
+                        <span>${item.type} - ${item.isVisible ? 'Visible' : 'Oculto'}</span><br>
+                        <small style="color: var(--color-texto-secundario); font-size: 0.8em;">${costDisplay}${profitDisplay}</small>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-item-is-visible">Visible</label>
-                        <label class="switch">
-                            <input type="checkbox" id="edit-item-is-visible" ${item.isVisible ? 'checked' : ''}>
+                    <div class="actions">
+                        <label class="switch" title="Visibilidad">
+                            <input type="checkbox" class="toggle-visibility-btn" data-id="${item.id}" ${item.isVisible ? 'checked' : ''}>
                             <span class="slider"></span>
                         </label>
+                        <button class="edit-btn" data-id="${item.id}" title="Editar">✏️</button>
+                        <button class="delete-btn" data-id="${item.id}" title="Eliminar">🗑️</button>
                     </div>
-                    <button type="button" id="edit-item-save-btn" class="form-button">Guardar Cambios</button>
                 `;
-                
-                document.getElementById('edit-item-save-btn').dataset.id = id;
-                document.getElementById('edit-item-save-btn').addEventListener('click', saveMedEdit);
-                
-                openModal(editMenuItemModal);
-            }
-            
-            editItemCloseBtn.addEventListener('click', () => closeModal(editMenuItemModal));
-            
-            async function saveMedEdit() {
-                const saveBtn = document.getElementById('edit-item-save-btn');
-                const id = saveBtn.dataset.id;
-                if (!id) return;
-                
-                // Validación del formulario
-                const form = document.getElementById('edit-menu-item-form');
-                if (!form.checkValidity()) {
-                    alert("Por favor, completa todos los campos requeridos.");
-                    return;
-                }
-                
-                saveBtn.disabled = true;
-                
-                const type = document.getElementById('edit-item-type').value;
-                let updatedData = {
-                    name: document.getElementById('edit-item-name').value,
-                    type: type,
-                    imageUrls: document.getElementById('edit-item-image-urls').value.split('\n').filter(Boolean),
-                    isVisible: document.getElementById('edit-item-is-visible').checked
-                };
-
-                if (type === 'burger') {
-                    updatedData.price = parseFloat(document.getElementById('edit-item-price').value);
-                    updatedData.ingredients = document.getElementById('edit-item-ingredients').value.split('\n').filter(Boolean);
-                } else if (type === 'soda') {
-                    updatedData.price = parseFloat(document.getElementById('edit-soda-price').value);
-                    updatedData.options = document.getElementById('edit-soda-options').value.split('\n').filter(Boolean);
-                } else if (type === 'fries') {
-                    updatedData.sizes = [];
-                    const size1_name = document.getElementById('edit-fries-size-1-name').value;
-                    const size1_price = parseFloat(document.getElementById('edit-fries-size-1-price').value);
-                    if(size1_name && size1_price) updatedData.sizes.push({ name: size1_name, price: size1_price });
-
-                    const size2_name = document.getElementById('edit-fries-size-2-name').value;
-                    const size2_price = parseFloat(document.getElementById('edit-fries-size-2-price').value);
-                    if(size2_name && size2_price) updatedData.sizes.push({ name: size2_name, price: size2_price });
-                }
-                
-                try {
-                    await db.collection('menu').doc(id).update(updatedData);
-                    closeModal(editMenuItemModal);
-                    showSuccessModal('¡Producto actualizado con éxito!');
-                } catch (err) {
-                    console.error("Error actualizando: ", err);
-                    alert("Error al guardar los cambios.");
-                } finally {
-                    saveBtn.disabled = false;
-                }
-            }
-
-
-            // Listener para fetchMenuAndPopulate
-            let menuListenerUnsubscribe = null;
-
-            function fetchMenuAndPopulate() {
-                if (menuListenerUnsubscribe) { menuListenerUnsubscribe(); }
-
-                menuListenerUnsubscribe = db.collection('menu').where('isVisible', '==', true).orderBy('name').onSnapshot(snapshot => {
-                    const visibleItems = [];
-                    snapshot.forEach(doc => visibleItems.push({ ...doc.data(), id: doc.id }));
-                    
-                    menuItemsVisibleCache = visibleItems;
-                    
-                    populateMenuGallery(visibleItems);
-                    populateOrderMenu(visibleItems);
-                }, error => { console.error("Error fetching menu:", error); });
-            }
-
-            function populateMenuGallery(items) {
-                menuGalleryContainer.innerHTML = '';
-                items.forEach(item => {
-                    const ingredientsHtml = (item.ingredients || []).map(ing => `<li>${ing}</li>`).join('');
-                    
-                    const imagesHtml = (item.imageUrls && item.imageUrls.length > 0)
-                        ? item.imageUrls.map(url => `<img src="${url}" alt="${item.name}" class="slider-image">`).join('')
-                        : `<img src="placeholder.png" alt="Sin imagen" class="slider-image">`;
-                    
-                    const totalImages = (item.imageUrls || []).length;
-
-                    const sliderHtml = `
-                        <div class="slider-container">
-                            <div class="slider-viewport">
-                                <div class="slider-track" data-index="0" data-total="${totalImages}">
-                                    ${imagesHtml}
-                                </div>
-                            </div>
-                            ${totalImages > 1 ? `
-                                <button class="slider-btn prev">&lt;</button>
-                                <button class="slider-btn next">&gt;</button>
-                            ` : ''}
-                        </div>
-                    `;
-                    
-                    let priceHtml = '';
-                    if (item.type === 'burger' || item.type === 'soda') {
-                        priceHtml = `<div class="price">$${item.price.toFixed(2)}</div>`;
-                    } else if (item.type === 'fries' && item.sizes && item.sizes.length > 0) {
-                        priceHtml = `<div class="price">Desde $${item.sizes[0].price.toFixed(2)}</div>`;
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'burger-card';
-                    card.innerHTML = `
-                        ${sliderHtml}
-                        <div class="burger-card-content">
-                            <h2>${item.name}</h2>
-                            ${priceHtml}
-                            <ul>${ingredientsHtml}</ul>
-                        </div>
-                    `;
-                    menuGalleryContainer.appendChild(card);
-                });
-            }
-            
-            function populateOrderMenu(items) {
-                orderMenuContainer.innerHTML = '<h3>Selecciona un Producto</h3>';
-                if (!items || items.length === 0) {
-                    orderMenuContainer.innerHTML += '<p style="text-align:center; color: var(--color-texto-secundario);">No hay productos disponibles.</p>';
-                    return;
-                }
-                items.forEach(item => {
-                    const displayImage = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : 'placeholder.png';
-                    
-                    let priceHtml = '';
-                    if (item.type === 'burger' || item.type === 'soda') {
-                        priceHtml = `<p class="price">$${item.price.toFixed(2)}</p>`;
-                    } else if (item.type === 'fries' && item.sizes && item.sizes.length > 0) {
-                        priceHtml = `<p class="price">Varios tamaños</p>`;
-                    }
-                    
-                    const card = document.createElement('div');
-                    card.className = 'order-item-card';
-                    card.dataset.itemId = item.id;
-                    card.innerHTML = `
-                        <img src="${displayImage}" alt="${item.name}">
-                        <div class="item-info">
-                            <h4>${item.name}</h4>
-                            ${priceHtml}
-                        </div>
-                    `;
-                    
-                    // CORRECCIÓN: Llama a openProductOptionsModal
-                    card.addEventListener('click', () => openProductOptionsModal(item)); 
-                    orderMenuContainer.appendChild(card);
-                });
-            }
-            
-            // Listener para el slider
-            menuGalleryContainer.addEventListener('click', (e) => {
-                const btn = e.target.closest('.slider-btn');
-                if (!btn) return;
-                const track = btn.closest('.slider-container').querySelector('.slider-track');
-                let index = parseInt(track.dataset.index, 10);
-                const total = parseInt(track.dataset.total, 10);
-                if (btn.classList.contains('next')) index = (index + 1) % total;
-                else index = (index - 1 + total) % total;
-                track.dataset.index = index;
-                track.style.transform = `translateX(-${index * 100}%)`;
+                menuManagementList.appendChild(card);
             });
+        }
+        
+        // --- Editar y Eliminar Producto (Admin List) ---
+        if(menuManagementList) menuManagementList.addEventListener('click', async e => { 
+            const button = e.target.closest('button, input[type="checkbox"]'); 
+            if (!button) return;
+            const id = button.dataset.id;
+            if (!id) return;
 
+            if (button.classList.contains('toggle-visibility-btn')) {
+                try { await db.collection('menu').doc(id).update({ isVisible: button.checked }); } 
+                catch (error) { console.error("Error cambiando visibilidad:", error); alert('Error al actualizar.'); button.checked = !button.checked; } 
+            } else if (button.classList.contains('edit-btn')) {
+                fillMenuItemFormForEdit(id);
+            } else if (button.classList.contains('delete-btn')) {
+                 const itemName = menuCache.find(m=>m.id===id)?.name || 'este producto';
+                 if (confirm(`¿Seguro que quieres eliminar "${itemName}"?`)) {
+                    try { 
+                        await db.collection('menu').doc(id).delete(); 
+                        showSuccessModal('Producto eliminado.'); 
+                        // Si el form estaba editando este item, resetéalo
+                        if(editMenuItemIdInput?.value === id) resetMenuItemForm(); 
+                    }
+                    catch (error) { console.error("Error eliminando producto:", error); alert('Error al eliminar.'); }
+                }
+            }
+        });
 
-            // --- Lógica del Panel de Pedido (Creación) ---
-            closePanelBtn.addEventListener('click', () => closePanel(sidePanel));
-            productOptionsCloseBtn.addEventListener('click', () => closeModal(productOptionsModal));
-
-            // --- CORRECCIÓN: Lógica del Modal de Opciones de Producto ---
-            let selectedOption = null; // Para guardar la opción de refresco/papas
+        function fillMenuItemFormForEdit(id) {
+            const item = menuCache.find(i => i.id === id);
+            if (!item || !addMenuItemForm) return; 
             
-            function openProductOptionsModal(item) {
-                currentItemWithOptions = item; // Guarda el item base
-                selectedOption = null; // Resetea la opción seleccionada
-                let optionsHtml = '';
-                let footerHtml = '';
+            resetMenuItemForm(); 
 
-                if (item.type === 'burger') {
-                    optionsHtml = `<p>¿Deseas personalizar los ingredientes de esta hamburguesa?</p>`;
-                    footerHtml = `
-                        <button class="btn-primary modal-footer-btn" id="customize-burger-btn">Personalizar Ingredientes</button>
-                        <button class="btn-secondary modal-footer-btn" id="add-burger-default-btn">Agregar así (${fmt.format(item.price)})</button>
-                    `;
-                } else if (item.type === 'soda') {
-                    optionsHtml = `<p>Elige un sabor:</p><div id="modal-options-list">` +
-                        item.options.map((opt, index) => 
-                            `<button class="option-btn" data-option="${opt}" data-price="${item.price}" onclick="selectOption(this)">${opt}</button>`
-                        ).join('') + `</div>`;
-                    footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
-                } else if (item.type === 'fries') {
-                    optionsHtml = `<p>Elige un tamaño:</p><div id="modal-options-list">` +
-                        item.sizes.map((size, index) => 
-                            `<button class="option-btn" data-option='${JSON.stringify(size)}' onclick="selectOption(this)">${size.name} - ${fmt.format(size.price)}</button>`
-                        ).join('') + `</div>`;
-                    footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
-                }
+            if(editMenuItemIdInput) editMenuItemIdInput.value = id;
+            if(itemNameInput) itemNameInput.value = item.name;
+            if(itemTypeSelect) itemTypeSelect.value = item.type;
+            if(itemImageUrlsTextarea) itemImageUrlsTextarea.value = (item.imageUrls || []).join('\n');
+            if(itemIsVisibleCheckbox) itemIsVisibleCheckbox.checked = item.isVisible;
 
-                productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
-                openModal(productOptionsModal);
-
-                // Asignar listeners a los botones del footer
-                if (item.type === 'burger') {
-                    document.getElementById('customize-burger-btn').onclick = () => {
-                        closeModal(productOptionsModal);
-                        showCustomization(item);
-                    };
-                    document.getElementById('add-burger-default-btn').onclick = () => {
-                        const burgerItem = { ...item, customIngredients: [...(item.ingredients || [])] };
-                        addItemToCart(burgerItem);
-                        closeModal(productOptionsModal);
-                    };
-                } else {
-                    document.getElementById('add-option-btn').onclick = () => {
-                        if (!selectedOption) return;
-                        
-                        let itemToAdd = { ...currentItemWithOptions };
-                        if (item.type === 'soda') {
-                            itemToAdd.selectedOption = selectedOption.option;
-                        } else if (item.type === 'fries') {
-                            itemToAdd.selectedSize = selectedOption.option;
-                        }
-                        
-                        addItemToCart(itemToAdd);
-                        closeModal(productOptionsModal);
-                    };
-                }
+            if (item.type === 'burger' && itemPriceInput) {
+                itemPriceInput.value = item.price || '';
+                currentRecipe = item.recipe ? JSON.parse(JSON.stringify(item.recipe)) : []; 
+                renderRecipeBuilder();
+            } else if (item.type === 'extra' && itemPriceDirectInput && itemCostDirectInput) {
+                itemPriceDirectInput.value = item.price || '';
+                itemCostDirectInput.value = item.cost || '';
+            } else if (item.type === 'soda' && itemPriceDirectInput && itemCostDirectInput && itemOptionsTextarea) {
+                 itemPriceDirectInput.value = item.price || ''; 
+                 itemCostDirectInput.value = item.cost || ''; 
+                 itemOptionsTextarea.value = (item.options || []).join('\n');
+            } else if (item.type === 'fries' && sizesListEl && itemCostDirectInput) {
+                sizesListEl.innerHTML = ''; 
+                (item.sizes || []).forEach(size => addSizeInput(size));
+                itemCostDirectInput.value = item.cost || ''; 
             }
 
-            // Helper global para los botones de opción (porque se crean dinámicamente)
-            window.selectOption = (btnElement) => {
-                // Quita la clase 'selected' de todos los botones
-                document.querySelectorAll('#modal-options-list .option-btn').forEach(btn => btn.classList.remove('selected'));
-                // Añade 'selected' al botón clickeado
-                btnElement.classList.add('selected');
-                
-                // Guarda la opción
-                const type = currentItemWithOptions.type;
-                if (type === 'soda') {
-                    selectedOption = { option: btnElement.dataset.option };
-                } else if (type === 'fries') {
-                    selectedOption = { option: JSON.parse(btnElement.dataset.option) };
-                }
-
-                // Activa el botón de agregar
-                document.getElementById('add-option-btn').disabled = false;
+            updateMenuItemFormView(); 
+            if(saveMenuItemBtn && cancelEditMenuBtn) { 
+                saveMenuItemBtn.textContent = 'Actualizar Producto';
+                cancelEditMenuBtn.style.display = 'inline-block';
             }
-            // --- FIN LÓGICA MODAL OPCIONES ---
+            addMenuItemForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+        }
 
-            function showCustomization(item) {
-                if (!item) {
-                    console.error("showCustomization called with invalid item");
-                    return;
-                }
-                const currentItemData = menuItemsVisibleCache.find(i => i.id === item.id) || item;
+        if(cancelEditMenuBtn) cancelEditMenuBtn.addEventListener('click', resetMenuItemForm); 
 
-                currentOrderItem = { ...currentItemData, customIngredients: [...(currentItemData.ingredients || [])] };
-                customBurgerName.textContent = `Personalizar: ${item.name}`;
-                ingredientsList.innerHTML = '';
-                (currentItemData.ingredients || []).forEach(ingredient => {
-                    const label = document.createElement('label');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox'; checkbox.value = ingredient; checkbox.checked = true;
-                    checkbox.addEventListener('change', (e) => {
-                        if (!currentOrderItem) return;
-                        if (e.target.checked) {
-                            currentOrderItem.customIngredients.push(e.target.value);
-                        } else {
-                            currentOrderItem.customIngredients = currentOrderItem.customIngredients.filter(ing => ing !== e.target.value);
-                        }
+        function resetMenuItemForm() {
+            if(!addMenuItemForm || !editMenuItemIdInput || !saveMenuItemBtn || !cancelEditMenuBtn || !sizesListEl || !recipeBuilderList || !calculatedCostEl || !calculatedProfitEl || !directProfitEl || !itemTypeSelect) return; 
+            
+            addMenuItemForm.reset(); 
+            editMenuItemIdInput.value = '';
+            currentRecipe = [];
+            sizesListEl.innerHTML = ''; 
+            renderRecipeBuilder(); 
+            updateMenuItemFormView(); 
+            saveMenuItemBtn.textContent = 'Guardar Producto';
+            saveMenuItemBtn.disabled = false; 
+            cancelEditMenuBtn.style.display = 'none';
+            calculatedCostEl.textContent = fmt.format(0);
+            calculatedProfitEl.textContent = `${fmt.format(0)} (0%)`;
+            directProfitEl.textContent = `${fmt.format(0)} (0%)`;
+            itemTypeSelect.value = ""; 
+        }
+
+        // ###################################
+        // ### LÓGICA DE REPORTES (MEJORADA) ###
+        // ###################################
+        
+        function listenToTodaySales() {
+            if (listeners.sales) { listeners.sales(); listeners.sales = null; }
+            if (!adminView?.classList.contains('active')) return; 
+            console.log("Activando listener: Sales");
+
+            listeners.sales = db.collection("pedidos")
+                .where("createdAt", ">=", getStartOfToday())
+                .where("status", "==", "Listo") 
+                .orderBy("createdAt", "desc") 
+                .onSnapshot(snapshot => {
+                    console.log("Recibidos datos de ventas.");
+                    let total = 0;
+                    const salesItemsCount = {}; 
+                    let completedOrdersHtml = '';
+
+                    snapshot.forEach(doc => {
+                        const order = doc.data();
+                        total += order.total;
+                        
+                        order.items.forEach(item => {
+                            const itemNameKey = item.selectedSize ? `${item.name} (${item.selectedSize})` : item.selectedOption ? `${item.name} (${item.selectedOption})` : item.name;
+                            salesItemsCount[itemNameKey] = (salesItemsCount[itemNameKey] || 0) + 1;
+                        });
+
+                        const itemsSummaryHtml = order.items.map(item => {
+                             const detail = item.selectedSize ? `(${item.selectedSize})` : item.selectedOption ? `(${item.selectedOption})` : '';
+                             // Intentar formatear el precio, si falla, mostrar el valor original
+                             let formattedPrice = item.price;
+                             try { formattedPrice = fmt.format(item.price); } catch (e) { console.warn("Precio inválido para formatear:", item.price); }
+                             return `<li>${item.name} ${detail} (${formattedPrice})</li>`;
+                        }).join('');
+                        completedOrdersHtml += `
+                            <details class="sales-report-item">
+                                <summary><span>${order.folio}</span><strong>${fmt.format(order.total)}</strong></summary>
+                                <div class="sales-item-details"><ul>${itemsSummaryHtml}</ul></div>
+                            </details>`;
                     });
-                    label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(` ${ingredient}`));
-                    ingredientsList.appendChild(label);
-                });
-                customizationSection.style.display = 'block';
-            }
-            
-            function resetCustomizationSection() {
-                customizationSection.style.display = 'none';
-                ingredientsList.innerHTML = '';
-                currentOrderItem = null;
-            }
-            
-            // --- Lógica del Carrito ---
-            addItemToCartBtn.addEventListener('click', () => { // Este botón es solo para 'Personalizar'
-                if (!currentOrderItem) return;
-                addItemToCart(currentOrderItem);
-            });
-            
-            function addItemToCart(item) {
-                if (!item) return;
-                fullOrder.push(item);
-                renderCart();
-                updateTotal();
-                resetCustomizationSection(); // Limpia la personalización
-            }
 
-            cartSummaryList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-item-btn')) {
-                    const index = parseInt(e.target.dataset.index, 10);
+                    if(todaySalesTotalEl) todaySalesTotalEl.textContent = fmt.format(total);
+                    if(todaySalesListEl) todaySalesListEl.innerHTML = completedOrdersHtml || '<p>No hay ventas completadas hoy.</p>';
+
+                    let bestItem = null, leastItem = null;
+                    let maxCount = 0, minCount = Infinity;
+                    const itemNames = Object.keys(salesItemsCount);
+
+                    if (itemNames.length > 0) {
+                        itemNames.forEach(name => {
+                            const count = salesItemsCount[name];
+                            if (count > maxCount) { maxCount = count; bestItem = name; }
+                            if (count < minCount) { minCount = count; leastItem = name; }
+                        });
+                        if (itemNames.length === 1) leastItem = bestItem; 
+                        
+                        if(bestSellingItemEl) bestSellingItemEl.textContent = bestItem;
+                        if(bestSellingCountEl) bestSellingCountEl.textContent = `(${maxCount} vendidos)`;
+                        if(leastSellingItemEl) leastSellingItemEl.textContent = leastItem;
+                        if(leastSellingCountEl) leastSellingCountEl.textContent = `(${minCount} vendidos)`;
+                    } else {
+                        if(bestSellingItemEl) bestSellingItemEl.textContent = '--'; 
+                        if(bestSellingCountEl) bestSellingCountEl.textContent = '';
+                        if(leastSellingItemEl) leastSellingItemEl.textContent = '--'; 
+                        if(leastSellingCountEl) leastSellingCountEl.textContent = '';
+                    }
+                }, error => {
+                     console.error("Error escuchando ventas:", error);
+                     if(todaySalesListEl) todaySalesListEl.innerHTML = '<p>Error al cargar ventas.</p>';
+                     if(bestSellingItemEl) bestSellingItemEl.textContent = 'Error'; 
+                     if(leastSellingItemEl) leastSellingItemEl.textContent = 'Error'; 
+                });
+        }
+        
+        if(loadSalesHistoryBtn) loadSalesHistoryBtn.addEventListener('click', async () => { 
+            loadSalesHistoryBtn.disabled = true;
+            loadSalesHistoryBtn.textContent = 'Cargando...';
+            if(salesHistoryListEl) salesHistoryListEl.innerHTML = '';
+            
+            try {
+                const snapshot = await db.collection("pedidos")
+                    .where("createdAt", "<", getStartOfToday())
+                    .where("status", "==", "Listo")
+                    .orderBy("createdAt", "desc")
+                    .limit(50) // Limitar historial para no sobrecargar
+                    .get();
+                    
+                if (snapshot.empty) {
+                    if(salesHistoryListEl) salesHistoryListEl.innerHTML = '<p>No hay historial de ventas.</p>';
+                    return;
+                }
+                
+                const salesByDay = {};
+                snapshot.docs.forEach(doc => {
+                    const order = doc.data();
+                    // Asegurar que createdAt es un objeto Timestamp
+                    const orderDate = order.createdAt?.toDate ? order.createdAt.toDate() : new Date(); // Fallback
+                    const orderDay = orderDate.toLocaleDateString('es-MX', { dateStyle: 'full' });
+                    if (!salesByDay[orderDay]) salesByDay[orderDay] = { total: 0, orders: [] };
+                    salesByDay[orderDay].total += order.total;
+                    salesByDay[orderDay].orders.push(order);
+                });
+                
+                let historyHtml = '';
+                for (const day in salesByDay) {
+                    const ordersHtml = salesByDay[day].orders.map(order => {
+                         const itemsSummaryHtml = order.items.map(item => {
+                              const detail = item.selectedSize ? `(${item.selectedSize})` : item.selectedOption ? `(${item.selectedOption})` : '';
+                              let formattedPrice = item.price;
+                              try { formattedPrice = fmt.format(item.price); } catch (e) { /* Ignorar error */ }
+                              return `<li>${item.name} ${detail} (${formattedPrice})</li>`;
+                         }).join('');
+                         return `<details class="sales-report-item"><summary><span>${order.folio}</span><strong>${fmt.format(order.total)}</strong></summary><div class="sales-item-details"><ul>${itemsSummaryHtml}</ul></div></details>`;
+                    }).join('');
+                    historyHtml += `<div class="history-day-group"><h4><span>${day}</span><strong>Total: ${fmt.format(salesByDay[day].total)}</strong></h4><div class="sales-day-details">${ordersHtml}</div></div>`;
+                }
+                 if(salesHistoryListEl) salesHistoryListEl.innerHTML = historyHtml;
+
+            } catch (e) { 
+                console.error("Error cargando historial de ventas: ", e); 
+                if(salesHistoryListEl) salesHistoryListEl.innerHTML = '<p>Error al cargar el historial.</p>';
+            } finally {
+                if(loadSalesHistoryBtn) {
+                    loadSalesHistoryBtn.disabled = false;
+                    loadSalesHistoryBtn.textContent = 'Cargar Historial';
+                }
+            }
+        });
+        
+        // ###################################
+        // ### LÓGICA DE COCINA (ORIGINAL) ###
+        // ###################################
+        
+        function listenToKitchenOrders() {
+            if (listeners.kitchen) { listeners.kitchen(); listeners.kitchen = null; }
+            if (!kitchenView?.classList.contains('active')) return; 
+            console.log("Activando listener: Kitchen Orders");
+             
+            listeners.kitchen = db.collection("pedidos")
+                .where("createdAt", ">=", getStartOfToday())
+                // No filtrar por status aquí para ver Pendientes, En Cocina y Listos
+                .orderBy("createdAt", "desc") 
+                .onSnapshot((snapshot) => {
+                    console.log("Recibidos datos de cocina.");
+                    if (!kitchenOrdersList) return;
+                    kitchenOrdersList.innerHTML = '';
+                    if (snapshot.empty) {
+                        kitchenOrdersList.innerHTML = '<p style="text-align: center; font-size: 1.2rem;">No hay pedidos por hoy.</p>';
+                    } else {
+                        snapshot.docs.forEach(doc => renderOrderCard(doc.data(), doc.id, kitchenOrdersList));
+                    }
+                }, (error) => {
+                    console.error("Error escuchando pedidos: ", error);
+                    if(kitchenOrdersList) kitchenOrdersList.innerHTML = '<p>Error al cargar pedidos.</p>';
+                });
+        }
+        
+        if(loadHistoryBtn) loadHistoryBtn.addEventListener('click', async () => { 
+            loadHistoryBtn.disabled = true;
+            loadHistoryBtn.textContent = 'Cargando...';
+            if(kitchenHistoryList) kitchenHistoryList.innerHTML = '';
+            
+            try {
+                const snapshot = await db.collection("pedidos")
+                    .where("createdAt", "<", getStartOfToday())
+                    .orderBy("createdAt", "desc")
+                    .limit(50) 
+                    .get();
+                    
+                if (snapshot.empty) {
+                    if(kitchenHistoryList) kitchenHistoryList.innerHTML = '<p>No hay historial de pedidos.</p>';
+                     if(loadHistoryBtn) { loadHistoryBtn.disabled = false; loadHistoryBtn.textContent = 'Cargar Historial'; }
+                    return;
+                }
+                
+                const groupedByDay = {};
+                snapshot.docs.forEach(doc => {
+                    const order = doc.data();
+                    const orderDate = order.createdAt?.toDate ? order.createdAt.toDate() : new Date();
+                    const orderDay = orderDate.toLocaleDateString('es-MX', { dateStyle: 'full' });
+                    if (!groupedByDay[orderDay]) groupedByDay[orderDay] = [];
+                    // Llamar a renderOrderCard para obtener el HTML de la tarjeta
+                    const cardHtml = renderOrderCard(order, doc.id, null, true); // Pasar null como container, isHistory = true
+                    if (cardHtml) groupedByDay[orderDay].push(cardHtml); // Añadir solo si se generó HTML
+                });
+                
+                let historyHtml = '';
+                for (const day in groupedByDay) {
+                    historyHtml += `<div class="history-day-group"><h3>${day}</h3>${groupedByDay[day].join('')}</div>`;
+                }
+                 if(kitchenHistoryList) kitchenHistoryList.innerHTML = historyHtml;
+
+            } catch (e) { console.error("Error cargando historial de cocina: ", e); if(kitchenHistoryList) kitchenHistoryList.innerHTML = '<p>Error al cargar historial.</p>';}
+            finally {
+                if(loadHistoryBtn) {
+                    loadHistoryBtn.disabled = false;
+                    loadHistoryBtn.textContent = 'Cargar Historial';
+                }
+            }
+        });
+
+        function renderOrderCard(order, orderId, container, isHistory = false) { 
+            if(!order || !orderId) return null; // Salir si no hay datos
+
+             let createdAt = order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('es-MX', { timeStyle: 'short' }) : 'N/A';
+             let completedAtHtml = '';
+             if (order.status === 'Listo' && order.finalizadoAt?.toDate) {
+                 completedAtHtml = `<span class="completed-at">Finalizado: ${order.finalizadoAt.toDate().toLocaleString('es-MX', { timeStyle: 'short' })}</span>`;
+             }
+
+             const itemsHtml = (order.items || []).map(item => { // Asegurar que items es un array
+                 const detail = item.selectedOption || item.selectedSize;
+                 const ingredientsListHtml = (item.customIngredients && Array.isArray(item.customIngredients) && item.customIngredients.length > 0)
+                     ? '<ul>' + item.customIngredients.map(ing => `<li>${ing}</li>`).join('') + '</ul>'
+                     : '';
+                 
+                 return `<li class="kitchen-item-card">
+                     <strong>${item.name || 'Producto Desconocido'} ${detail ? `<span class="item-detail">(${detail})</span>` : ''}</strong>
+                     ${ingredientsListHtml}
+                 </li>`;
+             }).join('');
+             
+             const buttonsHtml = isHistory ? '' : `
+                 <div class="status-buttons">
+                     ${order.status === 'Pendiente' ? `<button class="status-btn to-kitchen" data-id="${orderId}" data-status="En Cocina">Mover a Cocina</button>` : ''}
+                     ${order.status === 'En Cocina' ? `<button class="status-btn to-ready" data-id="${orderId}" data-status="Listo">Marcar como Listo</button>` : ''}
+                 </div>
+             `;
+             
+             const cardHtml = `
+                 <div class="order-card status-${order.status ? order.status.replace(' ', '-') : 'desconocido'}">
+                     <h3><span class="folio">${order.folio || 'N/A'}</span></h3>
+                     <span class="timestamp">Creado: ${createdAt}</span>
+                     ${completedAtHtml}
+                     <span class="status">Estado: ${order.status || 'Desconocido'}</span>
+                     <ul class="items-list">${itemsHtml}</ul>
+                     ${buttonsHtml}
+                 </div>
+             `;
+             if (container) { container.innerHTML += cardHtml; return null; } // Añade al contenedor si existe
+             else { return cardHtml; } // Devuelve el HTML si no hay contenedor (para historial)
+        }
+        
+        if(kitchenOrdersList) kitchenOrdersList.addEventListener('click', (e) => { 
+            const statusButton = e.target.closest('.status-btn');
+            if (statusButton) {
+                const id = statusButton.dataset.id;
+                const newStatus = statusButton.dataset.status;
+                if(id && newStatus) updateOrderStatus(id, newStatus);
+            }
+        }); 
+        
+        async function updateOrderStatus(id, status) { 
+            if(!id || !status) return;
+            let updateData = { status: status };
+            if (status === 'Listo') {
+                updateData.finalizadoAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
+            try {
+                await db.collection("pedidos").doc(id).update(updateData);
+                console.log(`Pedido ${id} actualizado a ${status}`);
+            } catch (error) {
+                console.error(`Error actualizando estado del pedido ${id}:`, error);
+                alert("Error al actualizar el estado del pedido.");
+            }
+        }
+
+        // #################################################
+        // ### LÓGICA PANEL PEDIDO Y CLIENTE (ORIGINAL) ###
+        // #################################################
+
+        function listenToMenuForClient() {
+            if (listeners.menuClient) { listeners.menuClient(); listeners.menuClient = null; }
+            const galleryActive = document.getElementById('menu-gallery')?.classList.contains('active');
+            const panelOpen = sidePanel?.classList.contains('open');
+            if (!galleryActive && !panelOpen) return; 
+            console.log("Activando listener: Menu Client");
+
+             listeners.menuClient = db.collection('menu').where('isVisible', '==', true).orderBy('name').onSnapshot(snapshot => {
+                 console.log("Recibidos datos de menú cliente.");
+                 const visibleItems = [];
+                 snapshot.forEach(doc => visibleItems.push({ ...doc.data(), id: doc.id }));
+                 
+                 menuItemsVisibleCache = visibleItems; 
+                 
+                 if (galleryActive) populateMenuGallery(visibleItems);
+                 if (panelOpen) populateOrderMenu(visibleItems);
+                 
+             }, error => { console.error("Error fetching menu client:", error); });
+        }
+        
+        // Populate Menu Gallery (Cliente)
+        function populateMenuGallery(items) { 
+            const container = document.getElementById('menu-gallery-container');
+            if(!container) return;
+            container.innerHTML = ''; 
+            if (!items || items.length === 0) { container.innerHTML = '<p style="text-align:center; color: var(--color-texto-secundario);">Menú no disponible por el momento.</p>'; return;}
+
+            items.forEach(item => {
+                // Ya no mostramos ingredientes aquí, solo nombre y precio
+                // const ingredientsHtml = (item.ingredients || []).map(ing => `<li>${ing}</li>`).join(''); // YA NO SE USA 'ingredients'
+                const imagesHtml = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls.map(url => `<img src="${url}" alt="${item.name}" class="slider-image">`).join('') : `<img src="logo.png" alt="Sin imagen" class="slider-image">`; // Usa logo.png como fallback
+                const totalImages = (item.imageUrls || []).length;
+                const sliderHtml = `
+                    <div class="slider-container">
+                        <div class="slider-viewport">
+                            <div class="slider-track" data-index="0" data-total="${totalImages}">
+                                ${imagesHtml}
+                            </div>
+                        </div>
+                        ${totalImages > 1 ? `<button class="slider-btn prev">&lt;</button><button class="slider-btn next">&gt;</button>` : ''}
+                    </div>`;
+                
+                let priceHtml = '';
+                if (item.price) { priceHtml = `<div class="price">${fmt.format(item.price)}</div>`; } 
+                else if (item.sizes?.length > 0) { priceHtml = `<div class="price">Desde ${fmt.format(item.sizes[0].price)}</div>`; }
+
+                const card = document.createElement('div');
+                card.className = 'burger-card';
+                // No mostrar lista de ingredientes <ul> aquí
+                card.innerHTML = `
+                    ${sliderHtml}
+                    <div class="burger-card-content">
+                        <h2>${item.name}</h2>
+                        ${priceHtml}
+                        {/* Eliminado */}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Populate Order Menu (Panel Lateral Pedido)
+        function populateOrderMenu(items) { 
+            if(!orderMenuContainer) return;
+            orderMenuContainer.innerHTML = '<h3>Selecciona un Producto</h3>'; 
+            if (!items || items.length === 0) { orderMenuContainer.innerHTML += '<p style="text-align:center; color: var(--color-texto-secundario);">Menú no disponible.</p>'; return; }
+
+            items.forEach(item => {
+                const displayImage = item.imageUrls?.[0] || 'logo.png'; // Fallback a logo
+                let priceHtml = '';
+                if (item.price) { priceHtml = `<p class="price">${fmt.format(item.price)}</p>`; } 
+                else if (item.sizes?.length > 0) { priceHtml = `<p class="price">Varios tamaños</p>`; }
+                
+                const card = document.createElement('div');
+                card.className = 'order-item-card';
+                card.dataset.itemId = item.id; // Guardar ID para buscar luego
+                card.innerHTML = `
+                    <img src="${displayImage}" alt="${item.name}">
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        ${priceHtml}
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    // Buscar los datos COMPLETOS del item en el cache al hacer clic
+                    const fullItemData = menuItemsVisibleCache.find(menuItem => menuItem.id === item.id);
+                    if(fullItemData) {
+                        openProductOptionsModal(fullItemData); 
+                    } else {
+                        console.error("No se encontraron los datos completos del item:", item.id);
+                        alert("Error al seleccionar el producto.");
+                    }
+                }); 
+                orderMenuContainer.appendChild(card);
+            });
+        }
+        
+        const menuGalleryContainerEl = document.getElementById('menu-gallery-container');
+        if(menuGalleryContainerEl) menuGalleryContainerEl.addEventListener('click', (e) => { 
+            const btn = e.target.closest('.slider-btn');
+            if (!btn) return;
+            const track = btn.closest('.slider-container')?.querySelector('.slider-track'); // Chequeo
+            if (!track) return;
+            let index = parseInt(track.dataset.index || '0', 10); // Default a 0
+            const total = parseInt(track.dataset.total || '1', 10); // Default a 1
+            if(total <= 1) return; // No hacer nada si solo hay 1 imagen
+
+            if (btn.classList.contains('next')) index = (index + 1) % total;
+            else index = (index - 1 + total) % total;
+            
+            track.dataset.index = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
+        }); 
+
+        if(closePanelBtn) closePanelBtn.addEventListener('click', () => closePanel(sidePanel)); 
+        if(productOptionsCloseBtn) productOptionsCloseBtn.addEventListener('click', () => closeModal(productOptionsModal)); 
+        
+        let selectedOption = null; // Guardará { option: 'valor' } para soda o { option: {name: 'Chicas', price: 25} } para fries
+        
+        function openProductOptionsModal(item) { 
+             if(!item || !productOptionsContent || !productOptionsModal) return;
+             
+             currentItemWithOptions = item; 
+             selectedOption = null; 
+             let optionsHtml = '';
+             let footerHtml = '';
+             const requiresOption = item.type === 'soda' || item.type === 'fries'; // Burger no requiere opción obligatoria
+
+             if (item.type === 'burger') {
+                 // Para burger, ya no ofrecemos personalizar aquí, se agrega directo o se va al (ahora obsoleto?) customizationSection
+                 optionsHtml = `<p>Hamburguesa simple con los ingredientes estándar.</p>`; // Mensaje simple
+                 footerHtml = `<button class="btn-primary modal-footer-btn" id="add-burger-direct-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
+             } else if (item.type === 'soda') {
+                 optionsHtml = `<p>Elige un sabor:</p><div id="modal-options-list">` +
+                     (item.options || []).map(opt => `<button class="option-btn" data-option="${opt}" onclick="selectOption(this)">${opt}</button>`).join('') + `</div>`;
+                 footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito (${fmt.format(item.price)})</button>`;
+             } else if (item.type === 'fries') {
+                 optionsHtml = `<p>Elige un tamaño:</p><div id="modal-options-list">` +
+                     (item.sizes || []).map(size => `<button class="option-btn" data-option='${JSON.stringify(size)}' onclick="selectOption(this)">${size.name} - ${fmt.format(size.price)}</button>`).join('') + `</div>`;
+                 footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
+             } else { // Para 'extra'
+                 optionsHtml = `<p>${item.name}</p>`; // Solo muestra el nombre
+                 footerHtml = `<button class="btn-primary modal-footer-btn" id="add-extra-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
+             }
+
+             productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
+             
+             // Asignar listeners a los botones del footer DINÁMICAMENTE
+             const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-burger-direct-btn, #add-extra-btn');
+             if(addBtn) {
+                 addBtn.onclick = () => {
+                     let itemToAdd = { ...currentItemWithOptions }; // Copia base del item
+
+                     if (item.type === 'burger') {
+                         // Agrega la burger tal cual (ya no personalizamos aquí)
+                     } else if (requiresOption) {
+                          if (!selectedOption) { alert("Por favor, selecciona una opción."); return; }
+                          if (item.type === 'soda') itemToAdd.selectedOption = selectedOption.option; 
+                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; 
+                     } else if (item.type === 'extra'){
+                         // No necesita opción
+                     }
+                     
+                     addItemToCart(itemToAdd);
+                     closeModal(productOptionsModal);
+                 };
+             }
+             
+             openModal(productOptionsModal);
+        }
+
+        window.selectOption = (btnElement) => { 
+             const allOptionBtns = productOptionsContent?.querySelectorAll('#modal-options-list .option-btn');
+             if(!allOptionBtns) return;
+
+             allOptionBtns.forEach(btn => btn.classList.remove('selected'));
+             btnElement.classList.add('selected');
+             
+             const type = currentItemWithOptions?.type;
+             const addBtn = productOptionsContent?.querySelector('#add-option-btn');
+             if(!type || !addBtn) return;
+
+             if (type === 'soda') {
+                 selectedOption = { option: btnElement.dataset.option };
+             } else if (type === 'fries') {
+                 try {
+                     selectedOption = { option: JSON.parse(btnElement.dataset.option) };
+                     addBtn.textContent = `Agregar al carrito (${fmt.format(selectedOption.option.price)})`; // Actualiza precio en botón
+                 } catch (e) { console.error("Error parsing size option:", e); selectedOption = null; }
+             }
+
+             addBtn.disabled = !selectedOption; // Habilita botón si hay opción válida
+        }
+
+        // --- Lógica Carrito ---
+        // addItemToCartBtn es el de la sección de personalización (obsoleto?)
+        if(addItemToCartBtn) addItemToCartBtn.addEventListener('click', () => { 
+             if (!currentOrderItem) return;
+             // Actualizar ingredientes basados en checkboxes (si aún se usa esta sección)
+             const checkboxes = ingredientsList?.querySelectorAll('input[type="checkbox"]');
+             if(checkboxes) {
+                 currentOrderItem.customIngredients = Array.from(checkboxes)
+                     .filter(cb => cb.checked)
+                     .map(cb => cb.value);
+             }
+             addItemToCart(currentOrderItem);
+        }); 
+        
+        function addItemToCart(item) { 
+             if (!item) return;
+             console.log("Agregando al carrito:", item);
+             fullOrder.push(item);
+             renderCart();
+             updateTotal();
+             resetCustomizationSection(); // Limpiar sección si se usó
+        }
+
+        if(cartSummaryList) cartSummaryList.addEventListener('click', (e) => { 
+            const deleteButton = e.target.closest('.delete-item-btn');
+            if (deleteButton) {
+                const index = parseInt(deleteButton.dataset.index, 10);
+                if (!isNaN(index) && index >= 0 && index < fullOrder.length) {
                     fullOrder.splice(index, 1);
                     renderCart();
                     updateTotal();
                 }
-            });
+            }
+        });
 
-            function renderCart() {
-                cartSummaryList.innerHTML = '';
-                if (fullOrder.length === 0) {
-                    cartSummaryList.innerHTML = '<p style="text-align: center; color: var(--color-texto-secundario);">El carrito está vacío</p>';
-                }
+        function renderCart() { 
+            if(!cartSummaryList) return;
+            cartSummaryList.innerHTML = '';
+            if (fullOrder.length === 0) {
+                cartSummaryList.innerHTML = '<p style="text-align: center; color: var(--color-texto-secundario);">El carrito está vacío</p>';
+            } else {
                 fullOrder.forEach((item, index) => {
                     const itemEl = document.createElement('div');
                     itemEl.className = 'cart-item';
                     
                     const detail = item.selectedOption || item.selectedSize?.name;
-                    const price = item.selectedSize?.price || item.price;
-
+                    // El precio correcto ya viene en el item (sea `item.price` o `item.selectedSize.price`)
+                    const price = item.selectedSize?.price || item.price || 0; 
+                    
                     itemEl.innerHTML = `
                         <div>
                             <span class="name">${item.name}</span>
                             ${detail ? `<span class="detail">(${detail})</span>` : ''}
                         </div>
                         <div>
-                            <span class="price">$${price.toFixed(2)}</span>
-                            <button class="delete-item-btn" data-index="${index}">&times;</button>
+                            <span class="price">${fmt.format(price)}</span>
+                            <button class="delete-item-btn" data-index="${index}" title="Eliminar">&times;</button>
                         </div>
                     `;
                     cartSummaryList.appendChild(itemEl);
                 });
             }
+        }
 
-            function updateTotal() {
-                const total = fullOrder.reduce((sum, item) => sum + (item.selectedSize?.price || item.price), 0);
-                totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
-                finalizeOrderBtn.disabled = (fullOrder.length === 0);
-                finalizeOrderBtn.textContent = (fullOrder.length > 0) ? `Finalizar Pedido ($${total.toFixed(2)})` : 'Finalizar Pedido';
-            }
+        function updateTotal() { 
+            if(!totalDisplay || !finalizeOrderBtn) return;
+            const total = fullOrder.reduce((sum, item) => sum + (item.selectedSize?.price || item.price || 0), 0);
+            totalDisplay.textContent = `Total: ${fmt.format(total)}`;
+            finalizeOrderBtn.disabled = (fullOrder.length === 0);
+            finalizeOrderBtn.textContent = (fullOrder.length > 0) ? `Finalizar Pedido (${fmt.format(total)})` : 'Finalizar Pedido';
+        }
 
-            function resetOrder() {
-                fullOrder = [];
-                currentOrderItem = null;
-                renderCart();
-                updateTotal();
-                resetCustomizationSection();
-            }
-
-            // --- Lógica de Firebase (Guardar Pedido) ---
-            finalizeOrderBtn.addEventListener('click', async () => {
-                if (fullOrder.length === 0) return;
-                finalizeOrderBtn.disabled = true;
-                finalizeOrderBtn.textContent = 'Enviando...';
-                
-                const cleanItems = fullOrder.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.selectedSize?.price || item.price,
-                    selectedOption: item.selectedOption || null,
-                    selectedSize: item.selectedSize?.name || null,
-                    customIngredients: item.customIngredients || null
-                }));
-
-                const orderData = {
-                    items: cleanItems,
-                    total: cleanItems.reduce((sum, item) => sum + item.price, 0),
-                    status: 'Pendiente',
-                    folio: `FOLIO-${Date.now().toString().slice(-6)}`,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    finalizadoAt: null
-                };
-                
-                try {
-                    await db.collection("pedidos").add(orderData);
-                    showSuccessModal('¡Pedido Enviado a Cocina!');
-                } catch (e) { alert("Error al enviar el pedido."); }
-                finally {
-                    closePanel(sidePanel);
-                    resetOrder();
-                }
-            });
-            
-            closeModalBtn.addEventListener('click', () => closeModal(successModal));
-            
-            // --- Lógica de Cocina (Leer Pedidos HOY) ---
-            function getStartOfToday() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                return firebase.firestore.Timestamp.fromDate(today);
-            }
-
-            function listenToKitchenOrders() {
-                if (kitchenOrderListener) return;
-                
-                kitchenOrderListener = db.collection("pedidos")
-                    .where("createdAt", ">=", getStartOfToday())
-                    .orderBy("createdAt", "desc")
-                    .onSnapshot((snapshot) => {
-                        kitchenOrdersList.innerHTML = '';
-                        if (snapshot.empty) {
-                            kitchenOrdersList.innerHTML = '<p style="text-align: center; font-size: 1.2rem;">No hay pedidos por hoy.</p>';
-                        } else {
-                            snapshot.docs.forEach(doc => renderOrderCard(doc.data(), doc.id, kitchenOrdersList));
-                        }
-                    }, (error) => {
-                        console.error("Error escuchando pedidos: ", error);
-                        kitchenOrdersList.innerHTML = '<p>Error al cargar pedidos.</p>';
-                    });
-            }
-            
-            loadHistoryBtn.addEventListener('click', async () => {
-                loadHistoryBtn.disabled = true;
-                loadHistoryBtn.textContent = 'Cargando...';
-                kitchenHistoryList.innerHTML = '';
-                
-                try {
-                    const snapshot = await db.collection("pedidos")
-                        .where("createdAt", "<", getStartOfToday())
-                        .orderBy("createdAt", "desc")
-                        .limit(50)
-                        .get();
-                        
-                    if (snapshot.empty) {
-                        kitchenHistoryList.innerHTML = '<p>No hay historial de pedidos.</p>';
-                        return;
-                    }
-                    
-                    const groupedByDay = {};
-                    snapshot.docs.forEach(doc => {
-                        const order = doc.data();
-                        const orderDay = order.createdAt.toDate().toLocaleDateString('es-MX', { dateStyle: 'full' });
-                        if (!groupedByDay[orderDay]) groupedByDay[orderDay] = [];
-                        groupedByDay[orderDay].push(renderOrderCard(order, doc.id, null, true));
-                    });
-                    
-                    for (const day in groupedByDay) {
-                        kitchenHistoryList.innerHTML += `<div class="history-day-group"><h3>${day}</h3>${groupedByDay[day].join('')}</div>`;
-                    }
-                } catch (e) { console.error("Error cargando historial: ", e); }
-                finally {
-                    loadHistoryBtn.disabled = false;
-                    loadHistoryBtn.textContent = 'Cargar Historial (Días Anteriores)';
-                }
-            });
-            
-            function renderOrderCard(order, orderId, container, isHistory = false) {
-                let createdAt = order.createdAt ? order.createdAt.toDate().toLocaleString('es-MX', { timeStyle: 'short' }) : '...';
-                let completedAtHtml = '';
-                if (order.status === 'Listo' && order.finalizadoAt) {
-                    completedAtHtml = `<span class="completed-at">Finalizado: ${order.finalizadoAt.toDate().toLocaleString('es-MX', { timeStyle: 'short' })}</span>`;
-                }
-
-                const itemsHtml = order.items.map(item => {
-                    const detail = item.selectedOption || item.selectedSize;
-                    const ingredientsListHtml = (item.customIngredients && item.customIngredients.length > 0)
-                        ? '<ul>' + item.customIngredients.map(ing => `<li>${ing}</li>`).join('') + '</ul>'
-                        : '';
-                    
-                    return `<li class="kitchen-item-card">
-                        <strong>${item.name} ${detail ? `<span class="item-detail">(${detail})</span>` : ''}</strong>
-                        ${ingredientsListHtml}
-                    </li>`;
-                }).join('');
-                
-                const buttonsHtml = isHistory ? '' : `
-                    <div class="status-buttons">
-                        ${order.status === 'Pendiente' ? `<button class="status-btn to-kitchen" data-id="${orderId}" data-status="En Cocina">Mover a Cocina</button>` : ''}
-                        ${order.status === 'En Cocina' ? `<button class="status-btn to-ready" data-id="${orderId}" data-status="Listo">Marcar como Listo</button>` : ''}
-                    </div>
-                `;
-                
-                const cardHtml = `
-                    <div class="order-card status-${order.status.replace(' ', '-')}">
-                        <h3><span class="folio">${order.folio}</span></h3>
-                        <span class="timestamp">Creado: ${createdAt}</span>
-                        ${completedAtHtml}
-                        <span class="status">Estado: ${order.status}</span>
-                        <ul class="items-list">${itemsHtml}</ul>
-                        ${buttonsHtml}
-                    </div>
-                `;
-                if (container) container.innerHTML += cardHtml;
-                else return cardHtml;
-            }
-            
-            kitchenOrdersList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('status-btn')) {
-                    const id = e.target.dataset.id;
-                    const newStatus = e.target.dataset.status;
-                    updateOrderStatus(id, newStatus);
-                }
-            });
-            
-            async function updateOrderStatus(id, status) {
-                let updateData = { status: status };
-                if (status === 'Listo') {
-                    updateData.finalizadoAt = firebase.firestore.FieldValue.serverTimestamp();
-                }
-                await db.collection("pedidos").doc(id).update(updateData);
-            }
-
-            // --- Lógica de REPORTE DE VENTAS ---
-            function listenToTodaySales() {
-                if (salesListener) return;
-                
-                salesListener = db.collection("pedidos")
-                    .where("createdAt", ">=", getStartOfToday())
-                    .where("status", "==", "Listo")
-                    .onSnapshot(snapshot => {
-                        let total = 0;
-                        todaySalesListEl.innerHTML = '';
-                        if (snapshot.empty) {
-                            todaySalesListEl.innerHTML = '<p>No hay ventas completadas hoy.</p>';
-                        }
-                        snapshot.docs.forEach(doc => {
-                            const order = doc.data();
-                            total += order.total;
-                            
-                            const itemsSummaryHtml = order.items.map(item => {
-                                const detail = item.selectedOption || item.selectedSize;
-                                return `<li>${item.name} ${detail ? `(${detail})` : ''} ($${item.price.toFixed(2)})</li>`;
-                            }).join('');
-                            
-                            todaySalesListEl.innerHTML += `
-                                <details class="sales-report-item">
-                                    <summary>
-                                        <span>${order.folio}</span>
-                                        <strong>$${order.total.toFixed(2)}</strong>
-                                    </summary>
-                                    <div class="sales-item-details">
-                                        <ul>${itemsSummaryHtml}</ul>
-                                    </div>
-                                </details>
-                            `;
-                        });
-                        todaySalesTotalEl.textContent = `$${total.toFixed(2)}`;
-                    }, (error) => { console.error("Error escuchando ventas: ", error); });
-            }
-            
-            loadSalesHistoryBtn.addEventListener('click', async () => {
-                loadSalesHistoryBtn.disabled = true;
-                loadSalesHistoryBtn.textContent = 'Cargando...';
-                salesHistoryListEl.innerHTML = '';
-                
-                try {
-                    const snapshot = await db.collection("pedidos")
-                        .where("createdAt", "<", getStartOfToday())
-                        .where("status", "==", "Listo")
-                        .orderBy("createdAt", "desc")
-                        .get();
-                        
-                    if (snapshot.empty) {
-                        salesHistoryListEl.innerHTML = '<p>No hay historial de ventas.</p>';
-                        return;
-                    }
-                    
-                    const salesByDay = {};
-                    snapshot.docs.forEach(doc => {
-                        const order = doc.data();
-                        const orderDay = order.createdAt.toDate().toLocaleDateString('es-MX', { dateStyle: 'full' });
-                        if (!salesByDay[orderDay]) {
-                            salesByDay[orderDay] = { total: 0, orders: [] };
-                        }
-                        salesByDay[orderDay].total += order.total;
-                        salesByDay[orderDay].orders.push(order);
-                    });
-                    
-                    for (const day in salesByDay) {
-                        const ordersHtml = salesByDay[day].orders.map(order => {
-                            const itemsSummaryHtml = order.items.map(item => {
-                                const detail = item.selectedOption || item.selectedSize;
-                                return `<li>${item.name} ${detail ? `(${detail})` : ''} ($${item.price.toFixed(2)})</li>`;
-                            }).join('');
-
-                            return `
-                                <details class="sales-report-item">
-                                    <summary>
-                                        <span>${order.folio}</span>
-                                        <strong>$${order.total.toFixed(2)}</strong>
-                                    </summary>
-                                    <div class="sales-item-details">
-                                        <ul>${itemsSummaryHtml}</ul>
-                                    </div>
-                                </details>
-                            `;
-                        }).join('');
-
-                        salesHistoryListEl.innerHTML += `
-                            <div class="history-day-group">
-                                <h4>
-                                    <span>${day}</span>
-                                    <strong>Total: $${salesByDay[day].total.toFixed(2)}</strong>
-                                </h4>
-                                <div class="sales-day-details">
-                                    ${ordersHtml}
-                                </div>
-                            </div>
-                        `;
-                    }
-                } catch (e) { console.error("Error cargando historial de ventas: ", e); }
-                finally {
-                    loadSalesHistoryBtn.disabled = false;
-                    loadSalesHistoryBtn.textContent = 'Cargar Historial';
-                }
-            });
-            
-            // --- Lógica de Tema (Dark/Light) ---
-            themeToggleBtn.addEventListener('click', toggleTheme);
-
-            function toggleTheme() {
-                document.body.classList.toggle('dark-mode');
-                
-                if (document.body.classList.contains('dark-mode')) {
-                    localStorage.setItem('theme', 'dark');
-                    themeToggleBtn.innerHTML = sunIcon;
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    themeToggleBtn.innerHTML = moonIcon;
-                }
-            }
-
-            function checkPersistentTheme() {
-                const savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark') {
-                    document.body.classList.add('dark-mode');
-                    themeToggleBtn.innerHTML = sunIcon;
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    themeToggleBtn.innerHTML = moonIcon;
-                }
-            }
-
-
-            // --- Inicialización ---
-            const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }); // Formateador de moneda
-            
-            checkPersistentTheme();
-            checkPersistentLogin();
-            fetchMenuAndPopulate();
+        function resetOrder() { 
+            fullOrder = [];
+            currentOrderItem = null; // Resetea item de personalización
             renderCart();
-            showView('menu-gallery');
+            updateTotal();
+            resetCustomizationSection();
+        }
+
+        // --- Guardar Pedido ---
+        if(finalizeOrderBtn) finalizeOrderBtn.addEventListener('click', async () => { 
+            if (fullOrder.length === 0) return;
+            finalizeOrderBtn.disabled = true;
+            finalizeOrderBtn.textContent = 'Enviando...';
             
-            overlay.addEventListener('click', () => {
+            // Mapeo final para asegurar estructura correcta en Firestore
+            const cleanItems = fullOrder.map(item => ({
+                id: item.id || 'N/A', // ID del producto base
+                name: item.name,
+                price: item.selectedSize?.price || item.price || 0, // Precio final pagado
+                selectedOption: item.selectedOption || null, // Sabor soda
+                selectedSize: item.selectedSize?.name || null, // Tamaño papas
+                // customIngredients: item.customIngredients || null // Si aún usas personalización
+            }));
+
+            const orderData = {
+                items: cleanItems,
+                total: cleanItems.reduce((sum, item) => sum + item.price, 0),
+                status: 'Pendiente', // Estado inicial
+                folio: `FOLIO-${Date.now().toString().slice(-6)}`, // Folio simple
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                finalizadoAt: null // Se llena al marcar como 'Listo'
+            };
+            
+            try {
+                const docRef = await db.collection("pedidos").add(orderData);
+                console.log("Pedido guardado con ID:", docRef.id);
+                showSuccessModal(`¡Pedido ${orderData.folio} Enviado a Cocina!`);
+            } catch (e) { 
+                console.error("Error al enviar el pedido:", e);
+                alert("Error al enviar el pedido. Intenta de nuevo."); 
+            } finally {
                 closePanel(sidePanel);
-                closePanel(adminPanel);
-                closeModal(loginModal);
-                closeModal(successModal);
-                closeModal(adminPasswordModal);
-                closeModal(editMenuItemModal);
-                closeModal(productOptionsModal);
-            });
+                resetOrder(); // Limpia carrito y estado
+                // No re-habilitamos el botón aquí, updateTotal lo hará si el carrito se llena de nuevo
+            }
         });
+        
+        if(closeModalBtn) closeModalBtn.addEventListener('click', () => closeModal(successModal)); 
+
+        // --- Lógica de Tema (Dark/Light) ---
+        if(themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme); 
+        function toggleTheme() { 
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if(themeToggleBtn) themeToggleBtn.innerHTML = isDark ? sunIcon : moonIcon;
+        }
+        function checkPersistentTheme() { 
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                 if(themeToggleBtn) themeToggleBtn.innerHTML = sunIcon;
+            } else {
+                document.body.classList.remove('dark-mode');
+                 if(themeToggleBtn) themeToggleBtn.innerHTML = moonIcon;
+            }
+        }
+
+        // --- INICIALIZACIÓN GENERAL ---
+        checkPersistentTheme();
+        checkPersistentLogin();
+        showView('menu-gallery'); // Vista inicial (iniciará listenToMenuForClient)
+        renderCart(); // Renderizar carrito vacío al inicio
+        
+        if(overlay) overlay.addEventListener('click', () => { 
+            closePanel(sidePanel);
+            closePanel(adminPanel);
+            closeModal(loginModal);
+            closeModal(successModal);
+            closeModal(adminPasswordModal);
+            closeModal(productOptionsModal);
+        });
+
+    // #############################################
+    // ### FIN DEL SCRIPT COMPLETO ###
+    // #############################################
+    });
     </script>
 
 </body>
