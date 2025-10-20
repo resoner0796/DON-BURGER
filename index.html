@@ -331,7 +331,7 @@
         #admin-pass-submit-btn { width: 100%; padding: 12px; background-color: var(--color-admin); color: var(--color-blanco); border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; }
         #edit-item-save-btn { background-color: var(--color-verde); }
 
-        /* NUEVO: Modal de Opciones de Producto */
+        /* Modal de Opciones de Producto */
         #product-options-content { text-align: left; }
         #product-options-content h3 { font-size: 1.5rem; color: var(--color-texto); }
         #product-options-content p { color: var(--color-texto-secundario); }
@@ -346,13 +346,14 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            box-sizing: border-box; /* Añadido */
         }
         .option-btn.selected {
             border-color: var(--color-primario);
             background: color-mix(in srgb, var(--color-primario) 15%, transparent);
             color: var(--color-primario);
         }
-        .modal-footer-btn { width: 100%; }
+        .modal-footer-btn { width: 100%; margin-top: 10px; }
         
     </style>
 </head>
@@ -363,7 +364,7 @@
             <button id="auth-btn">PANEL</button>
         </div>
         <div class="logo-container" id="logo-clickable-area">
-            <img src="logo.PNG" alt="Logo del Negocio">
+            <img src="logo.png" alt="Logo del Negocio">
         </div>
         <div class="header-side right">
             <button id="theme-toggle-btn">
@@ -445,7 +446,6 @@
                 <h2>Gestión de Menú</h2>
                 <form id="add-menu-item-form">
                     <h3>Agregar Nuevo Producto</h3>
-                    <!-- NUEVO: Selector de Tipo -->
                     <div class="form-group">
                         <label for="item-type">Tipo de Producto</label>
                         <select id="item-type">
@@ -460,16 +460,13 @@
                         <input type="text" id="item-name" required>
                     </div>
 
-                    <!-- Campos Condicionales -->
                     <div id="burger-fields">
                         <div class="form-group">
                             <label for="item-price">Precio</label>
-                            <input type="number" id="item-price" required>
-                        </div>
+                            <input type="number" id="item-price" required> </div>
                          <div class="form-group">
                             <label for="item-ingredients">Ingredientes (uno por línea)</label>
-                            <textarea id="item-ingredients" required></textarea>
-                        </div>
+                            <textarea id="item-ingredients" required></textarea> </div>
                     </div>
                     <div id="soda-fields" style="display: none;">
                          <div class="form-group">
@@ -567,18 +564,15 @@
             <span class="modal-close-btn" id="edit-item-close-btn">&times;</span>
             <h2>Editar Producto</h2>
             <form id="edit-menu-item-form">
-                <!-- Contenido dinámico con JS -->
-            </form>
+                </form>
         </div>
     </div>
 
-    <!-- NUEVO: Modal de Opciones de Producto -->
     <div id="product-options-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close-btn" id="product-options-close-btn">&times;</span>
             <div id="product-options-content">
-                <!-- Contenido dinámico con JS -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -599,14 +593,16 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             
+            // --- Cache y Estado ---
             let menuItemsAdminCache = [];
             let menuItemsVisibleCache = [];
-            let currentOrderItem = null;
+            let currentOrderItem = null; // Usado solo para personalización de hamburguesa
             let fullOrder = [];
             let isLoggedIn = false;
             let isAdminViewUnlocked = false;
             let kitchenOrderListener = null;
             let salesListener = null;
+            let currentItemWithOptions = null; // NUEVO: Guarda el item para el modal de opciones
 
             // --- DOM Generales ---
             const overlay = document.getElementById('overlay');
@@ -672,7 +668,6 @@
             // --- DOM Modal Editar ---
             const editMenuItemModal = document.getElementById('edit-menu-item-modal');
             const editItemCloseBtn = document.getElementById('edit-item-close-btn');
-            const editItemSaveBtn = document.getElementById('edit-item-save-btn');
             
             // --- DOM Modal Opciones de Producto ---
             const productOptionsModal = document.getElementById('product-options-modal');
@@ -807,6 +802,34 @@
                 document.getElementById('burger-fields').style.display = type === 'burger' ? 'block' : 'none';
                 document.getElementById('soda-fields').style.display = type === 'soda' ? 'block' : 'none';
                 document.getElementById('fries-fields').style.display = type === 'fries' ? 'block' : 'none';
+                
+                // CORRECCIÓN: Manejo dinámico de 'required'
+                const burgerPrice = document.getElementById('item-price');
+                const burgerIngredients = document.getElementById('item-ingredients');
+                const sodaPrice = document.getElementById('soda-price');
+                const sodaOptions = document.getElementById('soda-options');
+                const friesName1 = document.getElementById('fries-size-1-name');
+                const friesPrice1 = document.getElementById('fries-size-1-price');
+
+                // Resetea todos
+                burgerPrice.required = false;
+                burgerIngredients.required = false;
+                sodaPrice.required = false;
+                sodaOptions.required = false;
+                friesName1.required = false;
+                friesPrice1.required = false;
+                
+                // Asigna 'required' solo a los campos del tipo seleccionado
+                if (type === 'burger') {
+                    burgerPrice.required = true;
+                    burgerIngredients.required = true;
+                } else if (type === 'soda') {
+                    sodaPrice.required = true;
+                    sodaOptions.required = true;
+                } else if (type === 'fries') {
+                    friesName1.required = true;
+                    friesPrice1.required = true;
+                }
             });
             
             // (Admin) Guarda un nuevo producto
@@ -843,12 +866,10 @@
                     await db.collection('menu').add(newItem);
                     showSuccessModal('Producto agregado al menú.');
                     addMenuItemForm.reset();
-                    // Resetea la visibilidad del formulario
                     itemTypeSelect.dispatchEvent(new Event('change')); 
                 } catch (err) { alert("Error al guardar producto."); }
             });
 
-            // (Admin) Carga los items del menú en el panel de admin
             function loadMenuItemsForAdmin() {
                 db.collection('menu').orderBy('name').onSnapshot(snapshot => {
                     let items = [];
@@ -884,7 +905,6 @@
                 });
             }
             
-            // (Admin) Listeners para botones de admin (Editar, Eliminar, Ocultar)
             menuManagementList.addEventListener('click', async (e) => {
                 const target = e.target;
                 const button = target.closest('button, input');
@@ -916,8 +936,8 @@
                     return;
                 }
                 
-                // Generar dinámicamente el contenido del formulario de edición
                 const formContainer = document.getElementById('edit-menu-item-form');
+                // CORRECCIÓN: Añadir 'required' dinámicamente
                 formContainer.innerHTML = `
                     <div class="form-group">
                         <label for="edit-item-type">Tipo de Producto</label>
@@ -935,22 +955,22 @@
                     <div id="edit-burger-fields" style="display: ${item.type === 'burger' ? 'block' : 'none'}">
                         <div class="form-group">
                             <label for="edit-item-price">Precio</label>
-                            <input type="number" id="edit-item-price" value="${item.price || ''}" required>
+                            <input type="number" id="edit-item-price" value="${item.price || ''}" ${item.type === 'burger' ? 'required' : ''}>
                         </div>
                         <div class="form-group">
                             <label for="edit-item-ingredients">Ingredientes</label>
-                            <textarea id="edit-item-ingredients" required>${(item.ingredients || []).join('\n')}</textarea>
+                            <textarea id="edit-item-ingredients" ${item.type === 'burger' ? 'required' : ''}>${(item.ingredients || []).join('\n')}</textarea>
                         </div>
                     </div>
 
                     <div id="edit-soda-fields" style="display: ${item.type === 'soda' ? 'block' : 'none'}">
                         <div class="form-group">
                             <label for="edit-soda-price">Precio</label>
-                            <input type="number" id="edit-soda-price" value="${item.price || ''}">
+                            <input type="number" id="edit-soda-price" value="${item.price || ''}" ${item.type === 'soda' ? 'required' : ''}>
                         </div>
                         <div class="form-group">
                             <label for="edit-soda-options">Sabores</label>
-                            <textarea id="edit-soda-options">${(item.options || []).join('\n')}</textarea>
+                            <textarea id="edit-soda-options" ${item.type === 'soda' ? 'required' : ''}>${(item.options || []).join('\n')}</textarea>
                         </div>
                     </div>
 
@@ -958,11 +978,11 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div class="form-group">
                                 <label for="edit-fries-size-1-name">Tamaño 1</label>
-                                <input type="text" id="edit-fries-size-1-name" value="${item.sizes?.[0]?.name || ''}">
+                                <input type="text" id="edit-fries-size-1-name" value="${item.sizes?.[0]?.name || ''}" ${item.type === 'fries' ? 'required' : ''}>
                             </div>
                             <div class="form-group">
                                 <label for="edit-fries-size-1-price">Precio 1</label>
-                                <input type="number" id="edit-fries-size-1-price" value="${item.sizes?.[0]?.price || ''}">
+                                <input type="number" id="edit-fries-size-1-price" value="${item.sizes?.[0]?.price || ''}" ${item.type === 'fries' ? 'required' : ''}>
                             </div>
                              <div class="form-group">
                                 <label for="edit-fries-size-2-name">Tamaño 2</label>
@@ -989,7 +1009,6 @@
                     <button type="button" id="edit-item-save-btn" class="form-button">Guardar Cambios</button>
                 `;
                 
-                // Re-asignar el listener al nuevo botón
                 document.getElementById('edit-item-save-btn').dataset.id = id;
                 document.getElementById('edit-item-save-btn').addEventListener('click', saveMedEdit);
                 
@@ -999,10 +1018,18 @@
             editItemCloseBtn.addEventListener('click', () => closeModal(editMenuItemModal));
             
             async function saveMedEdit() {
-                const id = document.getElementById('edit-item-save-btn').dataset.id;
+                const saveBtn = document.getElementById('edit-item-save-btn');
+                const id = saveBtn.dataset.id;
                 if (!id) return;
                 
-                document.getElementById('edit-item-save-btn').disabled = true;
+                // Validación del formulario
+                const form = document.getElementById('edit-menu-item-form');
+                if (!form.checkValidity()) {
+                    alert("Por favor, completa todos los campos requeridos.");
+                    return;
+                }
+                
+                saveBtn.disabled = true;
                 
                 const type = document.getElementById('edit-item-type').value;
                 let updatedData = {
@@ -1037,7 +1064,7 @@
                     console.error("Error actualizando: ", err);
                     alert("Error al guardar los cambios.");
                 } finally {
-                    document.getElementById('edit-item-save-btn').disabled = false;
+                    saveBtn.disabled = false;
                 }
             }
 
@@ -1084,13 +1111,20 @@
                         </div>
                     `;
                     
+                    let priceHtml = '';
+                    if (item.type === 'burger' || item.type === 'soda') {
+                        priceHtml = `<div class="price">$${item.price.toFixed(2)}</div>`;
+                    } else if (item.type === 'fries' && item.sizes && item.sizes.length > 0) {
+                        priceHtml = `<div class="price">Desde $${item.sizes[0].price.toFixed(2)}</div>`;
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'burger-card';
                     card.innerHTML = `
                         ${sliderHtml}
                         <div class="burger-card-content">
                             <h2>${item.name}</h2>
-                            <div class="price">${item.price ? '$' + item.price.toFixed(2) : 'Varios precios'}</div>
+                            ${priceHtml}
                             <ul>${ingredientsHtml}</ul>
                         </div>
                     `;
@@ -1107,6 +1141,13 @@
                 items.forEach(item => {
                     const displayImage = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : 'placeholder.png';
                     
+                    let priceHtml = '';
+                    if (item.type === 'burger' || item.type === 'soda') {
+                        priceHtml = `<p class="price">$${item.price.toFixed(2)}</p>`;
+                    } else if (item.type === 'fries' && item.sizes && item.sizes.length > 0) {
+                        priceHtml = `<p class="price">Varios tamaños</p>`;
+                    }
+                    
                     const card = document.createElement('div');
                     card.className = 'order-item-card';
                     card.dataset.itemId = item.id;
@@ -1114,11 +1155,11 @@
                         <img src="${displayImage}" alt="${item.name}">
                         <div class="item-info">
                             <h4>${item.name}</h4>
-                            <p class="price">${item.price ? '$' + item.price.toFixed(2) : 'Varios tamaños'}</p>
+                            ${priceHtml}
                         </div>
                     `;
                     
-                    // --- CAMBIO: Llama a la nueva función del modal ---
+                    // CORRECCIÓN: Llama a openProductOptionsModal
                     card.addEventListener('click', () => openProductOptionsModal(item)); 
                     orderMenuContainer.appendChild(card);
                 });
@@ -1140,6 +1181,87 @@
 
             // --- Lógica del Panel de Pedido (Creación) ---
             closePanelBtn.addEventListener('click', () => closePanel(sidePanel));
+            productOptionsCloseBtn.addEventListener('click', () => closeModal(productOptionsModal));
+
+            // --- CORRECCIÓN: Lógica del Modal de Opciones de Producto ---
+            let selectedOption = null; // Para guardar la opción de refresco/papas
+            
+            function openProductOptionsModal(item) {
+                currentItemWithOptions = item; // Guarda el item base
+                selectedOption = null; // Resetea la opción seleccionada
+                let optionsHtml = '';
+                let footerHtml = '';
+
+                if (item.type === 'burger') {
+                    optionsHtml = `<p>¿Deseas personalizar los ingredientes de esta hamburguesa?</p>`;
+                    footerHtml = `
+                        <button class="btn-primary modal-footer-btn" id="customize-burger-btn">Personalizar Ingredientes</button>
+                        <button class="btn-secondary modal-footer-btn" id="add-burger-default-btn">Agregar así (${fmt.format(item.price)})</button>
+                    `;
+                } else if (item.type === 'soda') {
+                    optionsHtml = `<p>Elige un sabor:</p><div id="modal-options-list">` +
+                        item.options.map((opt, index) => 
+                            `<button class="option-btn" data-option="${opt}" data-price="${item.price}" onclick="selectOption(this)">${opt}</button>`
+                        ).join('') + `</div>`;
+                    footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
+                } else if (item.type === 'fries') {
+                    optionsHtml = `<p>Elige un tamaño:</p><div id="modal-options-list">` +
+                        item.sizes.map((size, index) => 
+                            `<button class="option-btn" data-option='${JSON.stringify(size)}' onclick="selectOption(this)">${size.name} - ${fmt.format(size.price)}</button>`
+                        ).join('') + `</div>`;
+                    footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
+                }
+
+                productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
+                openModal(productOptionsModal);
+
+                // Asignar listeners a los botones del footer
+                if (item.type === 'burger') {
+                    document.getElementById('customize-burger-btn').onclick = () => {
+                        closeModal(productOptionsModal);
+                        showCustomization(item);
+                    };
+                    document.getElementById('add-burger-default-btn').onclick = () => {
+                        const burgerItem = { ...item, customIngredients: [...(item.ingredients || [])] };
+                        addItemToCart(burgerItem);
+                        closeModal(productOptionsModal);
+                    };
+                } else {
+                    document.getElementById('add-option-btn').onclick = () => {
+                        if (!selectedOption) return;
+                        
+                        let itemToAdd = { ...currentItemWithOptions };
+                        if (item.type === 'soda') {
+                            itemToAdd.selectedOption = selectedOption.option;
+                        } else if (item.type === 'fries') {
+                            itemToAdd.selectedSize = selectedOption.option;
+                        }
+                        
+                        addItemToCart(itemToAdd);
+                        closeModal(productOptionsModal);
+                    };
+                }
+            }
+
+            // Helper global para los botones de opción (porque se crean dinámicamente)
+            window.selectOption = (btnElement) => {
+                // Quita la clase 'selected' de todos los botones
+                document.querySelectorAll('#modal-options-list .option-btn').forEach(btn => btn.classList.remove('selected'));
+                // Añade 'selected' al botón clickeado
+                btnElement.classList.add('selected');
+                
+                // Guarda la opción
+                const type = currentItemWithOptions.type;
+                if (type === 'soda') {
+                    selectedOption = { option: btnElement.dataset.option };
+                } else if (type === 'fries') {
+                    selectedOption = { option: JSON.parse(btnElement.dataset.option) };
+                }
+
+                // Activa el botón de agregar
+                document.getElementById('add-option-btn').disabled = false;
+            }
+            // --- FIN LÓGICA MODAL OPCIONES ---
 
             function showCustomization(item) {
                 if (!item) {
@@ -1177,14 +1299,19 @@
             }
             
             // --- Lógica del Carrito ---
-            function addItemToCart(item) { // Modificado para recibir un objeto
+            addItemToCartBtn.addEventListener('click', () => { // Este botón es solo para 'Personalizar'
+                if (!currentOrderItem) return;
+                addItemToCart(currentOrderItem);
+            });
+            
+            function addItemToCart(item) {
                 if (!item) return;
                 fullOrder.push(item);
                 renderCart();
                 updateTotal();
-                resetCustomizationSection(); // Opcional, pero bueno para limpiar
+                resetCustomizationSection(); // Limpia la personalización
             }
-            
+
             cartSummaryList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('delete-item-btn')) {
                     const index = parseInt(e.target.dataset.index, 10);
@@ -1203,16 +1330,16 @@
                     const itemEl = document.createElement('div');
                     itemEl.className = 'cart-item';
                     
-                    // Muestra el sabor o tamaño si existe
                     const detail = item.selectedOption || item.selectedSize?.name;
-                    
+                    const price = item.selectedSize?.price || item.price;
+
                     itemEl.innerHTML = `
                         <div>
                             <span class="name">${item.name}</span>
                             ${detail ? `<span class="detail">(${detail})</span>` : ''}
                         </div>
                         <div>
-                            <span class="price">$${(item.selectedSize?.price || item.price).toFixed(2)}</span>
+                            <span class="price">$${price.toFixed(2)}</span>
                             <button class="delete-item-btn" data-index="${index}">&times;</button>
                         </div>
                     `;
@@ -1521,6 +1648,8 @@
 
 
             // --- Inicialización ---
+            const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }); // Formateador de moneda
+            
             checkPersistentTheme();
             checkPersistentLogin();
             fetchMenuAndPopulate();
