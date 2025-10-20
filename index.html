@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamburguesas - Centro de Pedidos</title>
+    <title>Don Burger - Centro de Pedidos</title>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -260,13 +260,13 @@
         #close-panel-btn { background: none; border: none; color: var(--color-blanco); font-size: 2rem; font-weight: bold; cursor: pointer; }
         .panel-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
         
-        /* NUEVO: Contenedor para tarjetas de pedido */
+        /* Contenedor para tarjetas de pedido */
         #order-menu-items {
             display: grid;
             grid-template-columns: 1fr; /* Una columna por defecto */
             gap: 15px;
         }
-        /* NUEVO: Estilo de Tarjeta de Pedido */
+        /* Estilo de Tarjeta de Pedido */
         .order-item-card {
             display: flex;
             align-items: center;
@@ -570,14 +570,14 @@
 
 
     <script>
-        // --- Configuración de Firebase ---
+        // --- Configuración de Firebase (Don Burger) ---
         const firebaseConfig = {
-            apiKey: "AIzaSyDip9cNWnSXTKYzBy95zDom8SVfbjdC-68",
-            authDomain: "chepinas-burguer.firebaseapp.com",
-            projectId: "chepinas-burguer",
-            storageBucket: "chepinas-burguer.firebasestorage.app",
-            messagingSenderId: "233011732997",
-            appId: "1:233011732997:web:8b9bdbd47c83b4ef14726c"
+          apiKey: "AIzaSyBF4YpYxe6cSbPAyikxrjU9JpNTPdD_OIE",
+          authDomain: "don-burger-85dbb.firebaseapp.com",
+          projectId: "don-burger-85dbb",
+          storageBucket: "don-burger-85dbb.firebasestorage.app",
+          messagingSenderId: "720810288381",
+          appId: "1:720810288381:web:b6535578420074d3804a94"
         };
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
