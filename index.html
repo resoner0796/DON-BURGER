@@ -309,7 +309,7 @@
         #modal-ingredients-list label:last-child { border-bottom: none; }
         #modal-ingredients-list label:hover { background-color: var(--color-fondo-hover); }
         #modal-ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); vertical-align: middle; }
-        /* --- FIN DE LO AÑADIDO --- */
+        
         
         /* Utilidades */
         .btn-primary { background-color: var(--color-primario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
@@ -1834,7 +1834,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const detail = item.selectedOption || item.selectedSize?.name;
                     const price = item.selectedSize?.price || item.price || 0; 
 
-                    // --- AÑADIDO: Lógica para mostrar ingredientes ---
+                    
                     let ingredientsDetail = '';
                     if (item.type === 'burger' && item.customIngredients) {
                         // Compara la receta original con la personalizada
@@ -1852,7 +1852,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>
                             <span class="name">${item.name}</span>
                            ${detail ? `<span class="detail">(${detail})</span>` : ''}
-                            ${ingredientsDetail} {/* <-- AÑADIDO */}
+                            ${ingredientsDetail} 
                         </div>
                         <div>
                          <span class="price">${fmt.format(price)}</span>
