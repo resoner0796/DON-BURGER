@@ -507,9 +507,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
         // --- Cache y Estado Global ---
-        let ingredientsCache = []; 
-        let menuCache = []; 
-        let currentRecipe = [];
+        let ingredientsCache = []; 
+        let menuCache = []; 
+        let menuItemsVisibleCache = []; // <--- AÑADIR ESTA LÍNEA
+        let currentRecipe = [];
         let isLoggedIn = false;
         let isAdminViewUnlocked = false;
         let listeners = {
@@ -731,22 +732,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // --- Lógica del Panel de Admin (Navegación y Contraseña) ---
-         adminNavBtns.forEach(btn => {
-             btn.addEventListener('click', () => {
-                 const view = btn.dataset.view;
-                 const action = btn.dataset.action;
-                 if (view) {
-                     showView(view);
-                 } else if (action === 'create-order') {
-                     if (isLoggedIn) {
-                         closePanel(adminPanel);
-                         listenToMenuForClient(); // Asegurar que el menú esté cargado para el panel de pedido
-                         openPanel(sidePanel); 
-                     }
-                 } 
-                 // El listener de logout ya está asignado
-             });
-         });
+         // --- Lógica del Panel de Admin (Navegación y Contraseña) ---
+         adminNavBtns.forEach(btn => {
+             btn.addEventListener('click', () => {
+                 const view = btn.dataset.view;
+                 const action = btn.dataset.action;
+                 if (view) {
+                     showView(view);
+                 } else if (action === 'create-order') {
+                     if (isLoggedIn) {
+                         closePanel(adminPanel);
+                         listenToMenuForClient(true); // <--- MODIFICADO: Añadimos 'true' para forzar la carga
+                         openPanel(sidePanel); 
+                  _}
+                 } 
+                 // El listener de logout ya está asignado
+             });
+         });
         if(adminPassCloseBtn) adminPassCloseBtn.addEventListener('click', () => closeModal(adminPasswordModal)); 
         if(adminPassSubmitBtn) adminPassSubmitBtn.addEventListener('click', attemptAdminUnlock); 
         if(adminPasswordInput) adminPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptAdminUnlock(); }); 
@@ -1544,25 +1546,33 @@ document.addEventListener('DOMContentLoaded', () => {
         // ### LÓGICA PANEL PEDIDO Y CLIENTE (ORIGINAL) ###
         // #################################################
 
-        function listenToMenuForClient() {
-            if (listeners.menuClient) { listeners.menuClient(); listeners.menuClient = null; }
-            const galleryActive = document.getElementById('menu-gallery')?.classList.contains('active');
-            const panelOpen = sidePanel?.classList.contains('open');
-            if (!galleryActive && !panelOpen) return; 
-            console.log("Activando listener: Menu Client");
+        function listenToMenuForClient(forceOpen = false) { // <--- MODIFICADO: Acepta 'forceOpen'
+            if (listeners.menuClient) { listeners.menuClient(); listeners.menuClient = null; }
+            const galleryActive = document.getElementById('menu-gallery')?.classList.contains('active');
+            const panelOpen = sidePanel?.classList.contains('open');
 
-             listeners.menuClient = db.collection('menu').where('isVisible', '==', true).orderBy('name').onSnapshot(snapshot => {
-                 console.log("Recibidos datos de menú cliente.");
-                 const visibleItems = [];
-                 snapshot.forEach(doc => visibleItems.push({ ...doc.data(), id: doc.id }));
-                 
-                 menuItemsVisibleCache = visibleItems; 
-                 
-                 if (galleryActive) populateMenuGallery(visibleItems);
-                 if (panelOpen) populateOrderMenu(visibleItems);
-                 
-             }, error => { console.error("Error fetching menu client:", error); });
-        }
+            // MODIFICADO: Si no está activa la galería, ni abierto el panel, Y TAMPOCO se está forzando la apertura, entonces sí salimos.
+            if (!galleryActive && !panelOpen && !forceOpen) return; 
+            
+            console.log("Activando listener: Menu Client");
+
+             listeners.menuClient = db.collection('menu').where('isVisible', '==', true).orderBy('name').onSnapshot(snapshot => {
+                 console.log("Recibidos datos de menú cliente.");
+                 const visibleItems = [];
+                 snapshot.forEach(doc => visibleItems.push({ ...doc.data(), id: doc.id }));
+                 
+                 menuItemsVisibleCache = visibleItems; 
+                 
+                 if (document.getElementById('menu-gallery')?.classList.contains('active')) {
+                    populateMenuGallery(visibleItems);
+                 }
+                 // MODIFICADO: Revisamos si el panel está abierto O si se forzó la apertura (ya que el listener es asíncrono)
+                 if (sidePanel?.classList.contains('open') || forceOpen) {
+                    populateOrderMenu(visibleItems);
+              _}
+                 
+             }, error => { console.error("Error fetching menu client:", error); });
+        }
         
         // Populate Menu Gallery (Cliente)
         function populateMenuGallery(items) { 
