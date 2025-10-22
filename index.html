@@ -265,54 +265,82 @@
         /* --- INICIA BLOQUE DE REEMPLAZO: Resumen de Pedido --- */
 
 /* Contenedor principal del item en el carrito */
-/* --- INICIA BLOQUE DE REEMPLAZO: Resumen de Pedido --- */
+/* --- INICIA BLOQUE CORREGIDO: Resumen de Pedido --- */
 
 /* Contenedor principal del item en el carrito */
-.cart-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 6px 5px; 
-    font-size: 0.9rem; 
-}
- 
-/* Contenedor del LADO IZQUIERDO (Nombre + Detalles) */
-.cart-item > div:first-child { 
+.cart-item {
     display: flex;
-    align-items: baseline; /* Alinea 'Sin:' con el nombre */
+    justify-content: space-between;
+    align-items: center; /* Cambiado de baseline a center para mejor alineación vertical */
+    padding: 8px 5px; /* Un poco más de espacio vertical */
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--color-borde); /* Separador visual */
+}
+.cart-item:last-child {
+  border-bottom: none; /* No poner línea en el último item */
+}
+
+/* Contenedor del LADO IZQUIERDO (Nombre + Detalles) */
+.cart-item > div:first-child {
+    display: flex;
+    flex-direction: column; /* Pone nombre arriba, detalle abajo */
     overflow: hidden;      /* Oculta lo que no quepa */
-    flex-grow: 1; 
+    flex-grow: 1;
     margin-right: 10px; /* Espacio para que no se pegue al precio */
 }
- 
+
 /* Nombre del producto */
-.cart-item .name { 
-    font-weight: bold; 
+.cart-item .name {
+    font-weight: bold;
     white-space: nowrap;     /* No partir la línea */
     text-overflow: ellipsis; /* Poner '...' si no cabe */
     overflow: hidden;
-    flex-shrink: 0;          /* No encoger el nombre */
+    line-height: 1.2; /* Ajuste para que no quede pegado al detalle */
 }
- 
+
 /* Detalle (Sabor, Tamaño, o 'Sin:') */
-.cart-item .detail { 
-    font-size: 0.8em; 
-    color: var(--color-texto-secundario); 
+.cart-item .detail {
+    font-size: 0.8em;
+    color: var(--color-texto-secundario);
     white-space: nowrap;     /* No partir la línea */
     text-overflow: ellipsis; /* Poner '...' si no cabe */
     overflow: hidden;
-    margin-left: 5px;        /* Espacio entre nombre y detalle */
+    /* margin-left: 5px; */ /* Ya no es necesario con flex-direction: column */
+    line-height: 1.1;
 }
 
 /* Contenedor del LADO DERECHO (Precio + Botón) */
-.cart-item > div:last-child { 
+.cart-item > div:last-child {
     display: flex;
     align-items: center;
     flex-shrink: 0; /* Evita que el precio/botón se encoja */
+    margin-left: 10px; /* Asegura espacio entre nombre/detalle y precio */
 }
 
-/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
-        .delete-item-btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; line-height: 18px; text-align: center; flex-shrink: 0; } /* Tamaño ajustado */
+/* Estilo específico para el precio dentro del carrito */
+.cart-item .price {
+    font-weight: bold;
+    color: var(--color-secundario); /* O el color que prefieras para el precio */
+    margin-right: 8px; /* Espacio entre precio y botón eliminar */
+}
+
+/* Botón eliminar */
+.delete-item-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+    line-height: 19px; /* Ajustado para centrar mejor el 'x' */
+    text-align: center;
+    flex-shrink: 0;
+    padding: 0; /* Quitar padding extra */
+}
+
         #total-display { font-size: 1.4rem; font-weight: bold; color: var(--color-primario); text-align: right; margin-bottom: 10px; } /* Tamaño ajustado */
         #finalize-order-btn { width: 100%; padding: 12px; font-size: 1.1rem; } /* Padding y tamaño ajustado */
         
@@ -336,27 +364,36 @@
         .option-btn.selected { border-color: var(--color-primario); background: color-mix(in srgb, var(--color-primario) 15%, transparent); color: var(--color-primario); }
         .modal-footer-btn { width: 100%; margin-top: 15px; padding: 12px 20px; font-size: 1rem; } /* Esta línea ya existe */
 
-        /* --- INICIA BLOQUE DE REEMPLAZO: ESTILOS MODAL DE INGREDIENTES --- */
+        /* --- INICIA BLOQUE CORREGIDO: ESTILOS MODAL DE INGREDIENTES --- */
         #modal-ingredients-list {
-            max-height: 150px;
+            max-height: 150px; /* O ajusta la altura máxima como prefieras */
             overflow-y: auto;
             border: 1px solid var(--color-borde);
             border-radius: 5px;
             padding: 10px;
-            margin: 10px 0;
+            margin: 15px 0; /* Separación arriba y abajo */
             background-color: var(--color-fondo);
         }
         #modal-ingredients-list label {
-            display: block; /* <-- ESTA ES LA REGLA CLAVE */
-            padding: 8px 5px;
+            display: block; /* <-- ESTA ES LA REGLA CLAVE PARA VERTICAL */
+            padding: 10px 8px; /* Más padding para mejor clic */
             cursor: pointer;
             border-bottom: 1px solid var(--color-borde);
-            user-select: none; 
+            user-select: none;
+            transition: background-color 0.2s ease; /* Transición suave al pasar el mouse */
         }
-        #modal-ingredients-list label:last-child { border-bottom: none; }
-        #modal-ingredients-list label:hover { background-color: var(--color-fondo-hover); }
-        #modal-ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); vertical-align: middle; }
-/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
+        #modal-ingredients-list label:last-child {
+            border-bottom: none; /* Quita la línea del último elemento */
+        }
+        #modal-ingredients-list label:hover {
+            background-color: var(--color-fondo-hover); /* Efecto visual al pasar el mouse */
+        }
+        #modal-ingredients-list input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+            vertical-align: middle; /* Alinea checkbox con el texto */
+        }
+/* --- FIN DEL BLOQUE CORREGIDO --- */
 
         /* Utilidades */
         .btn-primary { background-color: var(--color-primario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
