@@ -265,47 +265,50 @@
         /* --- INICIA BLOQUE DE REEMPLAZO: Resumen de Pedido --- */
 
 /* Contenedor principal del item en el carrito */
-.cart-item { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 6px 5px; 
-    font-size: 0.9rem; 
+/* --- INICIA BLOQUE DE REEMPLAZO: Resumen de Pedido --- */
+
+/* Contenedor principal del item en el carrito */
+.cart-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 6px 5px; 
+    font-size: 0.9rem; 
 }
- 
+ 
 /* Contenedor del LADO IZQUIERDO (Nombre + Detalles) */
-.cart-item > div:first-child { 
-    display: flex;
-    align-items: baseline; /* Alinea 'Sin:' con el nombre */
-    overflow: hidden;      /* Oculta lo que no quepa */
-    flex-grow: 1; 
-    margin-right: 10px; /* Espacio para que no se pegue al precio */
+.cart-item > div:first-child { 
+    display: flex;
+    align-items: baseline; /* Alinea 'Sin:' con el nombre */
+    overflow: hidden;      /* Oculta lo que no quepa */
+    flex-grow: 1; 
+    margin-right: 10px; /* Espacio para que no se pegue al precio */
 }
- 
+ 
 /* Nombre del producto */
-.cart-item .name { 
-    font-weight: bold; 
-    white-space: nowrap;     /* No partir la línea */
-    text-overflow: ellipsis; /* Poner '...' si no cabe */
-    overflow: hidden;
-    flex-shrink: 0;          /* No encoger el nombre */
+.cart-item .name { 
+    font-weight: bold; 
+    white-space: nowrap;     /* No partir la línea */
+    text-overflow: ellipsis; /* Poner '...' si no cabe */
+    overflow: hidden;
+    flex-shrink: 0;          /* No encoger el nombre */
 }
- 
+ 
 /* Detalle (Sabor, Tamaño, o 'Sin:') */
-.cart-item .detail { 
-    font-size: 0.8em; 
-    color: var(--color-texto-secundario); 
-    white-space: nowrap;     /* No partir la línea */
-    text-overflow: ellipsis; /* Poner '...' si no cabe */
-    overflow: hidden;
-    margin-left: 5px;        /* Espacio entre nombre y detalle */
+.cart-item .detail { 
+    font-size: 0.8em; 
+    color: var(--color-texto-secundario); 
+    white-space: nowrap;     /* No partir la línea */
+    text-overflow: ellipsis; /* Poner '...' si no cabe */
+    overflow: hidden;
+    margin-left: 5px;        /* Espacio entre nombre y detalle */
 }
 
 /* Contenedor del LADO DERECHO (Precio + Botón) */
-.cart-item > div:last-child { 
-    display: flex;
-    align-items: center;
-    flex-shrink: 0; /* Evita que el precio/botón se encoja */
+.cart-item > div:last-child { 
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Evita que el precio/botón se encoja */
 }
 
 /* --- FIN DEL BLOQUE DE REEMPLAZO --- */
@@ -333,8 +336,7 @@
         .option-btn.selected { border-color: var(--color-primario); background: color-mix(in srgb, var(--color-primario) 15%, transparent); color: var(--color-primario); }
         .modal-footer-btn { width: 100%; margin-top: 15px; padding: 12px 20px; font-size: 1rem; } /* Esta línea ya existe */
 
-        /* --- AÑADIR ESTO --- */
-        /* --- AÑADIR ESTO PARA ARREGLAR LAYOUT DE INGREDIENTES --- */
+        /* --- INICIA BLOQUE DE REEMPLAZO: ESTILOS MODAL DE INGREDIENTES --- */
         #modal-ingredients-list {
             max-height: 150px;
             overflow-y: auto;
@@ -349,13 +351,13 @@
             padding: 8px 5px;
             cursor: pointer;
             border-bottom: 1px solid var(--color-borde);
-            user-select: none; 
+            user-select: none; 
         }
         #modal-ingredients-list label:last-child { border-bottom: none; }
         #modal-ingredients-list label:hover { background-color: var(--color-fondo-hover); }
         #modal-ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); vertical-align: middle; }
-        /* --- FIN DEL BLOQUE A AÑADIR --- */
-        
+/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
+
         /* Utilidades */
         .btn-primary { background-color: var(--color-primario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
         .btn-secondary { background-color: var(--color-texto-secundario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
@@ -1740,7 +1742,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let selectedOption = null; // Guardará { option: 'valor' } para soda o { option: {name: 'Chicas', price: 25} } para fries
         
-        function openProductOptionsModal(item) { 
+        /* --- INICIA BLOQUE DE REEMPLAZO: FUNCIÓN openProductOptionsModal --- */
+        function openProductOptionsModal(item) { 
              if(!item || !productOptionsContent || !productOptionsModal) return;
              
              currentItemWithOptions = item; 
@@ -1775,7 +1778,6 @@ document.addEventListener('DOMContentLoaded', () => {
              } else { // Para 'extra'
                  optionsHtml = `<p>${item.name}</p>`; // Solo muestra el nombre
                  footerHtml = `<button class="btn-primary modal-footer-btn" id="add-extra-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
-             }
 
              productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
              
@@ -1795,18 +1797,19 @@ document.addEventListener('DOMContentLoaded', () => {
                      } else if (requiresOption) {
                           if (!selectedOption) { alert("Por favor, selecciona una opción."); return; }
                           if (item.type === 'soda') itemToAdd.selectedOption = selectedOption.option; 
-                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option;i  
+                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; // <-- CORREGIDO: Se quitó la 'i' extra
                      } else if (item.type === 'extra'){
                          // No necesita opción
                      }
                      
                      addItemToCart(itemToAdd);
-                     closeModal(productOptionsModal); // <-- ¡AQUÍ SE CIERRA AUTOMÁTICAMENTE!
+                     closeModal(productOptionsModal); // <-- CORREGIDO: Esta línea ahora se ejecuta
                  };
              }
              
              openModal(productOptionsModal);
-       }
+       }
+/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
 
         window.selectOption = (btnElement) => { 
              const allOptionBtns = productOptionsContent?.querySelectorAll('#modal-options-list .option-btn');
@@ -1866,7 +1869,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        function renderCart() { 
+        /* --- INICIA BLOQUE DE REEMPLAZO: FUNCIÓN renderCart --- */
+        function renderCart() { 
             if(!cartSummaryList) return;
             cartSummaryList.innerHTML = '';
             if (fullOrder.length === 0) {
@@ -1874,7 +1878,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fullOrder.forEach((item, index) => {
                     const itemEl = document.createElement('div');
-                   itemEl.className = 'cart-item';
+                   itemEl.className = 'cart-item';
                     
                     const detail = item.selectedOption || item.selectedSize?.name;
                     const price = item.selectedSize?.price || item.price || 0; 
@@ -1882,7 +1886,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // --- Lógica para mostrar ingredientes ---
                     let ingredientsDetail = '';
                     if (item.type === 'burger' && item.customIngredients) {
-                        // Compara la receta original con la personalizada
+                         // Compara la receta original con la personalizada
                         const originalRecipe = (item.recipe || []).map(r => r.name);
                         const removed = originalRecipe.filter(orig => !item.customIngredients.includes(orig));
                         if (removed.length > 0) {
@@ -1893,11 +1897,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     // --- FIN DE LÓGICA ---
                     
+                    // Esta es la estructura HTML correcta que usa las clases CSS
                     itemEl.innerHTML = `
                         <div>
                             <span class="name">${item.name}</span>
                             ${detail ? `<span class="detail">(${detail})</span>` : ''}
-                            ${ingredientsDetail} {/* AÑADIDO */}
+                            ${ingredientsDetail}
                         </div>
                         <div>
                             <span class="price">${fmt.format(price)}</span>
@@ -1905,9 +1910,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     cartSummaryList.appendChild(itemEl);
-               });
+               });
             }
         }
+/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
         function updateTotal() { 
             if(!totalDisplay || !finalizeOrderBtn) return;
             const total = fullOrder.reduce((sum, item) => sum + (item.selectedSize?.price || item.price || 0), 0);
