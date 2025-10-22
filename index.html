@@ -1778,11 +1778,12 @@ document.addEventListener('DOMContentLoaded', () => {
              } else { // Para 'extra'
                  optionsHtml = `<p>${item.name}</p>`; // Solo muestra el nombre
                  footerHtml = `<button class="btn-primary modal-footer-btn" id="add-extra-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
+             }
 
              productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
              
              // Asignar listeners a los botones del footer DINÁMICAMENTE
-             const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-custom-burger-btn, #add-extra-btn'); // Modificado ID
+             const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-custom-burger-btn, #add-extra-btn');
              if(addBtn) {
                  addBtn.onclick = () => {
                      let itemToAdd = { ...currentItemWithOptions }; // Copia base del item
@@ -1797,19 +1798,20 @@ document.addEventListener('DOMContentLoaded', () => {
                      } else if (requiresOption) {
                           if (!selectedOption) { alert("Por favor, selecciona una opción."); return; }
                           if (item.type === 'soda') itemToAdd.selectedOption = selectedOption.option; 
-                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; // <-- CORREGIDO: Se quitó la 'i' extra
+                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option;i  
                      } else if (item.type === 'extra'){
                          // No necesita opción
                      }
                      
                      addItemToCart(itemToAdd);
-                     closeModal(productOptionsModal); // <-- CORREGIDO: Esta línea ahora se ejecuta
+
+                     closeModal(productOptionsModal); // <-- ¡AQUÍ SE CIERRA AUTOMÁTICAMENTE!
                  };
              }
              
              openModal(productOptionsModal);
        }
-/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
+
 
         window.selectOption = (btnElement) => { 
              const allOptionBtns = productOptionsContent?.querySelectorAll('#modal-options-list .option-btn');
@@ -1870,10 +1872,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         /* --- INICIA BLOQUE DE REEMPLAZO: FUNCIÓN renderCart --- */
+        /* --- INICIA BLOQUE DE REEMPLAZO: FUNCIÓN renderCart --- */
         function renderCart() { 
             if(!cartSummaryList) return;
             cartSummaryList.innerHTML = '';
-            if (fullOrder.length === 0) {
+             if (fullOrder.length === 0) {
                 cartSummaryList.innerHTML = '<p style="text-align: center; color: var(--color-texto-secundario);">El carrito está vacío</p>';
             } else {
                 fullOrder.forEach((item, index) => {
@@ -1885,10 +1888,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // --- Lógica para mostrar ingredientes ---
                     let ingredientsDetail = '';
-                    if (item.type === 'burger' && item.customIngredients) {
-                         // Compara la receta original con la personalizada
+                     if (item.type === 'burger' && item.customIngredients) {
+
+                        // Compara la receta original con la personalizada
                         const originalRecipe = (item.recipe || []).map(r => r.name);
-                        const removed = originalRecipe.filter(orig => !item.customIngredients.includes(orig));
+                       const removed = originalRecipe.filter(orig => !item.customIngredients.includes(orig));
                         if (removed.length > 0) {
                             ingredientsDetail = `<span class="detail" style="color: var(--color-primario);">Sin: ${removed.join(', ')}</span>`;
                         } else if (originalRecipe.length === item.customIngredients.length) {
@@ -1904,15 +1908,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${detail ? `<span class="detail">(${detail})</span>` : ''}
                             ${ingredientsDetail}
                         </div>
-                        <div>
-                            <span class="price">${fmt.format(price)}</span>
-                          <button class="delete-item-btn" data-index="${index}" title="Eliminar">&times;</button>
+                       <div>
+                         <span class="price">${fmt.format(price)}</span>
+                            <button class="delete-item-btn" data-index="${index}" title="Eliminar">&times;</button>
                         </div>
-                    `;
+                   `;
                     cartSummaryList.appendChild(itemEl);
                });
             }
         }
+/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
 /* --- FIN DEL BLOQUE DE REEMPLAZO --- */
         function updateTotal() { 
             if(!totalDisplay || !finalizeOrderBtn) return;
