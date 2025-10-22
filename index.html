@@ -262,9 +262,53 @@
         .panel-footer { padding: 15px 20px; border-top: 2px solid var(--color-borde); background-color: var(--color-blanco); transition: background-color 0.3s ease, border-color 0.3s ease; flex-shrink: 0; /* Evitar que se encoja */}
         #order-summary h3 { margin: 0 0 10px 0; font-size: 1.2rem;} /* Título resumen */
         #order-summary-list { max-height: 120px; overflow-y: auto; margin-bottom: 10px; border-bottom: 1px solid var(--color-borde); padding-bottom: 5px;} /* Altura ajustada */
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 5px; font-size: 0.9rem; } /* Padding y tamaño ajustado */
-        .cart-item .name { font-weight: bold; flex-grow: 1; margin-right: 10px; } /* Espacio para botón */
-        .cart-item .detail { font-size: 0.8em; color: var(--color-texto-secundario); }
+        /* --- INICIA BLOQUE DE REEMPLAZO: Resumen de Pedido --- */
+
+/* Contenedor principal del item en el carrito */
+.cart-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 6px 5px; 
+    font-size: 0.9rem; 
+}
+ 
+/* Contenedor del LADO IZQUIERDO (Nombre + Detalles) */
+.cart-item > div:first-child { 
+    display: flex;
+    align-items: baseline; /* Alinea 'Sin:' con el nombre */
+    overflow: hidden;      /* Oculta lo que no quepa */
+    flex-grow: 1; 
+    margin-right: 10px; /* Espacio para que no se pegue al precio */
+}
+ 
+/* Nombre del producto */
+.cart-item .name { 
+    font-weight: bold; 
+    white-space: nowrap;     /* No partir la línea */
+    text-overflow: ellipsis; /* Poner '...' si no cabe */
+    overflow: hidden;
+    flex-shrink: 0;          /* No encoger el nombre */
+}
+ 
+/* Detalle (Sabor, Tamaño, o 'Sin:') */
+.cart-item .detail { 
+    font-size: 0.8em; 
+    color: var(--color-texto-secundario); 
+    white-space: nowrap;     /* No partir la línea */
+    text-overflow: ellipsis; /* Poner '...' si no cabe */
+    overflow: hidden;
+    margin-left: 5px;        /* Espacio entre nombre y detalle */
+}
+
+/* Contenedor del LADO DERECHO (Precio + Botón) */
+.cart-item > div:last-child { 
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Evita que el precio/botón se encoja */
+}
+
+/* --- FIN DEL BLOQUE DE REEMPLAZO --- */
         .delete-item-btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; line-height: 18px; text-align: center; flex-shrink: 0; } /* Tamaño ajustado */
         #total-display { font-size: 1.4rem; font-weight: bold; color: var(--color-primario); text-align: right; margin-bottom: 10px; } /* Tamaño ajustado */
         #finalize-order-btn { width: 100%; padding: 12px; font-size: 1.1rem; } /* Padding y tamaño ajustado */
@@ -290,6 +334,7 @@
         .modal-footer-btn { width: 100%; margin-top: 15px; padding: 12px 20px; font-size: 1rem; } /* Esta línea ya existe */
 
         /* --- AÑADIR ESTO --- */
+        /* --- AÑADIR ESTO PARA ARREGLAR LAYOUT DE INGREDIENTES --- */
         #modal-ingredients-list {
             max-height: 150px;
             overflow-y: auto;
@@ -300,16 +345,16 @@
             background-color: var(--color-fondo);
         }
         #modal-ingredients-list label {
-            display: block;
+            display: block; /* <-- ESTA ES LA REGLA CLAVE */
             padding: 8px 5px;
             cursor: pointer;
             border-bottom: 1px solid var(--color-borde);
-            user-select: none; /* Evitar selección de texto */
+            user-select: none; 
         }
         #modal-ingredients-list label:last-child { border-bottom: none; }
         #modal-ingredients-list label:hover { background-color: var(--color-fondo-hover); }
         #modal-ingredients-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); vertical-align: middle; }
-        
+        /* --- FIN DEL BLOQUE A AÑADIR --- */
         
         /* Utilidades */
         .btn-primary { background-color: var(--color-primario); color: #FFF; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s ease;}
@@ -1730,12 +1775,12 @@ document.addEventListener('DOMContentLoaded', () => {
              } else { // Para 'extra'
                  optionsHtml = `<p>${item.name}</p>`; // Solo muestra el nombre
                  footerHtml = `<button class="btn-primary modal-footer-btn" id="add-extra-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
-        }
+             }
 
              productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
              
              // Asignar listeners a los botones del footer DINÁMICAMENTE
-             const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-custom-burger-btn, #add-extra-btn'); // Modificado ID
+             const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-custom-burger-btn, #add-extra-btn');
              if(addBtn) {
                  addBtn.onclick = () => {
                      let itemToAdd = { ...currentItemWithOptions }; // Copia base del item
@@ -1747,17 +1792,17 @@ document.addEventListener('DOMContentLoaded', () => {
                              .filter(cb => cb.checked) // Solo los que SÍ quiere
                              .map(cb => cb.value);
                          // --- FIN LECTURA ---
-                     } else if (requiresOption) {
+                   } else if (requiresOption) {
                           if (!selectedOption) { alert("Por favor, selecciona una opción."); return; }
                           if (item.type === 'soda') itemToAdd.selectedOption = selectedOption.option; 
-                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; 
+                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; // <-- ¡ERROR CORREGIDO! (se quitó la 'i')
                      } else if (item.type === 'extra'){
                          // No necesita opción
                      }
                      
                      addItemToCart(itemToAdd);
-                     closeModal(productOptionsModal); // <-- ¡AQUÍ SE CIERRA AUTOMÁTICAMENTE!
-                };
+                     closeModal(productOptionsModal); // <-- ¡Ahora sí se ejecutará!
+                 };
              }
              
              openModal(productOptionsModal);
