@@ -1874,12 +1874,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fullOrder.forEach((item, index) => {
                     const itemEl = document.createElement('div');
-                    itemEl.className = 'cart-item';
+                   itemEl.className = 'cart-item';
                     
                     const detail = item.selectedOption || item.selectedSize?.name;
                     const price = item.selectedSize?.price || item.price || 0; 
 
-                    
+                    // --- Lógica para mostrar ingredientes ---
                     let ingredientsDetail = '';
                     if (item.type === 'burger' && item.customIngredients) {
                         // Compara la receta original con la personalizada
@@ -1889,26 +1889,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             ingredientsDetail = `<span class="detail" style="color: var(--color-primario);">Sin: ${removed.join(', ')}</span>`;
                         } else if (originalRecipe.length === item.customIngredients.length) {
                             // ingredientsDetail = `<span class="detail">(Con todo)</span>`; // Opcional
-                  }
+                        }
                     }
                     // --- FIN DE LÓGICA ---
                     
                     itemEl.innerHTML = `
                         <div>
                             <span class="name">${item.name}</span>
-                           ${detail ? `<span class="detail">(${detail})</span>` : ''}
-                            ${ingredientsDetail} 
+                            ${detail ? `<span class="detail">(${detail})</span>` : ''}
+                            ${ingredientsDetail} {/* AÑADIDO */}
                         </div>
                         <div>
-                         <span class="price">${fmt.format(price)}</span>
-                            <button class="delete-item-btn" data-index="${index}" title="Eliminar">&times;</button>
+                            <span class="price">${fmt.format(price)}</span>
+                          <button class="delete-item-btn" data-index="${index}" title="Eliminar">&times;</button>
                         </div>
                     `;
                     cartSummaryList.appendChild(itemEl);
-                });
+               });
             }
         }
-
         function updateTotal() { 
             if(!totalDisplay || !finalizeOrderBtn) return;
             const total = fullOrder.reduce((sum, item) => sum + (item.selectedSize?.price || item.price || 0), 0);
