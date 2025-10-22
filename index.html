@@ -1750,20 +1750,16 @@ document.addEventListener('DOMContentLoaded', () => {
              const requiresOption = item.type === 'soda' || item.type === 'fries';
 
              if (item.type === 'burger') {
-                 // --- LÓGICA DE PERSONALIZACIÓN RESTAURADA ---
                  optionsHtml = `<p>Personaliza tus ingredientes:</p><div id="modal-ingredients-list">`;
                  if (item.recipe && item.recipe.length > 0) {
                      item.recipe.forEach(recipeItem => {
-                         // Usamos el 'name' guardado en la receta
                          optionsHtml += `<label><input type="checkbox" class="modal-ingredient-cb" value="${recipeItem.name}" checked> ${recipeItem.name}</label>`;
                      });
                  } else {
                      optionsHtml += `<p>Receta no definida.</p>`;
                  }
                  optionsHtml += `</div>`;
-                 footerHtml = `<button class="btn-primary modal-footer-btn" id="add-custom-burger-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
-                 // --- FIN DE LÓGICA RESTAURADA ---
-
+                footerHtml = `<button class="btn-primary modal-footer-btn" id="add-custom-burger-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
              } else if (item.type === 'soda') {
                  optionsHtml = `<p>Elige un sabor:</p><div id="modal-options-list">` +
                      (item.options || []).map(opt => `<button class="option-btn" data-option="${opt}" onclick="selectOption(this)">${opt}</button>`).join('') + `</div>`;
@@ -1772,36 +1768,34 @@ document.addEventListener('DOMContentLoaded', () => {
                  optionsHtml = `<p>Elige un tamaño:</p><div id="modal-options-list">` +
                      (item.sizes || []).map(size => `<button class="option-btn" data-option='${JSON.stringify(size)}' onclick="selectOption(this)">${size.name} - ${fmt.format(size.price)}</button>`).join('') + `</div>`;
                  footerHtml = `<button class="btn-primary modal-footer-btn" id="add-option-btn" disabled>Agregar al carrito</button>`;
-             } else { // Para 'extra'
-                 optionsHtml = `<p>${item.name}</p>`; // Solo muestra el nombre
+             } else { 
+                 optionsHtml = `<p>${item.name}</p>`;
                  footerHtml = `<button class="btn-primary modal-footer-btn" id="add-extra-btn">Agregar ${item.name} (${fmt.format(item.price)})</button>`;
              }
 
              productOptionsContent.innerHTML = `<h3>${item.name}</h3>${optionsHtml}${footerHtml}`;
              
-             // Asignar listeners a los botones del footer DINÁMICAMENTE
              const addBtn = productOptionsContent.querySelector('#add-option-btn, #add-custom-burger-btn, #add-extra-btn');
              if(addBtn) {
                  addBtn.onclick = () => {
-                     let itemToAdd = { ...currentItemWithOptions }; // Copia base del item
+                     let itemToAdd = { ...currentItemWithOptions }; 
 
                      if (item.type === 'burger') {
-                         // --- LEER CHECKBOXES DE INGREDIENTES ---
                          const checkboxes = productOptionsContent.querySelectorAll('.modal-ingredient-cb');
                          itemToAdd.customIngredients = Array.from(checkboxes)
-                             .filter(cb => cb.checked) // Solo los que SÍ quiere
+                             .filter(cb => cb.checked) 
                              .map(cb => cb.value);
-                         // --- FIN LECTURA ---
-                   } else if (requiresOption) {
+                     } else if (requiresOption) {
                           if (!selectedOption) { alert("Por favor, selecciona una opción."); return; }
                           if (item.type === 'soda') itemToAdd.selectedOption = selectedOption.option; 
-                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; // <-- ¡ERROR CORREGIDO! (se quitó la 'i')
+                          // ***** LÍNEA CRÍTICA CORREGIDA *****
+                          else if (item.type === 'fries') itemToAdd.selectedSize = selectedOption.option; 
                      } else if (item.type === 'extra'){
                          // No necesita opción
                      }
                      
                      addItemToCart(itemToAdd);
-                     closeModal(productOptionsModal); // <-- ¡Ahora sí se ejecutará!
+                     closeModal(productOptionsModal); // <-- Ahora sí se va a ejecutar
                  };
              }
              
