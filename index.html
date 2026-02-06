@@ -20,7 +20,7 @@
         </button>
 
         <div class="logo-container">
-            <img src="logo.PNG" alt="Don Burger" class="app-logo">
+            <img src="logotienda.png" alt="Don Burger" class="app-logo">
         </div>
 
         <div style="display: flex; gap: 10px; align-items: center;">
@@ -84,6 +84,7 @@
         <div id="admin-btn-container" class="admin-zone hidden">
             <h4>Administración Pro</h4>
             <div class="admin-grid-btns">
+                <button onclick="openKitchenMode()" class="btn-sec admin-btn" style="background:#FF6F00; color:white; grid-column: span 2;">👨‍🍳 PANTALLA COCINA</button>
                 <button onclick="openAdmin()" class="btn-sec admin-btn">📦 +Producto</button>
                 <button onclick="openInventory()" class="btn-sec admin-btn">📋 Stock</button>
                 <button onclick="openOrdersPanel()" class="btn-sec admin-btn">🚀 Pedidos</button>
@@ -95,18 +96,25 @@
     </aside>
 
     <main id="app">
-        
         <div class="search-container">
              <input type="text" id="search" placeholder="🔍 Buscar burgers, papas...">
         </div>
 
-        <div id="promo-carousel" class="hero-carousel-container">
-            </div>
+        <div id="promo-carousel" class="hero-carousel-container"></div>
 
         <div id="product-list" class="grid-container">
             <div class="loader" style="text-align:center; padding:20px;">Preparando parrilla...</div>
         </div>
     </main>
+
+    <div id="kitchen-view" class="full-screen-panel hidden" style="background: #1a1a1a;">
+        <div class="panel-header" style="background: #333; border-bottom: 1px solid #444;">
+            <h2 style="color:white;">👨‍🍳 Comandas Cocina</h2>
+            <button onclick="document.getElementById('kitchen-view').classList.add('hidden')" class="btn-close-panel" style="color:white; border-color:white;">Salir</button>
+        </div>
+        <div id="kitchen-orders-container" style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; overflow-y: auto;">
+            </div>
+    </div>
 
     <div id="orders-view" class="full-screen-panel hidden">
         <div class="panel-header">
@@ -123,10 +131,22 @@
         </div>
         <div class="dashboard-body">
             <div class="kpi-grid">
-                <div class="kpi-card"><small>Ventas Cerradas</small><h3 id="kpi-sales-today">$0</h3></div>
-                <div class="kpi-card"><small>Entregados</small><h3 id="kpi-orders-today">0</h3></div>
-                <div class="kpi-card"><small>Ticket Promedio</small><h3 id="kpi-ticket-avg">$0</h3></div>
+                <div class="kpi-card"><small>Ventas Totales</small><h3 id="kpi-sales-today">$0</h3></div>
+                <div class="kpi-card"><small>Ganancia Neta</small><h3 id="kpi-profit-today" style="color:var(--success);">$0</h3></div>
+                <div class="kpi-card"><small>Pedidos</small><h3 id="kpi-orders-today">0</h3></div>
             </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div class="kpi-card" style="border-color: #FFC107;">
+                    <small>🔥 Más Vendido</small>
+                    <h4 id="kpi-best-seller" style="margin:5px 0;">--</h4>
+                </div>
+                <div class="kpi-card" style="border-color: #D32F2F;">
+                    <small>🧊 Menos Vendido</small>
+                    <h4 id="kpi-worst-seller" style="margin:5px 0;">--</h4>
+                </div>
+            </div>
+
             <h4 style="margin: 20px 0 10px 0;">✅ Historial de Pedidos</h4>
             <div id="sales-history-list" class="history-list"></div>
         </div>
@@ -139,7 +159,6 @@
     </div>
 
     <div class="drivers-body" style="padding: 20px; max-width: 800px; margin: 0 auto;">
-        
         <div class="driver-form-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;">
             <h3 style="margin-bottom: 15px; color: var(--primary);">⚡ Dar de Alta Repartidor</h3>
             <form id="driver-register-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -150,11 +169,8 @@
                 <button type="submit" class="btn-primary" style="grid-column: span 2; margin-top: 10px;">Registrar Repartidor</button>
             </form>
         </div>
-
         <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">🏍️ Repartidores Activos</h3>
-        <div id="drivers-list" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
-
+        <div id="drivers-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
 </div>
 
@@ -182,12 +198,10 @@
             <h3 style="margin:0;">📊 Reporte de Rendimiento</h3>
             <button onclick="closeDriverStats()" class="btn-close" style="padding:5px 10px;">✕</button>
         </div>
-
         <div style="text-align:center; margin-bottom:20px;">
             <h2 id="stats-name" style="color:var(--primary);">Juan Pérez</h2>
             <small style="color:#666;">Resumen Total (Deuda Actual)</small>
         </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
             <div style="background:#f5f5f5; padding:15px; border-radius:10px; text-align:center;">
                 <span style="font-size:2rem;">📦</span>
@@ -200,10 +214,8 @@
                 <small>Su Ganancia (Envíos)</small>
             </div>
         </div>
-
         <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; border: 1px dashed #FFB74D;">
             <h4 style="margin-top:0; color:#EF6C00;">💵 Corte de Caja (Efectivo)</h4>
-            
             <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
                 <span>Cobrado a Clientes:</span>
                 <span id="stats-cash-collected" style="font-weight:bold;">$0.00</span>
@@ -212,21 +224,17 @@
                 <span>(-) Su Ganancia de Envíos:</span>
                 <span id="stats-deduction" style="color:#D32F2F;">- $0.00</span>
             </div>
-            
             <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-top:5px;">
                 <strong>A Entregar al Negocio:</strong>
                 <strong id="stats-final-pay" style="color:#EF6C00;">$0.00</strong>
             </div>
-
             <button id="btn-liquidar-corte" onclick="settleDebt()" class="btn-primary" style="margin-top:15px; width:100%; background:#2E7D32; display:none; font-size:1.1rem; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.4);">
                 💸 Recibir Dinero y Liquidar
             </button>
         </div>
-        
         <p style="text-align: center; font-size: 0.8rem; color: #999; margin-top: 15px;">
             * Este reporte muestra la deuda acumulada real. Al liquidar, el saldo del repartidor volverá a $0.
         </p>
-
         <button onclick="closeDriverStats()" class="btn-primary" style="margin-top:15px; width:100%; background:#666;">Cerrar Reporte</button>
     </div>
 </div>
@@ -234,7 +242,7 @@
     <div id="ticket-visual-modal" class="modal-overlay" style="display: none; z-index: 3500;">
         <div class="modal-card ticket-modal-content">
             <div class="ticket-visual-header">
-                <img src="logo.PNG" class="ticket-logo" alt="Don Burger">
+                <img src="logotienda.png" class="ticket-logo" alt="Don Burger">
                 <h3>Resumen de Pedido</h3>
                 <p id="ticket-folio-display" style="color:var(--primary); font-weight:800;">PEDIDO-XXX</p>
                 <small id="ticket-date-display" style="color:var(--text-sec);">Fecha</small>
@@ -290,12 +298,13 @@
             <form id="admin-form">
                 <input type="hidden" id="p-id"> 
                 <input type="text" id="p-name" placeholder="Nombre (Ej: Doble con Queso)" required class="input-field">
+                <textarea id="p-desc" placeholder="Descripción..." class="input-field" rows="3" style="resize: none;"></textarea>
                 
-                <textarea id="p-desc" placeholder="Descripción (Ej: -Carne Angus
--Doble Queso
--Tocino)" class="input-field" rows="3" style="resize: none;"></textarea>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="number" id="p-price" placeholder="Precio Venta" required class="input-field">
+                    <input type="number" id="p-cost" placeholder="Costo Insumos (Opcional)" class="input-field" style="background:#FFF3E0; border-color:#FFB74D;">
+                </div>
                 
-                <input type="number" id="p-price" placeholder="Precio" required class="input-field">
                 <input type="number" id="p-stock" placeholder="Stock Inicial" class="input-field">
                 <input type="text" id="p-cat" placeholder="Categoría" required list="cat-suggestions" class="input-field">
                 <datalist id="cat-suggestions"></datalist>
@@ -315,49 +324,43 @@
     </div>
     
     <div id="tracking-modal" class="modal-overlay hidden" style="display:none; z-index: 5000;">
-    <div class="modal-card" style="width: 95%; height: 85vh; padding: 0; display:flex; flex-direction:column; overflow:hidden;">
-        <div style="padding: 15px; background: white; border-bottom:1px solid #eee; display: flex; justify-content: space-between; align-items:center;">
-            <div>
-                <h3 style="margin:0; color:#333;">📍 Tu pedido en camino</h3>
-                <small style="color:#666;">Actualización en tiempo real</small>
+        <div class="modal-card" style="width: 95%; height: 85vh; padding: 0; display:flex; flex-direction:column; overflow:hidden;">
+            <div style="padding: 15px; background: white; border-bottom:1px solid #eee; display: flex; justify-content: space-between; align-items:center;">
+                <div>
+                    <h3 style="margin:0; color:#333;">📍 Tu pedido en camino</h3>
+                    <small style="color:#666;">Actualización en tiempo real</small>
+                </div>
+                <button onclick="closeTracking()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#333;">✕</button>
             </div>
-            <button onclick="closeTracking()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#333;">✕</button>
-        </div>
-        
-        <div id="map" style="width: 100%; flex-grow: 1; background: #eee;"></div>
-        
-        <div style="padding: 15px; background: white; border-top:1px solid #eee; display:flex; align-items:center; gap:10px;">
-            <img src="banners/morenitamoto.png" style="width:40px; height:40px;">
-            <div>
-                <div style="font-weight:bold; color:#333;">Repartidor Don Burger</div>
-                <div style="font-size:0.8rem; color:green;">● Conectado al GPS</div>
+            <div id="map" style="width: 100%; flex-grow: 1; background: #eee;"></div>
+            <div style="padding: 15px; background: white; border-top:1px solid #eee; display:flex; align-items:center; gap:10px;">
+                <img src="banners/morenitamoto.png" style="width:40px; height:40px;">
+                <div>
+                    <div style="font-weight:bold; color:#333;">Repartidor Don Burger</div>
+                    <div style="font-size:0.8rem; color:green;">● Conectado al GPS</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="banner-modal" class="modal-overlay" style="display: none; z-index: 4000;">
-    <div class="modal-card">
-        <h3>Gestionar Promociones</h3>
-        
-        <form id="banner-form" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-            <input type="text" id="ban-img" placeholder="Nombre imagen (ej: promo.jpg)" class="input-field" required>
-            
-            <select id="ban-loc" class="input-field" required style="background: var(--bg-input);">
-                <option value="top">⬆️ Ubicación: Arriba (Principal)</option>
-                <option value="mid">⬇️ Ubicación: En Medio (Entre productos)</option>
-            </select>
-
-            <input type="text" id="ban-cat" placeholder="Categoría Destino" class="input-field" list="cat-suggestions" required>
-            <button type="submit" class="btn-primary">Guardar Banner</button>
-        </form>
-
-        <h4>Banners Activos:</h4>
-        <div id="admin-banner-list" style="display:flex; flex-direction:column; gap:10px; max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
-
-        <button onclick="closeBannerAdmin()" class="btn-close">Cerrar</button>
+    <div id="banner-modal" class="modal-overlay" style="display: none; z-index: 4000;">
+        <div class="modal-card">
+            <h3>Gestionar Promociones</h3>
+            <form id="banner-form" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                <input type="text" id="ban-img" placeholder="Nombre imagen (ej: promo.jpg)" class="input-field" required>
+                <select id="ban-loc" class="input-field" required style="background: var(--bg-input);">
+                    <option value="top">⬆️ Ubicación: Arriba (Principal)</option>
+                    <option value="mid">⬇️ Ubicación: En Medio (Entre productos)</option>
+                </select>
+                <input type="text" id="ban-cat" placeholder="Categoría Destino" class="input-field" list="cat-suggestions" required>
+                <button type="submit" class="btn-primary">Guardar Banner</button>
+            </form>
+            <h4>Banners Activos:</h4>
+            <div id="admin-banner-list" style="display:flex; flex-direction:column; gap:10px; max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
+            <button onclick="closeBannerAdmin()" class="btn-close">Cerrar</button>
+        </div>
     </div>
-</div>
+
     <div id="confirm-modal" class="modal-overlay" style="display: none; z-index: 3001;">
         <div class="modal-card" style="text-align: center;">
             <h3 id="confirm-title">Confirmar</h3>
@@ -382,53 +385,46 @@
             </div>
         </div>
         <div id="checkout-view" class="checkout-view hidden" style="display:contents;">
-    <div class="checkout-body">
-        <button onclick="backToCart()" class="back-link">← Volver al carrito</button>
-        
-        <h4 style="margin-bottom:10px;">🛵 Tipo de Entrega</h4>
-        <div class="delivery-switch-container" style="display:flex; gap:10px; margin-bottom:20px;">
-            <button id="btn-mode-delivery" class="btn-mode active" onclick="setDeliveryMode('delivery')">
-                🛵 A Domicilio
-            </button>
-            <button id="btn-mode-pickup" class="btn-mode" onclick="setDeliveryMode('pickup')">
-                🛍️ Pasar a Recoger
-            </button>
-        </div>
-
-        <div id="address-section">
-            <h4>📍 Dirección de Entrega</h4>
-            <form id="checkout-form-address">
-                <input type="text" id="address-street" placeholder="Calle" class="input-checkout">
-                <input type="text" id="address-num" placeholder="Número Exterior" class="input-checkout">
-                <input type="text" id="address-ref" placeholder="Referencia" class="input-checkout">
-            </form>
-        </div>
-
-        <div id="pickup-msg" class="hidden" style="background:#E0F2F1; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; border:1px solid #009688;">
-            <p style="color:#00796B; font-weight:bold; margin:0;">📍 Recoger en el Negocio</p>
-            <small style="color:#004D40;">Pasa por tus Burgers al local.</small>
-        </div>
-
-        <h4>💳 Método de Pago</h4>
-        <form id="checkout-form-payment">
-            <div class="payment-options">
-                <label class="radio-card"><input type="radio" name="payment" value="Efectivo" checked onchange="handlePaymentChange()"><span>💵 Efectivo</span></label>
-                <label class="radio-card"><input type="radio" name="payment" value="Terminal" onchange="handlePaymentChange()"><span>💳 Terminal</span></label>
-                <label class="radio-card"><input type="radio" name="payment" value="Transferencia" onchange="handlePaymentChange()"><span>📱 Transferencia</span></label>
+            <div class="checkout-body">
+                <button onclick="backToCart()" class="back-link">← Volver al carrito</button>
+                <h4 style="margin-bottom:10px;">🛵 Tipo de Entrega</h4>
+                <div class="delivery-switch-container" style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button id="btn-mode-delivery" class="btn-mode active" onclick="setDeliveryMode('delivery')">
+                        🛵 A Domicilio
+                    </button>
+                    <button id="btn-mode-pickup" class="btn-mode" onclick="setDeliveryMode('pickup')">
+                        🛍️ Pasar a Recoger
+                    </button>
+                </div>
+                <div id="address-section">
+                    <h4>📍 Dirección de Entrega</h4>
+                    <form id="checkout-form-address">
+                        <input type="text" id="address-street" placeholder="Calle" class="input-checkout">
+                        <input type="text" id="address-num" placeholder="Número Exterior" class="input-checkout">
+                        <input type="text" id="address-ref" placeholder="Referencia" class="input-checkout">
+                    </form>
+                </div>
+                <div id="pickup-msg" class="hidden" style="background:#E0F2F1; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; border:1px solid #009688;">
+                    <p style="color:#00796B; font-weight:bold; margin:0;">📍 Recoger en el Negocio</p>
+                    <small style="color:#004D40;">Pasa por tus Burgers al local.</small>
+                </div>
+                <h4>💳 Método de Pago</h4>
+                <form id="checkout-form-payment">
+                    <div class="payment-options">
+                        <label class="radio-card"><input type="radio" name="payment" value="Efectivo" checked onchange="handlePaymentChange()"><span>💵 Efectivo</span></label>
+                        <label class="radio-card"><input type="radio" name="payment" value="Terminal" onchange="handlePaymentChange()"><span>💳 Terminal</span></label>
+                        <label class="radio-card"><input type="radio" name="payment" value="Transferencia" onchange="handlePaymentChange()"><span>📱 Transferencia</span></label>
+                    </div>
+                    <div id="payment-details" class="payment-details-box hidden"></div>
+                </form>
             </div>
-            <div id="payment-details" class="payment-details-box hidden"></div>
-        </form>
-    </div>
-
-    <div class="cart-footer">
-        <div class="summary-row">Subtotal: <span id="checkout-subtotal">$0</span></div>
-        
-        <div class="summary-row">Envío: <span id="checkout-shipping">$20</span></div>
-        
-        <div class="total-row">Total: <span id="checkout-total">$0</span></div>
-        <button onclick="processOrder()" id="btn-confirm-order" class="btn-success">Confirmar Pedido</button>
-    </div>
-</div>
+            <div class="cart-footer">
+                <div class="summary-row">Subtotal: <span id="checkout-subtotal">$0</span></div>
+                <div class="summary-row">Envío: <span id="checkout-shipping">$20</span></div>
+                <div class="total-row">Total: <span id="checkout-total">$0</span></div>
+                <button onclick="processOrder()" id="btn-confirm-order" class="btn-success">Confirmar Pedido</button>
+            </div>
+        </div>
     </div>
     
     <script type="module" src="script.js"></script>
