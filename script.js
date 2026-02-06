@@ -35,6 +35,8 @@ const getAppDoc = (colName, docId) => doc(db, MAIN_COLLECTION, MAIN_DOC, colName
 // ==========================================
 let allProducts = [];
 let cart = [];
+let currentOptionsSelected = {}; 
+let currentExtraPrice = 0;
 let isPickup = false;
 let currentCategory = 'all';
 let currentUserData = null; 
@@ -202,46 +204,97 @@ window.openCustomization = (productId) => {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
 
-    // 1. USAR LOS INGREDIENTES QUE TÚ DEFINISTE EN EL ADMIN
-    let ingredientsList = product.ingredientes;
+    tempProductToAdd = product;
+    currentExclusions = [];
+    currentOptionsSelected = {};
+    currentExtraPrice = 0;
 
-    // 2. SI NO DEFINISTE NADA (Producto viejo o vacío), USAR FALLBACK
-    // Solo si es una burger/combo usamos una lista estándar para no dejarlo vacío
-    if (!ingredientsList || ingredientsList.length === 0) {
+    getEl('custom-title').innerText = `Armar ${product.nombre}`;
+    getEl('custom-note').value = '';
+
+    const container = getEl('ingredients-container');
+    let html = '';
+
+    // 1. RENDERIZAR VARIANTES (COMBOS / TAMAÑOS)
+    if (product.opciones && product.opciones.length > 0) {
+        html += `<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">`;
+        
+        product.opciones.forEach((grupo, idx) => {
+            // Seleccionar default
+            const defaultOpt = grupo.opciones[0];
+            currentOptionsSelected[grupo.titulo] = { nombre: defaultOpt.nombre, precio: defaultOpt.precio };
+            currentExtraPrice += defaultOpt.precio;
+
+            html += `<h4 style="margin:10px 0 5px 0; color:var(--blue); font-size:0.9rem;">${grupo.titulo}:</h4>
+                     <div style="display:flex; gap:10px; flex-wrap:wrap;">`;
+            
+            grupo.opciones.forEach(opt => {
+                const precioTxt = opt.precio > 0 ? `(+$${opt.precio})` : '';
+                const checked = opt.nombre === defaultOpt.nombre ? 'checked' : '';
+                
+                // Radio buttons estilizados
+                html += `
+                <label class="radio-option" style="background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:5px;">
+                    <input type="radio" name="g-${idx}" value="${opt.nombre}" ${checked} 
+                        onclick="selectOption('${grupo.titulo}', '${opt.nombre}', ${opt.precio}, this)" 
+                        style="accent-color: var(--primary);"> 
+                    <span>${opt.nombre} <b style="color:var(--success)">${precioTxt}</b></span>
+                </label>`;
+            });
+            html += `</div>`;
+        });
+        html += `</div>`;
+    }
+
+    // 2. RENDERIZAR INGREDIENTES
+    let ingredientsList = product.ingredientes;
+    // Fallback
+    if ((!ingredientsList || ingredientsList.length === 0)) {
         const cat = (product.categoria || '').toLowerCase();
         if (cat.includes('burger') || cat.includes('hamburguesa') || cat.includes('combo')) {
-            ingredientsList = STANDARD_INGREDIENTS; // Usa la lista global por defecto
-        } else {
-            // Si no es burger y no configuraste ingredientes, se agrega directo (ej: Refresco)
-            addToCartWithExtras(product, [], '');
-            return;
+            ingredientsList = STANDARD_INGREDIENTS;
         }
     }
 
-    tempProductToAdd = product;
-    currentExclusions = [];
-    
-    getEl('custom-title').innerText = `Personalizar ${product.nombre}`;
-    getEl('custom-note').value = '';
-    
-    const container = getEl('ingredients-container');
-    
-    // RENDERIZAR TUS INGREDIENTES
     if (ingredientsList && ingredientsList.length > 0) {
-        container.innerHTML = ingredientsList.map(ing => `
+        html += `<p style="color:var(--text-sec); font-size:0.85rem; margin-bottom:5px;">Ingredientes (Toca para quitar):</p>
+                 <div class="ingredient-grid">`;
+        html += ingredientsList.map(ing => `
             <div class="ing-toggle" onclick="toggleIngredient(this, '${ing}')">
                 <span>${ing}</span>
                 <span class="status-icon">✅</span>
             </div>
         `).join('');
-        // Mostrar instrucción visual
-        const pInst = getEl('custom-modal').querySelector('p');
-        if(pInst) pInst.style.display = 'block';
-    } else {
-        container.innerHTML = '';
+        html += `</div>`;
     }
-
+    
+    container.innerHTML = html;
+    updateModalPriceButton();
     getEl('custom-modal').style.display = 'flex';
+};
+
+// Helper: Seleccionar Opción
+window.selectOption = (titulo, nombre, precio, inputEl) => {
+    currentOptionsSelected[titulo] = { nombre, precio };
+    
+    // Recalcular precio extra
+    currentExtraPrice = 0;
+    Object.values(currentOptionsSelected).forEach(val => currentExtraPrice += val.precio);
+    
+    // UI Visual (Borde activo)
+    const container = inputEl.closest('div'); // El div contenedor de los radios
+    const labels = container.querySelectorAll('label');
+    labels.forEach(l => l.style.borderColor = 'rgba(255,255,255,0.1)'); // Reset
+    inputEl.parentElement.style.borderColor = 'var(--primary)'; // Active
+    
+    updateModalPriceButton();
+};
+
+// Helper: Actualizar Botón Precio
+window.updateModalPriceButton = () => {
+    const btn = getEl('custom-modal').querySelector('.btn-primary');
+    const total = tempProductToAdd.precio + currentExtraPrice;
+    btn.innerText = `Agregar al Carrito ($${total})`;
 };
 
 window.toggleIngredient = (el, ing) => {
@@ -264,41 +317,43 @@ window.closeCustomModal = () => {
     currentExclusions = [];
 };
 
+// Función Confirmar (Reemplaza la anterior)
 window.confirmAddToCart = () => {
     if (!tempProductToAdd) return;
     const note = getEl('custom-note').value.trim();
-    addToCartWithExtras(tempProductToAdd, currentExclusions, note);
+    
+    // Convertir objeto de opciones a lista de texto
+    const optionsList = Object.keys(currentOptionsSelected).map(key => {
+        const sel = currentOptionsSelected[key];
+        return `${key}: ${sel.nombre}`;
+    });
+
+    addToCartWithExtras(tempProductToAdd, currentExclusions, note, optionsList, currentExtraPrice);
     closeCustomModal();
-    window.showAlert("Agregado", "Producto añadido al carrito");
+    window.showAlert("Agregado", "Producto añadido");
 };
 
 // ==========================================
 // 7. LÓGICA DEL CARRITO (CORE ACTUALIZADO)
 // ==========================================
 
-function addToCartWithExtras(product, exclusions, note) {
-    // Generamos un ID único para el carrito basado en sus cambios
-    // Así puedes tener una Burger con cebolla y otra sin cebolla como items distintos
-    const cartId = `${product.id}|${exclusions.join(',')}|${note.replace(/\s/g,'_')}`;
+function addToCartWithExtras(product, exclusions, note, options = [], extraPrice = 0) {
+    const cartId = `${product.id}|${exclusions.join(',')}|${options.join(',')}|${note.replace(/\s/g,'_')}`;
     
     const existingItem = cart.find(i => i.cartId === cartId);
 
     if (existingItem) {
-        // Validar stock si es necesario
-        if (product.stock !== undefined && product.stock > 0 && (existingItem.qty + 1 > product.stock)) {
-             return window.showAlert("Stock", "No hay suficiente stock.");
-        }
         existingItem.qty += 1;
     } else {
-        if (product.stock !== undefined && product.stock <= 0) {
-             return window.showAlert("Stock", "Producto agotado.");
-        }
         cart.push({
             ...product,
-            cartId: cartId, // ID único interno del carrito
+            cartId: cartId,
             qty: 1,
-            exclusions: [...exclusions], // Copia del array
-            note: note
+            exclusions: [...exclusions],
+            options: options, // Array ["Bebida: Coca", "Tamaño: Grande"]
+            note: note,
+            precio_base: product.precio,
+            precio: product.precio + extraPrice // Precio final unitario
         });
     }
     updateCartUI(); renderProducts();
@@ -370,32 +425,24 @@ function updateCartUI() {
 
     const totalEl = getEl('checkout-total');
     if(totalEl) totalEl.innerText = "$" + total;
-
-    const rows = document.querySelectorAll('.summary-row');
-    rows.forEach(row => {
-        if (row.innerText.includes("Envío") || row.innerText.includes("Envio")) {
-            if (isPickup) {
-                row.innerHTML = 'Envío: <span style="color:#2E7D32; font-weight:800;">GRATIS</span>';
-            } else {
-                row.innerHTML = `Envío: <span>$${DELIVERY_COST}</span>`;
-            }
-        }
-    });
-    
-    const fallbackImg = "https://placehold.co/100?text=Burger";
     
     const cartItemsContainer = getEl('cart-items');
+    const fallbackImg = "https://placehold.co/100?text=Burger";
+
     if(cartItemsContainer) {
         cartItemsContainer.innerHTML = cart.map(item => {
             const imgSrc = item.img ? (item.img.startsWith('http') ? item.img : `productos/${item.img}`) : fallbackImg;
             
-            // Visualizar ingredientes/notas
             let extrasHtml = '';
+            // MOSTRAR OPCIONES (NUEVO)
+            if (item.options && item.options.length > 0) {
+                extrasHtml += `<div style="color:var(--blue); font-size:0.8rem; font-weight:bold; margin-top:2px;">✨ ${item.options.join(' / ')}</div>`;
+            }
             if (item.exclusions && item.exclusions.length > 0) {
                 extrasHtml += `<div style="color:#E53935; font-size:0.8rem; margin-top:2px;">🚫 Sin: ${item.exclusions.join(', ')}</div>`;
             }
             if (item.note) {
-                extrasHtml += `<div style="color:#FFC107; font-size:0.8rem; margin-top:2px;">📝 Nota: ${item.note}</div>`;
+                extrasHtml += `<div style="color:#FFC107; font-size:0.8rem; margin-top:2px;">📝 ${item.note}</div>`;
             }
 
             return `
@@ -417,6 +464,7 @@ function updateCartUI() {
         }).join('');
     }
     
+    // (Mantener lógica de checkout si estaba visible)
     if (!getEl('checkout-view').classList.contains('hidden')) {
         if(document.getElementById('cash-amount') && document.getElementById('cash-amount').value) {
             calcChange();
@@ -621,7 +669,16 @@ function loadOrders(isAdmin) {
             ordersCache[id] = o;
             
             const fecha = o.fecha ? o.fecha.toDate().toLocaleString() : 'Reciente';
-            const statusText = o.estado ? o.estado.toUpperCase() : "RECIBIDO";
+            
+            // --- FIX STATUS ---
+            const statusMap = {
+                'recibido': '📥 RECIBIDO',
+                'surtiendo': '🔥 EN PARRILLA',
+                'camino': '🏍️ EN CAMINO',
+                'entregado': '✅ ENTREGADO'
+            };
+            const statusText = statusMap[o.estado] || o.estado.toUpperCase();
+            
             const folioDisplay = o.folio || "SIN FOLIO"; 
             
             let addressHtml = '';
@@ -647,7 +704,6 @@ function loadOrders(isAdmin) {
                 paymentInfo += ` (Pagó: $${o.monto_pago} | Cambio: <b>$${o.cambio ? o.cambio.toFixed(2) : '0.00'}</b>)`;
             }
 
-            // Visualizar items pequeños (fotos)
             let visualItems = '';
             const fallbackItemImg = "https://placehold.co/50?text=x";
             if (o.items && o.items.length > 0) {
@@ -657,11 +713,12 @@ function loadOrders(isAdmin) {
                 });
             }
 
-            // Lista detallada con ingredientes
             let textListItems = '';
             if (o.items && o.items.length > 0) {
                 o.items.forEach(i => { 
                     let extras = '';
+                    // Mostrar opciones y exclusiones en el ticket de pedido
+                    if(i.options && i.options.length > 0) extras += `<div style="color:var(--blue); font-size:0.8rem;">✨ ${i.options.join(', ')}</div>`;
                     if(i.exclusions && i.exclusions.length > 0) extras += `<div style="color:#E53935; font-size:0.8rem;">🚫 Sin: ${i.exclusions.join(', ')}</div>`;
                     if(i.note) extras += `<div style="color:#FFA000; font-size:0.8rem;">📝 ${i.note}</div>`;
 
@@ -798,27 +855,7 @@ window.openAdmin = () => {
 };
 window.closeAdmin = () => getEl('admin-modal').style.display = 'none';
 
-window.editProduct = (id) => {
-    const p = allProducts.find(prod => prod.id === id); if (!p) return;
-    getEl('p-id').value = p.id; 
-    getEl('p-name').value = p.nombre; 
-    
-    const descEl = getEl('p-desc');
-    if(descEl) descEl.value = p.descripcion || '';
-    
-    // CARGAR TUS INGREDIENTES DE VUELTA AL TEXTO
-    const ingEl = getEl('p-ingredients');
-    if(ingEl) ingEl.value = (p.ingredientes || []).join(', ');
-
-    getEl('p-price').value = p.precio;
-    getEl('p-stock').value = p.stock || 0; 
-    getEl('p-cat').value = p.categoria; 
-    getEl('p-img').value = p.img || ''; 
-    getEl('upload-progress').style.display = 'none';
-    getEl('admin-modal').style.display = 'flex';
-};
-
-// --- CAMBIO 4: GUARDAR PRODUCTO CON IMAGEN EN STORAGE ---
+// --- BLOQUE JS: LÓGICA DE GUARDADO ADMIN (REEMPLAZAR LISTENER EXISTENTE) ---
 const productForm = getEl('admin-form');
 if (productForm) {
     productForm.addEventListener('submit', async (e) => {
@@ -834,12 +871,36 @@ if (productForm) {
         
         let imageUrl = getEl('p-img').value.trim();
 
-        // 1. OBTENER TU LISTA DE INGREDIENTES ESPECÍFICOS
+        // 1. PROCESAR INGREDIENTES (Texto -> Array)
         const rawIng = getEl('p-ingredients').value;
-        // Convertimos "Carne, Piña, Jamón" en ["Carne", "Piña", "Jamón"]
         const ingredientesArray = rawIng.split(',').map(i => i.trim()).filter(i => i !== "");
 
+        // 2. PROCESAR VARIANTES / OPCIONES (Texto -> Objetos)
+        const rawOpt = getEl('p-options').value;
+        const opcionesArray = [];
+        
+        if (rawOpt.trim() !== "") {
+            const grupos = rawOpt.split('|');
+            grupos.forEach(grupo => {
+                const parts = grupo.split(':');
+                if (parts.length === 2) {
+                    const titulo = parts[0].trim();
+                    const opcionesTexto = parts[1].split(',');
+                    const opciones = opcionesTexto.map(opt => {
+                        const match = opt.match(/(.*)\((\d+)\)/); // Busca "Nombre(Precio)"
+                        if (match) {
+                            return { nombre: match[1].trim(), precio: parseFloat(match[2]) };
+                        } else {
+                            return { nombre: opt.trim(), precio: 0 };
+                        }
+                    });
+                    opcionesArray.push({ titulo: titulo, opciones: opciones });
+                }
+            });
+        }
+
         try {
+            // Subida de imagen
             if (file) {
                 getEl('upload-progress').style.display = 'block';
                 const storageRef = ref(storage, `productos/${Date.now()}_${file.name}`);
@@ -851,8 +912,8 @@ if (productForm) {
             const data = { 
                 nombre: getEl('p-name').value, 
                 descripcion: getEl('p-desc').value.trim(),
-                // AQUÍ SE GUARDAN LOS INGREDIENTES QUE TÚ DEFINISTE PARA ESTE PRODUCTO
                 ingredientes: ingredientesArray, 
+                opciones: opcionesArray, // <-- Guardamos las variantes
                 precio: parseFloat(getEl('p-price').value), 
                 stock: parseInt(getEl('p-stock').value) || 0, 
                 categoria: getEl('p-cat').value.trim().toLowerCase(), 
@@ -876,6 +937,39 @@ if (productForm) {
         }
     });
 }
+
+// --- BLOQUE JS: EDITAR PRODUCTO (REEMPLAZAR FUNCIÓN EXISTENTE) ---
+window.editProduct = (id) => {
+    const p = allProducts.find(prod => prod.id === id); if (!p) return;
+    getEl('p-id').value = p.id; 
+    getEl('p-name').value = p.nombre; 
+    
+    const descEl = getEl('p-desc');
+    if(descEl) descEl.value = p.descripcion || '';
+    
+    // CARGAR INGREDIENTES
+    const ingEl = getEl('p-ingredients');
+    if(ingEl) ingEl.value = (p.ingredientes || []).join(', ');
+
+    // CARGAR OPCIONES (Reconstruir texto)
+    const optEl = getEl('p-options');
+    if(optEl && p.opciones && p.opciones.length > 0) {
+        const texto = p.opciones.map(g => {
+            const opts = g.opciones.map(o => `${o.nombre}(${o.precio})`).join(', ');
+            return `${g.titulo}: ${opts}`;
+        }).join(' | ');
+        optEl.value = texto;
+    } else if (optEl) {
+        optEl.value = '';
+    }
+
+    getEl('p-price').value = p.precio;
+    getEl('p-stock').value = p.stock || 0; 
+    getEl('p-cat').value = p.categoria; 
+    getEl('p-img').value = p.img || ''; 
+    getEl('upload-progress').style.display = 'none';
+    getEl('admin-modal').style.display = 'flex';
+};
 window.deleteProduct = (id) => window.showConfirm("Borrar", "¿Eliminar?", async () => await deleteDoc(getAppDoc("productos", id)));
 
 // ==========================================
