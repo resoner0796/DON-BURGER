@@ -123,84 +123,117 @@
             <button onclick="document.getElementById('ingredients-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
         </div>
         <div class="dashboard-body">
-            <form id="add-ingredient-form" style="background:var(--bg-input); padding:15px; border-radius:12px; margin-bottom:20px;">
-                <input type="hidden" id="ing-id">
-                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
-                    <input type="text" id="ing-name" placeholder="Nombre Insumo" class="input-field" required style="margin:0;">
-                    <select id="ing-unit" class="input-field" style="margin:0;">
-                        <option value="kg">Kg</option><option value="g">Gr</option><option value="l">Litro</option><option value="ml">ml</option><option value="pieza">Pieza</option>
-                    </select>
-                </div>
-                <input type="number" id="ing-cost" placeholder="Costo por Unidad (Ej: $120 el Kg)" class="input-field" step="0.01" required>
-                <button type="submit" class="btn-primary" id="btn-save-ing">Guardar Insumo</button>
-            </form>
+            <div class="driver-form-card" style="background:var(--bg-input); padding:20px; border-radius:12px; margin-bottom:20px;">
+                <h3>Agregar Insumo</h3>
+                <form id="add-ingredient-form">
+                    <input type="hidden" id="ing-id">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="ing-name" placeholder="Nombre Insumo (Ej: Carne Sirloin)" class="input-field" required style="margin:0;">
+                        <select id="ing-unit" class="input-field" style="margin:0;">
+                            <option value="kg">Kg</option>
+                            <option value="g">Gramos</option>
+                            <option value="l">Litro</option>
+                            <option value="ml">Mililitros</option>
+                            <option value="pieza">Pieza</option>
+                        </select>
+                    </div>
+                    <label style="font-size:0.8rem;">Costo por Unidad seleccionada:</label>
+                    <input type="number" id="ing-cost" placeholder="Ej: 120.50" class="input-field" step="0.01" required>
+                    <button type="submit" class="btn-primary" id="btn-save-ing">Guardar Insumo</button>
+                </form>
+            </div>
+            <h3>Inventario de Insumos</h3>
             <div id="ingredients-list-container" class="history-list"></div>
         </div>
     </div>
 
     <div id="admin-modal" class="modal-overlay" style="display: none; z-index: 2000;">
-        <div class="modal-card" style="max-width: 600px;">
-            <h3 id="admin-title">Producto</h3>
+        <div class="modal-card" style="max-width: 600px; width: 95%;">
+            <h3 id="admin-title">Gestión de Producto</h3>
             <form id="admin-form">
                 <input type="hidden" id="p-id">
-                <input type="text" id="p-name" placeholder="Nombre (Ej: Doble con Queso)" required class="input-field">
                 
-                <select id="p-type" class="input-field" onchange="toggleProductFields()">
-                    <option value="burger">🍔 Hamburguesa (Receta)</option>
-                    <option value="fries">🍟 Papas (Tamaños)</option>
-                    <option value="soda">🥤 Refresco (Opciones)</option>
-                    <option value="extra">🍪 Extra/Postre (Simple)</option>
-                </select>
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="p-name" placeholder="Ej: Doble con Queso" required class="input-field">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de Producto (Define comportamiento)</label>
+                    <select id="p-type" class="input-field" onchange="toggleProductFields()">
+                        <option value="burger">🍔 Hamburguesa (Usa Receta)</option>
+                        <option value="fries">🍟 Papas (Usa Tamaños)</option>
+                        <option value="soda">🥤 Refresco (Usa Opciones)</option>
+                        <option value="extra">🍪 Extra/Postre (Simple)</option>
+                    </select>
+                </div>
 
-                <textarea id="p-desc" placeholder="Descripción..." class="input-field" rows="2" style="resize: none;"></textarea>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="p-desc" placeholder="Ingredientes, detalles..." class="input-field" rows="2" style="resize: none;"></textarea>
+                </div>
                 
-                <div id="fields-recipe" class="hidden">
-                    <h4 style="margin: 10px 0 5px;">👨‍🍳 Constructor de Receta</h4>
+                <div id="fields-recipe" class="hidden" style="border:1px dashed #ccc; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <h4 style="margin: 0 0 10px;">👨‍🍳 Constructor de Receta</h4>
+                    <p style="font-size:0.8rem; color:#666;">Selecciona insumos para calcular el costo real.</p>
+                    
                     <div style="background: rgba(0,0,0,0.05); padding:10px; border-radius:8px; margin-bottom:10px;">
                         <div style="display:flex; gap:5px; margin-bottom:5px;">
                             <select id="recipe-ing-select" class="input-field" style="margin:0; flex-grow:1;"></select>
-                            <input type="number" id="recipe-qty" placeholder="Cant." class="input-field" style="margin:0; width:70px;">
+                            <input type="number" id="recipe-qty" placeholder="Cant." class="input-field" style="margin:0; width:80px;">
                             <button type="button" onclick="addToRecipe()" class="btn-primary" style="width:auto; padding:10px;">+</button>
                         </div>
-                        <div id="recipe-list-display" style="font-size:0.85rem; color:var(--text-sec);"></div>
+                        <div id="recipe-list-display" style="font-size:0.9rem; color:var(--text-main); max-height:100px; overflow-y:auto;"></div>
                     </div>
+                    
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
-                        <span>Costo Calc: <span id="calc-cost" style="color:var(--primary);">$0.00</span></span>
+                        <span>Costo Calculado: <span id="calc-cost" style="color:var(--primary);">$0.00</span></span>
                     </div>
                 </div>
 
-                <div id="fields-sizes" class="hidden">
-                    <h4 style="margin: 10px 0 5px;">🍟 Tamaños</h4>
+                <div id="fields-sizes" class="hidden" style="border:1px dashed #ccc; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <h4 style="margin: 0 0 10px;">🍟 Tamaños y Precios</h4>
                     <div id="sizes-container"></div>
-                    <button type="button" onclick="addSizeInput()" style="background:#eee; border:none; padding:5px 10px; border-radius:4px; width:100%; margin-bottom:10px;">+ Agregar Tamaño</button>
+                    <button type="button" onclick="addSizeInput()" style="background:#eee; border:1px solid #ccc; padding:8px; border-radius:4px; width:100%; margin-top:5px;">+ Agregar Tamaño</button>
                 </div>
 
-                <div id="fields-options" class="hidden">
-                    <h4 style="margin: 10px 0 5px;">🥤 Opciones (Sabores)</h4>
-                    <textarea id="p-options" placeholder="Coca Cola, Sprite, Fanta (Uno por línea)" class="input-field" rows="3"></textarea>
+                <div id="fields-options" class="hidden" style="margin-bottom:15px;">
+                    <label>🥤 Opciones / Sabores (Uno por línea)</label>
+                    <textarea id="p-options" placeholder="Coca Cola&#10;Sprite&#10;Fanta" class="input-field" rows="3"></textarea>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
                     <div id="price-container">
-                        <label style="font-size:0.8rem; font-weight:bold;">Precio Venta</label>
-                        <input type="number" id="p-price" placeholder="$" class="input-field">
+                        <label style="font-size:0.9rem; font-weight:bold;">Precio Venta ($)</label>
+                        <input type="number" id="p-price" placeholder="0.00" class="input-field" step="0.5">
                     </div>
                     <div id="cost-container">
-                        <label style="font-size:0.8rem; font-weight:bold;">Costo Directo</label>
-                        <input type="number" id="p-cost" placeholder="$ (Insumo)" class="input-field" style="background:#FFF3E0; border-color:#FFB74D;">
+                        <label style="font-size:0.9rem; font-weight:bold;">Costo Insumos ($)</label>
+                        <input type="number" id="p-cost" placeholder="0.00" class="input-field" style="background:#FFF3E0; border-color:#FFB74D;" step="0.01">
                     </div>
                 </div>
                 
-                <div style="text-align:right; font-size:0.8rem; margin-bottom:10px;">
-                    Ganancia: <span id="calc-profit" style="color:green; font-weight:bold;">$0.00</span>
+                <div style="text-align:right; font-size:0.9rem; margin-bottom:15px; background:#e8f5e9; padding:5px; border-radius:4px;">
+                    Ganancia Estimada: <span id="calc-profit" style="color:green; font-weight:bold;">$0.00 (0%)</span>
                 </div>
 
-                <input type="number" id="p-stock" placeholder="Stock Inicial" class="input-field">
-                <input type="text" id="p-cat" placeholder="Categoría (Ej: Burgers)" required list="cat-suggestions" class="input-field">
-                <datalist id="cat-suggestions"></datalist>
-                <input type="text" id="p-img" placeholder="Foto (URL o nombre archivo)" class="input-field">
+                <div class="form-group">
+                    <label>Stock Inicial</label>
+                    <input type="number" id="p-stock" placeholder="Cantidad disponible" class="input-field">
+                </div>
                 
-                <button type="submit" id="btn-save-prod" class="btn-primary">Guardar Producto</button>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <input type="text" id="p-cat" placeholder="Ej: Burgers, Bebidas" required list="cat-suggestions" class="input-field">
+                    <datalist id="cat-suggestions"></datalist>
+                </div>
+                
+                <div class="form-group">
+                    <label>URL Imagen</label>
+                    <input type="text" id="p-img" placeholder="https://..." class="input-field">
+                </div>
+                
+                <button type="submit" id="btn-save-prod" class="btn-primary" style="font-size:1.1rem; padding:15px;">Guardar Producto</button>
             </form>
             <button onclick="closeAdmin()" class="btn-close">Cancelar</button>
         </div>
@@ -209,18 +242,18 @@
     <div id="orders-view" class="full-screen-panel hidden"><div class="panel-header"><h2>🚀 Pedidos Activos</h2><button onclick="closeOrdersPanel()" class="btn-close-panel">Cerrar</button></div><div id="orders-list" class="orders-container"></div></div>
     
     <div id="sales-dashboard-view" class="full-screen-panel hidden">
-        <div class="panel-header"><h2>📈 Ventas</h2><button onclick="document.getElementById('sales-dashboard-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div>
+        <div class="panel-header"><h2>📈 Ventas y Finanzas</h2><button onclick="document.getElementById('sales-dashboard-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div>
         <div class="dashboard-body">
             <div class="kpi-grid">
-                <div class="kpi-card"><small>Ventas</small><h3 id="kpi-sales-today">$0</h3></div>
-                <div class="kpi-card"><small>Ganancia</small><h3 id="kpi-profit-today" style="color:green;">$0</h3></div>
+                <div class="kpi-card"><small>Ventas Brutas</small><h3 id="kpi-sales-today">$0.00</h3></div>
+                <div class="kpi-card"><small>Ganancia Neta</small><h3 id="kpi-profit-today" style="color:green;">$0.00</h3></div>
                 <div class="kpi-card"><small>Pedidos</small><h3 id="kpi-orders-today">0</h3></div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                <div class="kpi-card" style="border-color: #FFC107;"><small>🔥 Estrella</small><h4 id="kpi-best-seller">--</h4></div>
-                <div class="kpi-card" style="border-color: #D32F2F;"><small>🧊 Frío</small><h4 id="kpi-worst-seller">--</h4></div>
+                <div class="kpi-card" style="border-color: #FFC107;"><small>🔥 Más Vendido</small><h4 id="kpi-best-seller">--</h4></div>
+                <div class="kpi-card" style="border-color: #D32F2F;"><small>🧊 Menos Vendido</small><h4 id="kpi-worst-seller">--</h4></div>
             </div>
-            <h4>Historial</h4>
+            <h4>Historial de Pedidos</h4>
             <div id="sales-history-list" class="history-list"></div>
         </div>
     </div>
