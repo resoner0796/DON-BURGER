@@ -1,12 +1,12 @@
 :root {
     /* --- PALETA "DON BURGER" (DARK BBQ THEME) --- */
     /* Primario: Naranja "Cheddar/BBQ" intenso */
-    --primary: #FF6F00;       
+    --primary: #FF6F00;        
     --primary-hover: #E65100; 
     --primary-light: #FFF3E0; 
     
     /* FONDO PRINCIPAL: Gris Oscuro/Carbón para resaltar comida */
-    --bg-body: #121212;       
+    --bg-body: #121212;        
     
     /* --- VARIABLES GLASSMORPHISM (DARK) --- */
     /* Tarjetas: Negro Translúcido */
@@ -34,7 +34,7 @@
     --shadow-lg: 0 15px 30px rgba(0,0,0,0.5); 
     
     --radius-sm: 10px;
-    --radius-md: 18px;        
+    --radius-md: 18px;         
     --radius-lg: 24px;
     --radius-xl: 32px;
 }
@@ -44,7 +44,7 @@ body.dark-mode {
     --primary: #FFA000; /* Un poco más amarillo en dark mode puro */
     --glass-card: rgba(35, 35, 35, 0.90);
     --glass-panel: rgba(15, 15, 15, 0.98);
-    --bg-body: #0a0a0a;       
+    --bg-body: #0a0a0a;        
 }
 
 html { scroll-behavior: smooth; }
@@ -74,7 +74,16 @@ body {
     padding: 0 24px; z-index: 1000; transition: all 0.3s ease;
 }
 .logo-container { position: absolute; left: 50%; transform: translateX(-50%); }
-.app-logo { height: 90px; width: auto; object-fit: contain; transition: transform 0.3s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+
+/* --- CAMBIO 1: LOGO MÁS GRANDE --- */
+.app-logo { 
+    height: 140px; 
+    width: auto; 
+    object-fit: contain; 
+    transition: transform 0.3s; 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+    margin-top: 15px; 
+}
 .app-logo:hover { transform: scale(1.05); }
 
 /* BOTONES HEADER */
@@ -181,12 +190,22 @@ body {
     position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; 
     height: 100%; transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); border-color: var(--primary); }
+
+/* --- CAMBIO 2: ELIMINAR EFECTO ZOOM --- */
+.product-card:hover { 
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
+    border-color: var(--primary); 
+}
+
 .product-card img { 
     width: 100%; aspect-ratio: 1 / 1; object-fit: contain; margin-bottom: 8px; 
     filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.3s;
 }
-.product-card:hover img { transform: scale(1.08) rotate(3deg); }
+
+.product-card:hover img { 
+    transform: none; 
+}
+
 .category-badge {
     display: inline-block; align-self: center; background: rgba(255, 255, 255, 0.1); color: #FFFFFF;
     font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
@@ -343,7 +362,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 .btn-mode:hover { background: rgba(255,255,255,0.05); }
 .btn-mode.active {
     background: var(--primary); 
-    color: #000 !important;   
+    color: #000 !important;    
     box-shadow: 0 4px 10px rgba(230, 81, 0, 0.4);
     transform: scale(1.02);
 }
@@ -596,4 +615,34 @@ input[type="radio"]:checked + label, .radio-card:has(input:checked) { border-col
     white-space: pre-line; 
     line-height: 1.4;
     min-height: 20px; 
+}
+
+/* --- CAMBIO 3: ESTILOS INGREDIENTES --- */
+.ingredient-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+.ing-toggle {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-main);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+.ing-toggle.excluded {
+    background: rgba(229, 57, 53, 0.2);
+    border-color: var(--danger);
+    color: #ffcccc;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+.ing-toggle:hover {
+    background: rgba(255,255,255,0.1);
 }
