@@ -56,7 +56,7 @@
                 </div>
                 <div class="user-details">
                     <p id="user-name-display" class="user-name-pro">Usuario</p>
-                    <small onclick="askut()" class="ut-pill">Cerrar Sesión</small>
+                    <small onclick="askLogout()" class="logout-pill">Cerrar Sesión</small>
                 </div>
             </div>
             
@@ -291,15 +291,20 @@
                 <input type="hidden" id="p-id"> 
                 <input type="text" id="p-name" placeholder="Nombre (Ej: Doble con Queso)" required class="input-field">
                 
-                <textarea id="p-desc" placeholder="Descripción (Ej: -Carne Angus
--Doble Queso
--Tocino)" class="input-field" rows="3" style="resize: none;"></textarea>
+                <textarea id="p-desc" placeholder="Descripción (Ej: -Carne Angus&#10;-Doble Queso&#10;-Tocino)" class="input-field" rows="3" style="resize: none;"></textarea>
                 
                 <input type="number" id="p-price" placeholder="Precio" required class="input-field">
                 <input type="number" id="p-stock" placeholder="Stock Inicial" class="input-field">
                 <input type="text" id="p-cat" placeholder="Categoría" required list="cat-suggestions" class="input-field">
                 <datalist id="cat-suggestions"></datalist>
-                <input type="text" id="p-img" placeholder="Foto (ej: burger.jpg)" class="input-field">
+
+                <label style="display:block; margin-bottom:5px; color:#aaa; font-size:0.9rem;">Imagen del Producto:</label>
+                <div style="display:flex; gap:5px; margin-bottom:15px;">
+                    <input type="file" id="p-img-file" class="input-field" accept="image/*" style="padding: 10px;">
+                    <input type="text" id="p-img" placeholder="URL (Opcional)" class="input-field" style="display:none;"> 
+                </div>
+                <div id="upload-progress" style="font-size:0.8rem; color:var(--primary); margin-bottom:10px; display:none;">Subiendo imagen...</div>
+
                 <button type="submit" id="btn-save-prod" class="btn-primary">Guardar</button>
             </form>
             <button onclick="closeAdmin()" class="btn-close">Cancelar</button>
@@ -365,6 +370,26 @@
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button onclick="closeCustomConfirm(false)" class="btn-close" style="margin:0; border:1px solid #ddd">Cancelar</button>
                 <button onclick="closeCustomConfirm(true)" class="btn-primary" style="margin:0;">Sí</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="modal-overlay" style="display: none; z-index: 3100;">
+        <div class="modal-card">
+            <h3 id="custom-title">Personalizar</h3>
+            <p style="color:var(--text-sec); font-size:0.9rem;">Toca para quitar ingredientes:</p>
+            
+            <div id="ingredients-container" class="ingredient-grid">
+                </div>
+
+            <div style="margin-top:20px;">
+                <label style="color:var(--text-sec); font-size:0.9rem;">Nota extra:</label>
+                <input type="text" id="custom-note" class="input-field" placeholder="Ej: Sin sal, muy dorada...">
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                 <button onclick="closeCustomModal()" class="btn-close" style="margin:0; border:1px solid #444;">Cancelar</button>
+                 <button onclick="confirmAddToCart()" class="btn-primary" style="margin:0;">Agregar al Carrito</button>
             </div>
         </div>
     </div>
