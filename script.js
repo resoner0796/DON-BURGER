@@ -19,6 +19,18 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // ==========================================
+// 1.5. CONSTANTES DE RUTA (SEPARACIÓN DE DATOS)
+// ==========================================
+// Toda la info se guardará en: Don Burger > App > [coleccion]
+const MAIN_COLLECTION = "Don Burger";
+const MAIN_DOC = "App";
+
+// Helper para crear referencias a colecciones dentro de Don Burger
+const getAppCollection = (colName) => collection(db, MAIN_COLLECTION, MAIN_DOC, colName);
+// Helper para crear referencias a documentos dentro de Don Burger
+const getAppDoc = (colName, docId) => doc(db, MAIN_COLLECTION, MAIN_DOC, colName, docId);
+
+// ==========================================
 // 2. VARIABLES GLOBALES
 // ==========================================
 let allProducts = [];
@@ -27,7 +39,6 @@ let isPickup = false;
 let currentCategory = 'all';
 let currentUserData = null; 
 let confirmCallback = null; 
-// CAMBIO: Email de admin actualizado para Don Burger
 const ADMIN_EMAIL = "admin@donburger.com"; 
 const DELIVERY_COST = 20;
 const CLABE_NUMBER = "012345678901234567";
@@ -62,7 +73,7 @@ window.toggleCart = () => {
     if (drawer) drawer.classList.toggle('open'); 
 };
 
-// CAMBIO: Forzar modo oscuro por defecto para estilo de Hamburguesas
+// Forzar modo oscuro
 if (localStorage.getItem('dark-mode') === null) {
     localStorage.setItem('dark-mode', 'true');
     document.body.classList.add('dark-mode');
@@ -105,7 +116,8 @@ if (authForm) {
                 if(!name || !phone) return window.showAlert("Datos", "Nombre y celular requeridos.");
 
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "usuarios", userCred.user.uid), {
+                // RUTA: Don Burger > App > usuarios
+                await setDoc(getAppDoc("usuarios", userCred.user.uid), {
                     nombre: name, telefono: phone, email: email, creado: serverTimestamp()
                 });
                 window.showAlert("¡Bienvenido!", "Cuenta creada.");
@@ -120,7 +132,8 @@ if (authForm) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
-            const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+            // RUTA: Don Burger > App > usuarios
+            const userDoc = await getDoc(getAppDoc("usuarios", user.uid));
             if(userDoc.exists()) {
                 currentUserData = userDoc.data();
                 const nameDisplay = getEl('user-name-display');
@@ -149,9 +162,10 @@ onAuthStateChanged(auth, async (user) => {
 window.askLogout = () => window.showConfirm("Salir", "¿Cerrar sesión?", () => signOut(auth));
 
 // ==========================================
-// 5. PRODUCTOS & VISIBILIDAD (CON DESCRIPCIÓN)
+// 5. PRODUCTOS & VISIBILIDAD
 // ==========================================
-onSnapshot(collection(db, "productos"), (snapshot) => {
+// RUTA: Don Burger > App > productos
+onSnapshot(getAppCollection("productos"), (snapshot) => {
     allProducts = [];
     snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
     renderCategories(); renderProducts(); renderAdminBannerList();
@@ -310,7 +324,6 @@ window.handlePaymentChange = () => {
     } else if (method === 'Terminal') {
         container.innerHTML = `<p style="color:var(--text-sec); text-align:center;">💳 Nuestro repartidor llevará la terminal a tu domicilio.</p>`;
     } else if (method === 'Transferencia') {
-        // CAMBIO: Nombre Don Burger
         container.innerHTML = `
             <div class="bank-info">
                 <p>🏦 Banco: <b>BBVA</b></p>
@@ -358,7 +371,8 @@ window.copyClabe = () => {
 
 async function generateOrderFolio() {
     try {
-        const counterRef = doc(db, "contadores", "pedidos");
+        // RUTA: Don Burger > App > contadores > pedidos
+        const counterRef = getAppDoc("contadores", "pedidos");
         const counterSnap = await getDoc(counterRef);
         
         let newCount = 1;
@@ -427,7 +441,8 @@ window.processOrder = async () => {
             ...extraData 
         };
 
-        await addDoc(collection(db, "pedidos"), orderData);
+        // RUTA: Don Burger > App > pedidos
+        await addDoc(getAppCollection("pedidos"), orderData);
         
         cart = []; updateCartUI(); renderProducts(); 
         
@@ -455,11 +470,14 @@ function loadOrders(isAdmin) {
     const list = isAdmin ? getEl('orders-list') : getEl('client-orders-list');
     list.innerHTML = '<div class="loader">Cargando...</div>';
     
+    // RUTA: Don Burger > App > pedidos
+    const pedidosRef = getAppCollection("pedidos");
     let q;
+    
     if (isAdmin) { 
-        q = query(collection(db, "pedidos"), orderBy("fecha", "desc")); 
+        q = query(pedidosRef, orderBy("fecha", "desc")); 
     } else { 
-        q = query(collection(db, "pedidos"), where("usuario_email", "==", currentUserData.email), orderBy("fecha", "desc")); 
+        q = query(pedidosRef, where("usuario_email", "==", currentUserData.email), orderBy("fecha", "desc")); 
     }
     
     onSnapshot(q, (snapshot) => {
@@ -571,7 +589,8 @@ window.updateStatus = async (id, status) => {
                 watchId = navigator.geolocation.watchPosition(async (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    updateDoc(doc(db, "pedidos", id), {
+                    // RUTA: Don Burger > App > pedidos > [ID]
+                    updateDoc(getAppDoc("pedidos", id), {
                         ubicacion_repartidor: { lat: lat, lng: lng }
                     }).catch(console.error);
                 }, (error) => {
@@ -588,7 +607,8 @@ window.updateStatus = async (id, status) => {
             }
         }
 
-        await updateDoc(doc(db, "pedidos", id), data);
+        // RUTA: Don Burger > App > pedidos > [ID]
+        await updateDoc(getAppDoc("pedidos", id), data);
     } catch (e) {
         window.showAlert("Error", "Fallo al actualizar: " + e.message);
     }
@@ -611,11 +631,13 @@ window.confirmDeleteOrder = async () => {
     if (!orderToDeleteId) return;
 
     try {
-        const orderSnap = await getDoc(doc(db, "pedidos", orderToDeleteId));
+        // RUTA: Don Burger > App > pedidos > [ID]
+        const orderSnap = await getDoc(getAppDoc("pedidos", orderToDeleteId));
         if (!orderSnap.exists()) return window.showAlert("Error", "Pedido no encontrado.");
         const orderData = orderSnap.data();
 
-        await addDoc(collection(db, "auditoria_eliminados"), {
+        // RUTA: Don Burger > App > auditoria_eliminados
+        await addDoc(getAppCollection("auditoria_eliminados"), {
             ...orderData,
             deleted_at: serverTimestamp(),
             deleted_by: currentUserData.email,
@@ -623,7 +645,7 @@ window.confirmDeleteOrder = async () => {
             original_order_id: orderToDeleteId
         });
 
-        await deleteDoc(doc(db, "pedidos", orderToDeleteId));
+        await deleteDoc(getAppDoc("pedidos", orderToDeleteId));
         closeDeleteModal();
         window.showAlert("Eliminado", "Pedido borrado.");
     } catch (e) {
@@ -658,19 +680,23 @@ if (productForm) {
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = getEl('p-id').value;
-        const descEl = getEl('p-desc'); // OBTENER DESCRIPCIÓN
+        const descEl = getEl('p-desc'); 
         const data = { 
             nombre: getEl('p-name').value, 
-            descripcion: descEl ? descEl.value.trim() : '', // GUARDAR
+            descripcion: descEl ? descEl.value.trim() : '', 
             precio: parseFloat(getEl('p-price').value), 
             stock: parseInt(getEl('p-stock').value) || 0, 
             categoria: getEl('p-cat').value.trim().toLowerCase(), 
             img: getEl('p-img').value.trim() 
         };
-        try { id ? await updateDoc(doc(db, "productos", id), data) : await addDoc(collection(db, "productos"), { ...data, creado: serverTimestamp() }); closeAdmin(); window.showAlert("Listo", "Guardado"); } catch (e) { window.showAlert("Error", e.message); }
+        try { 
+            // RUTA: Don Burger > App > productos
+            id ? await updateDoc(getAppDoc("productos", id), data) : await addDoc(getAppCollection("productos"), { ...data, creado: serverTimestamp() }); 
+            closeAdmin(); window.showAlert("Listo", "Guardado"); 
+        } catch (e) { window.showAlert("Error", e.message); }
     });
 }
-window.deleteProduct = (id) => window.showConfirm("Borrar", "¿Eliminar?", async () => await deleteDoc(doc(db, "productos", id)));
+window.deleteProduct = (id) => window.showConfirm("Borrar", "¿Eliminar?", async () => await deleteDoc(getAppDoc("productos", id)));
 
 // ==========================================
 // 9. DASHBOARD VENTAS
@@ -679,7 +705,8 @@ window.openSalesDashboard = async () => {
     getEl('sales-dashboard-view').classList.remove('hidden');
     window.toggleMenu();
     
-    const q = query(collection(db, "pedidos"), where("estado", "==", "entregado"), orderBy("fecha", "desc"));
+    // RUTA: Don Burger > App > pedidos
+    const q = query(getAppCollection("pedidos"), where("estado", "==", "entregado"), orderBy("fecha", "desc"));
     const snapshot = await getDocs(q);
     
     let totalToday = 0; let ordersToday = 0; let historyHtml = '';
@@ -782,7 +809,8 @@ window.openInventory = () => {
 
 window.toggleProductVisibility = async (id, currentStatus) => {
     try {
-        await updateDoc(doc(db, "productos", id), { visible: !currentStatus });
+        // RUTA: Don Burger > App > productos > [ID]
+        await updateDoc(getAppDoc("productos", id), { visible: !currentStatus });
     } catch(e) { window.showAlert("Error", "No se pudo actualizar"); }
 };
 
@@ -852,7 +880,8 @@ window.closeCustomConfirm = (r) => {
 // ==========================================
 // 12. BANNERS
 // ==========================================
-onSnapshot(collection(db, "banners"), (snapshot) => {
+// RUTA: Don Burger > App > banners
+onSnapshot(getAppCollection("banners"), (snapshot) => {
     allBanners = [];
     snapshot.forEach(doc => allBanners.push({ id: doc.id, ...doc.data() }));
     
@@ -921,7 +950,7 @@ function renderProducts() {
         
         let badgeColor = '#212121'; 
         const catLower = (p.categoria || '').toLowerCase();
-        // CAMBIO: Colores de categorías adaptados a Burgers
+        
         if (catLower.includes('papas') || catLower.includes('sides')) badgeColor = '#F57C00';      
         else if (catLower.includes('burger')) badgeColor = '#795548'; 
         else if (catLower.includes('bebida')) badgeColor = '#0097A7'; 
@@ -977,7 +1006,8 @@ if (bannerForm) {
         e.preventDefault();
         try {
             const locVal = getEl('ban-loc') ? getEl('ban-loc').value : 'top';
-            await addDoc(collection(db, "banners"), {
+            // RUTA: Don Burger > App > banners
+            await addDoc(getAppCollection("banners"), {
                 img: getEl('ban-img').value.trim(),
                 ubicacion: locVal,
                 categoria: getEl('ban-cat').value.trim(),
@@ -1008,7 +1038,7 @@ function renderAdminBannerList() {
 }
 
 window.deleteBanner = async (id) => {
-    if(confirm("¿Eliminar banner?")) await deleteDoc(doc(db, "banners", id));
+    if(confirm("¿Eliminar banner?")) await deleteDoc(getAppDoc("banners", id));
 };
 
 // ==========================================
@@ -1051,7 +1081,8 @@ window.openTracking = (orderId) => {
         trackingListener(); 
     }
 
-    trackingListener = onSnapshot(doc(db, "pedidos", orderId), (docSnap) => {
+    // RUTA: Don Burger > App > pedidos > [ID]
+    trackingListener = onSnapshot(getAppDoc("pedidos", orderId), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
             
@@ -1107,7 +1138,9 @@ function renderDriversList() {
     const list = getEl('drivers-list');
     list.innerHTML = '<div class="loader">Cargando flotilla...</div>';
 
-    const q = query(collection(db, "usuarios"), where("rol", "==", "repartidor"));
+    // RUTA: Don Burger > App > usuarios
+    const usersRef = getAppCollection("usuarios");
+    const q = query(usersRef, where("rol", "==", "repartidor"));
 
     onSnapshot(q, (snapshot) => {
         list.innerHTML = "";
@@ -1158,7 +1191,8 @@ if (driverForm) {
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             const newUid = userCred.user.uid;
 
-            await setDoc(doc(db, "usuarios", newUid), {
+            // RUTA: Don Burger > App > usuarios
+            await setDoc(getAppDoc("usuarios", newUid), {
                 nombre: name,
                 telefono: phone,
                 email: email,
@@ -1183,7 +1217,8 @@ if (driverForm) {
 window.deleteDriver = (uid, name) => {
     window.showConfirm("Dar de Baja", `¿Eliminar acceso a ${name}?`, async () => {
         try {
-            await deleteDoc(doc(db, "usuarios", uid));
+            // RUTA: Don Burger > App > usuarios
+            await deleteDoc(getAppDoc("usuarios", uid));
             window.showAlert("Baja Exitosa", "El repartidor ya no tiene acceso.");
         } catch (e) {
             window.showAlert("Error", e.message);
@@ -1200,7 +1235,8 @@ window.openDriverStats = (uid, name) => {
     getEl('stats-name').innerText = name;
     getEl('driver-stats-modal').classList.remove('hidden');
     
-    const q = query(collection(db, "pedidos"), 
+    // RUTA: Don Burger > App > pedidos
+    const q = query(getAppCollection("pedidos"), 
         where("repartidor_uid", "==", uid),
         where("estado", "==", "entregado")
     );
@@ -1274,7 +1310,8 @@ window.settleDebt = async () => {
 
     try {
         const batchPromises = currentDriverOrders.map(orderId => 
-            updateDoc(doc(db, "pedidos", orderId), { 
+            // RUTA: Don Burger > App > pedidos > [ID]
+            updateDoc(getAppDoc("pedidos", orderId), { 
                 liquidado: true,
                 fecha_liquidacion: serverTimestamp() 
             })
