@@ -86,6 +86,7 @@
             <div class="admin-grid-btns">
                 <button onclick="openKitchenMode()" class="btn-sec admin-btn" style="background:#FF6F00; color:white; grid-column: span 2;">👨‍🍳 PANTALLA COCINA</button>
                 <button onclick="openAdmin()" class="btn-sec admin-btn">📦 +Producto</button>
+                <button onclick="openIngredientsManager()" class="btn-sec admin-btn">🥕 Insumos</button>
                 <button onclick="openInventory()" class="btn-sec admin-btn">📋 Stock</button>
                 <button onclick="openOrdersPanel()" class="btn-sec admin-btn">🚀 Pedidos</button>
                 <button onclick="openSalesDashboard()" class="btn-sec admin-btn">📈 Ventas</button>
@@ -116,314 +117,165 @@
             </div>
     </div>
 
-    <div id="orders-view" class="full-screen-panel hidden">
+    <div id="ingredients-view" class="full-screen-panel hidden">
         <div class="panel-header">
-            <h2>🚀 Pedidos Activos</h2>
-            <button onclick="closeOrdersPanel()" class="btn-close-panel">Cerrar</button>
-        </div>
-        <div id="orders-list" class="orders-container"></div>
-    </div>
-
-    <div id="sales-dashboard-view" class="full-screen-panel hidden">
-        <div class="panel-header">
-            <h2>📈 Cierre de Ventas</h2>
-            <button onclick="document.getElementById('sales-dashboard-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
+            <h2>🥕 Gestión de Insumos</h2>
+            <button onclick="document.getElementById('ingredients-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
         </div>
         <div class="dashboard-body">
-            <div class="kpi-grid">
-                <div class="kpi-card"><small>Ventas Totales</small><h3 id="kpi-sales-today">$0</h3></div>
-                <div class="kpi-card"><small>Ganancia Neta</small><h3 id="kpi-profit-today" style="color:var(--success);">$0</h3></div>
-                <div class="kpi-card"><small>Pedidos</small><h3 id="kpi-orders-today">0</h3></div>
-            </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div class="kpi-card" style="border-color: #FFC107;">
-                    <small>🔥 Más Vendido</small>
-                    <h4 id="kpi-best-seller" style="margin:5px 0;">--</h4>
+            <form id="add-ingredient-form" style="background:var(--bg-input); padding:15px; border-radius:12px; margin-bottom:20px;">
+                <input type="hidden" id="ing-id">
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="ing-name" placeholder="Nombre Insumo" class="input-field" required style="margin:0;">
+                    <select id="ing-unit" class="input-field" style="margin:0;">
+                        <option value="kg">Kg</option><option value="g">Gr</option><option value="l">Litro</option><option value="ml">ml</option><option value="pieza">Pieza</option>
+                    </select>
                 </div>
-                <div class="kpi-card" style="border-color: #D32F2F;">
-                    <small>🧊 Menos Vendido</small>
-                    <h4 id="kpi-worst-seller" style="margin:5px 0;">--</h4>
-                </div>
-            </div>
-
-            <h4 style="margin: 20px 0 10px 0;">✅ Historial de Pedidos</h4>
-            <div id="sales-history-list" class="history-list"></div>
-        </div>
-    </div>
-
-<div id="drivers-view" class="full-screen-panel hidden">
-    <div class="panel-header">
-        <h2>👥 Gestión de Flotilla</h2>
-        <button onclick="document.getElementById('drivers-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
-    </div>
-
-    <div class="drivers-body" style="padding: 20px; max-width: 800px; margin: 0 auto;">
-        <div class="driver-form-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">⚡ Dar de Alta Repartidor</h3>
-            <form id="driver-register-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input type="text" id="drv-name" placeholder="Nombre Completo" class="input-field" required>
-                <input type="tel" id="drv-phone" placeholder="Celular" class="input-field" required>
-                <input type="email" id="drv-email" placeholder="Correo (Usuario)" class="input-field" required>
-                <input type="password" id="drv-pass" placeholder="Contraseña" class="input-field" required>
-                <button type="submit" class="btn-primary" style="grid-column: span 2; margin-top: 10px;">Registrar Repartidor</button>
+                <input type="number" id="ing-cost" placeholder="Costo por Unidad (Ej: $120 el Kg)" class="input-field" step="0.01" required>
+                <button type="submit" class="btn-primary" id="btn-save-ing">Guardar Insumo</button>
             </form>
-        </div>
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">🏍️ Repartidores Activos</h3>
-        <div id="drivers-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-    </div>
-</div>
-
-    <div id="inventory-view" class="full-screen-panel hidden">
-        <div class="panel-header">
-            <h2>📋 Control de Stock</h2>
-            <button onclick="document.getElementById('inventory-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
-        </div>
-        <div class="inventory-body">
-            <input type="text" id="inv-search" placeholder="🔍 Buscar..." class="input-field" onkeyup="renderInventory()">
-            <div class="inv-header-row" style="grid-template-columns: 2fr 1fr 1fr 0.5fr 0.5fr;">
-                <span>Producto</span>
-                <span style="text-align:center;">Precio</span>
-                <span style="text-align:center;">Stock</span>
-                <span style="text-align:center;">Ver</span>
-                <span style="text-align:center;">Edit</span>
-            </div>
-            <div id="inventory-list-container"></div>
-        </div>
-    </div>
-
-<div id="driver-stats-modal" class="modal-overlay hidden" style="z-index: 2000;">
-    <div class="modal-box" style="max-width: 500px; text-align: left;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0;">📊 Reporte de Rendimiento</h3>
-            <button onclick="closeDriverStats()" class="btn-close" style="padding:5px 10px;">✕</button>
-        </div>
-        <div style="text-align:center; margin-bottom:20px;">
-            <h2 id="stats-name" style="color:var(--primary);">Juan Pérez</h2>
-            <small style="color:#666;">Resumen Total (Deuda Actual)</small>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-            <div style="background:#f5f5f5; padding:15px; border-radius:10px; text-align:center;">
-                <span style="font-size:2rem;">📦</span>
-                <div style="font-weight:bold; font-size:1.2rem;" id="stats-orders">0</div>
-                <small>Pendientes de Corte</small>
-            </div>
-            <div style="background:#e8f5e9; padding:15px; border-radius:10px; text-align:center; border:1px solid #c8e6c9;">
-                <span style="font-size:2rem;">💰</span>
-                <div style="font-weight:bold; font-size:1.2rem; color:#2E7D32;" id="stats-earnings">$0</div>
-                <small>Su Ganancia (Envíos)</small>
-            </div>
-        </div>
-        <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; border: 1px dashed #FFB74D;">
-            <h4 style="margin-top:0; color:#EF6C00;">💵 Corte de Caja (Efectivo)</h4>
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span>Cobrado a Clientes:</span>
-                <span id="stats-cash-collected" style="font-weight:bold;">$0.00</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #ccc; padding-bottom:5px;">
-                <span>(-) Su Ganancia de Envíos:</span>
-                <span id="stats-deduction" style="color:#D32F2F;">- $0.00</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; margin-top:5px;">
-                <strong>A Entregar al Negocio:</strong>
-                <strong id="stats-final-pay" style="color:#EF6C00;">$0.00</strong>
-            </div>
-            <button id="btn-liquidar-corte" onclick="settleDebt()" class="btn-primary" style="margin-top:15px; width:100%; background:#2E7D32; display:none; font-size:1.1rem; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.4);">
-                💸 Recibir Dinero y Liquidar
-            </button>
-        </div>
-        <p style="text-align: center; font-size: 0.8rem; color: #999; margin-top: 15px;">
-            * Este reporte muestra la deuda acumulada real. Al liquidar, el saldo del repartidor volverá a $0.
-        </p>
-        <button onclick="closeDriverStats()" class="btn-primary" style="margin-top:15px; width:100%; background:#666;">Cerrar Reporte</button>
-    </div>
-</div>
-
-    <div id="ticket-visual-modal" class="modal-overlay" style="display: none; z-index: 3500;">
-        <div class="modal-card ticket-modal-content">
-            <div class="ticket-visual-header">
-                <img src="logotienda.png" class="ticket-logo" alt="Don Burger">
-                <h3>Resumen de Pedido</h3>
-                <p id="ticket-folio-display" style="color:var(--primary); font-weight:800;">PEDIDO-XXX</p>
-                <small id="ticket-date-display" style="color:var(--text-sec);">Fecha</small>
-            </div>
-            <div id="ticket-items-container" class="ticket-items-list"></div>
-            <div class="ticket-visual-footer">
-                <div class="summary-row">Envío: <span id="ticket-ship-display">$0</span></div>
-                <div class="summary-row"><span>Total Pagado:</span> <span id="ticket-total-display" style="font-weight:800; font-size:1.2rem; color:var(--primary);">$0</span></div>
-                <div id="ticket-payment-info" style="margin-top:10px; padding-top:10px; border-top:1px dashed #eee; font-size:0.9rem;"></div>
-            </div>
-            <button onclick="document.getElementById('ticket-visual-modal').style.display='none'" class="btn-close">Cerrar Ticket</button>
-        </div>
-    </div>
-
-    <div id="client-orders-view" class="full-screen-panel hidden">
-        <div class="panel-header">
-            <h2>📦 Mis Pedidos</h2>
-            <button onclick="document.getElementById('client-orders-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button>
-        </div>
-        <div id="client-orders-list" class="orders-container"></div>
-    </div>
-
-    <div id="auth-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <h3 id="auth-title">Acceso</h3>
-            <form id="auth-form">
-                <div id="reg-fields" class="hidden">
-                    <input type="text" id="reg-name" placeholder="Nombre Completo" class="input-field">
-                    <input type="tel" id="reg-phone" placeholder="Celular (10 dígitos)" class="input-field">
-                </div>
-                <input type="email" id="auth-email" placeholder="Correo" required class="input-field">
-                <input type="password" id="auth-pass" placeholder="Contraseña" required class="input-field">
-                <button type="submit" class="btn-primary">Entrar</button>
-            </form>
-            <p class="text-link" onclick="toggleAuthMode()" style="margin-top:10px; cursor:pointer; color:var(--primary);">¿No tienes cuenta? Regístrate</p>
-            <button onclick="closeAuth()" class="btn-close">Cerrar</button>
-        </div>
-    </div>
-
-    <div id="delete-reason-modal" class="modal-overlay" style="display: none; z-index: 3005;">
-        <div class="modal-card">
-            <h3>⚠️ Eliminar Pedido</h3>
-            <p>Se guardará un registro de esta acción.</p>
-            <textarea id="delete-reason" class="input-field" rows="3" placeholder="Motivo..."></textarea>
-            <button onclick="confirmDeleteOrder()" class="btn-primary" style="background:var(--dark);">Confirmar</button>
-            <button onclick="closeDeleteModal()" class="btn-close">Cancelar</button>
+            <div id="ingredients-list-container" class="history-list"></div>
         </div>
     </div>
 
     <div id="admin-modal" class="modal-overlay" style="display: none; z-index: 2000;">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 600px;">
             <h3 id="admin-title">Producto</h3>
             <form id="admin-form">
-                <input type="hidden" id="p-id"> 
+                <input type="hidden" id="p-id">
                 <input type="text" id="p-name" placeholder="Nombre (Ej: Doble con Queso)" required class="input-field">
-                <textarea id="p-desc" placeholder="Descripción..." class="input-field" rows="3" style="resize: none;"></textarea>
                 
+                <select id="p-type" class="input-field" onchange="toggleProductFields()">
+                    <option value="burger">🍔 Hamburguesa (Receta)</option>
+                    <option value="fries">🍟 Papas (Tamaños)</option>
+                    <option value="soda">🥤 Refresco (Opciones)</option>
+                    <option value="extra">🍪 Extra/Postre (Simple)</option>
+                </select>
+
+                <textarea id="p-desc" placeholder="Descripción..." class="input-field" rows="2" style="resize: none;"></textarea>
+                
+                <div id="fields-recipe" class="hidden">
+                    <h4 style="margin: 10px 0 5px;">👨‍🍳 Constructor de Receta</h4>
+                    <div style="background: rgba(0,0,0,0.05); padding:10px; border-radius:8px; margin-bottom:10px;">
+                        <div style="display:flex; gap:5px; margin-bottom:5px;">
+                            <select id="recipe-ing-select" class="input-field" style="margin:0; flex-grow:1;"></select>
+                            <input type="number" id="recipe-qty" placeholder="Cant." class="input-field" style="margin:0; width:70px;">
+                            <button type="button" onclick="addToRecipe()" class="btn-primary" style="width:auto; padding:10px;">+</button>
+                        </div>
+                        <div id="recipe-list-display" style="font-size:0.85rem; color:var(--text-sec);"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
+                        <span>Costo Calc: <span id="calc-cost" style="color:var(--primary);">$0.00</span></span>
+                    </div>
+                </div>
+
+                <div id="fields-sizes" class="hidden">
+                    <h4 style="margin: 10px 0 5px;">🍟 Tamaños</h4>
+                    <div id="sizes-container"></div>
+                    <button type="button" onclick="addSizeInput()" style="background:#eee; border:none; padding:5px 10px; border-radius:4px; width:100%; margin-bottom:10px;">+ Agregar Tamaño</button>
+                </div>
+
+                <div id="fields-options" class="hidden">
+                    <h4 style="margin: 10px 0 5px;">🥤 Opciones (Sabores)</h4>
+                    <textarea id="p-options" placeholder="Coca Cola, Sprite, Fanta (Uno por línea)" class="input-field" rows="3"></textarea>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="number" id="p-price" placeholder="Precio Venta" required class="input-field">
-                    <input type="number" id="p-cost" placeholder="Costo Insumos (Opcional)" class="input-field" style="background:#FFF3E0; border-color:#FFB74D;">
+                    <div id="price-container">
+                        <label style="font-size:0.8rem; font-weight:bold;">Precio Venta</label>
+                        <input type="number" id="p-price" placeholder="$" class="input-field">
+                    </div>
+                    <div id="cost-container">
+                        <label style="font-size:0.8rem; font-weight:bold;">Costo Directo</label>
+                        <input type="number" id="p-cost" placeholder="$ (Insumo)" class="input-field" style="background:#FFF3E0; border-color:#FFB74D;">
+                    </div>
                 </div>
                 
+                <div style="text-align:right; font-size:0.8rem; margin-bottom:10px;">
+                    Ganancia: <span id="calc-profit" style="color:green; font-weight:bold;">$0.00</span>
+                </div>
+
                 <input type="number" id="p-stock" placeholder="Stock Inicial" class="input-field">
-                <input type="text" id="p-cat" placeholder="Categoría" required list="cat-suggestions" class="input-field">
+                <input type="text" id="p-cat" placeholder="Categoría (Ej: Burgers)" required list="cat-suggestions" class="input-field">
                 <datalist id="cat-suggestions"></datalist>
-                <input type="text" id="p-img" placeholder="Foto (ej: burger.jpg)" class="input-field">
-                <button type="submit" id="btn-save-prod" class="btn-primary">Guardar</button>
+                <input type="text" id="p-img" placeholder="Foto (URL o nombre archivo)" class="input-field">
+                
+                <button type="submit" id="btn-save-prod" class="btn-primary">Guardar Producto</button>
             </form>
             <button onclick="closeAdmin()" class="btn-close">Cancelar</button>
         </div>
     </div>
 
-    <div id="alert-modal" class="modal-overlay" style="display: none; z-index: 3000;">
-        <div class="modal-card" style="text-align: center;">
-            <h3 id="alert-title">Mensaje</h3>
-            <p id="alert-msg">...</p>
-            <button onclick="closeCustomAlert()" class="btn-primary">Entendido</button>
-        </div>
-    </div>
+    <div id="orders-view" class="full-screen-panel hidden"><div class="panel-header"><h2>🚀 Pedidos Activos</h2><button onclick="closeOrdersPanel()" class="btn-close-panel">Cerrar</button></div><div id="orders-list" class="orders-container"></div></div>
     
-    <div id="tracking-modal" class="modal-overlay hidden" style="display:none; z-index: 5000;">
-        <div class="modal-card" style="width: 95%; height: 85vh; padding: 0; display:flex; flex-direction:column; overflow:hidden;">
-            <div style="padding: 15px; background: white; border-bottom:1px solid #eee; display: flex; justify-content: space-between; align-items:center;">
-                <div>
-                    <h3 style="margin:0; color:#333;">📍 Tu pedido en camino</h3>
-                    <small style="color:#666;">Actualización en tiempo real</small>
-                </div>
-                <button onclick="closeTracking()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#333;">✕</button>
+    <div id="sales-dashboard-view" class="full-screen-panel hidden">
+        <div class="panel-header"><h2>📈 Ventas</h2><button onclick="document.getElementById('sales-dashboard-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div>
+        <div class="dashboard-body">
+            <div class="kpi-grid">
+                <div class="kpi-card"><small>Ventas</small><h3 id="kpi-sales-today">$0</h3></div>
+                <div class="kpi-card"><small>Ganancia</small><h3 id="kpi-profit-today" style="color:green;">$0</h3></div>
+                <div class="kpi-card"><small>Pedidos</small><h3 id="kpi-orders-today">0</h3></div>
             </div>
-            <div id="map" style="width: 100%; flex-grow: 1; background: #eee;"></div>
-            <div style="padding: 15px; background: white; border-top:1px solid #eee; display:flex; align-items:center; gap:10px;">
-                <img src="banners/morenitamoto.png" style="width:40px; height:40px;">
-                <div>
-                    <div style="font-weight:bold; color:#333;">Repartidor Don Burger</div>
-                    <div style="font-size:0.8rem; color:green;">● Conectado al GPS</div>
-                </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                <div class="kpi-card" style="border-color: #FFC107;"><small>🔥 Estrella</small><h4 id="kpi-best-seller">--</h4></div>
+                <div class="kpi-card" style="border-color: #D32F2F;"><small>🧊 Frío</small><h4 id="kpi-worst-seller">--</h4></div>
             </div>
+            <h4>Historial</h4>
+            <div id="sales-history-list" class="history-list"></div>
         </div>
     </div>
 
-    <div id="banner-modal" class="modal-overlay" style="display: none; z-index: 4000;">
-        <div class="modal-card">
-            <h3>Gestionar Promociones</h3>
-            <form id="banner-form" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                <input type="text" id="ban-img" placeholder="Nombre imagen (ej: promo.jpg)" class="input-field" required>
-                <select id="ban-loc" class="input-field" required style="background: var(--bg-input);">
-                    <option value="top">⬆️ Ubicación: Arriba (Principal)</option>
-                    <option value="mid">⬇️ Ubicación: En Medio (Entre productos)</option>
-                </select>
-                <input type="text" id="ban-cat" placeholder="Categoría Destino" class="input-field" list="cat-suggestions" required>
-                <button type="submit" class="btn-primary">Guardar Banner</button>
-            </form>
-            <h4>Banners Activos:</h4>
-            <div id="admin-banner-list" style="display:flex; flex-direction:column; gap:10px; max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
-            <button onclick="closeBannerAdmin()" class="btn-close">Cerrar</button>
-        </div>
-    </div>
-
-    <div id="confirm-modal" class="modal-overlay" style="display: none; z-index: 3001;">
-        <div class="modal-card" style="text-align: center;">
-            <h3 id="confirm-title">Confirmar</h3>
-            <p id="confirm-msg">¿Estás seguro?</p>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button onclick="closeCustomConfirm(false)" class="btn-close" style="margin:0; border:1px solid #ddd">Cancelar</button>
-                <button onclick="closeCustomConfirm(true)" class="btn-primary" style="margin:0;">Sí</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="cart-drawer" class="drawer-right">
-        <div class="drawer-header">
-            <h3>Tu Carrito</h3>
-            <button onclick="toggleCart()">✕</button>
-        </div>
-        <div id="cart-view" class="cart-view" style="display:contents;">
-            <div id="cart-items" class="cart-body"></div>
-            <div class="cart-footer">
-                <div class="subtotal-row">Subtotal: <span id="cart-subtotal">$0</span></div>
-                <button onclick="goToCheckout()" class="btn-primary">Terminar Compra</button>
-            </div>
-        </div>
-        <div id="checkout-view" class="checkout-view hidden" style="display:contents;">
-            <div class="checkout-body">
-                <button onclick="backToCart()" class="back-link">← Volver al carrito</button>
-                <h4 style="margin-bottom:10px;">🛵 Tipo de Entrega</h4>
-                <div class="delivery-switch-container" style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button id="btn-mode-delivery" class="btn-mode active" onclick="setDeliveryMode('delivery')">
-                        🛵 A Domicilio
-                    </button>
-                    <button id="btn-mode-pickup" class="btn-mode" onclick="setDeliveryMode('pickup')">
-                        🛍️ Pasar a Recoger
-                    </button>
-                </div>
-                <div id="address-section">
-                    <h4>📍 Dirección de Entrega</h4>
-                    <form id="checkout-form-address">
-                        <input type="text" id="address-street" placeholder="Calle" class="input-checkout">
-                        <input type="text" id="address-num" placeholder="Número Exterior" class="input-checkout">
-                        <input type="text" id="address-ref" placeholder="Referencia" class="input-checkout">
-                    </form>
-                </div>
-                <div id="pickup-msg" class="hidden" style="background:#E0F2F1; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; border:1px solid #009688;">
-                    <p style="color:#00796B; font-weight:bold; margin:0;">📍 Recoger en el Negocio</p>
-                    <small style="color:#004D40;">Pasa por tus Burgers al local.</small>
-                </div>
-                <h4>💳 Método de Pago</h4>
-                <form id="checkout-form-payment">
-                    <div class="payment-options">
-                        <label class="radio-card"><input type="radio" name="payment" value="Efectivo" checked onchange="handlePaymentChange()"><span>💵 Efectivo</span></label>
-                        <label class="radio-card"><input type="radio" name="payment" value="Terminal" onchange="handlePaymentChange()"><span>💳 Terminal</span></label>
-                        <label class="radio-card"><input type="radio" name="payment" value="Transferencia" onchange="handlePaymentChange()"><span>📱 Transferencia</span></label>
-                    </div>
-                    <div id="payment-details" class="payment-details-box hidden"></div>
+    <div id="drivers-view" class="full-screen-panel hidden">
+        <div class="panel-header"><h2>👥 Repartidores</h2><button onclick="document.getElementById('drivers-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div>
+        <div class="drivers-body" style="padding:20px;">
+            <div class="driver-form-card" style="background:#fff; padding:15px; border-radius:10px; margin-bottom:20px;">
+                <h3 style="color:var(--primary);">Nuevo Repartidor</h3>
+                <form id="driver-register-form" style="display:grid; gap:10px;">
+                    <input type="text" id="drv-name" placeholder="Nombre" class="input-field" required>
+                    <input type="email" id="drv-email" placeholder="Email" class="input-field" required>
+                    <input type="password" id="drv-pass" placeholder="Pass" class="input-field" required>
+                    <button type="submit" class="btn-primary">Registrar</button>
                 </form>
             </div>
-            <div class="cart-footer">
-                <div class="summary-row">Subtotal: <span id="checkout-subtotal">$0</span></div>
-                <div class="summary-row">Envío: <span id="checkout-shipping">$20</span></div>
-                <div class="total-row">Total: <span id="checkout-total">$0</span></div>
-                <button onclick="processOrder()" id="btn-confirm-order" class="btn-success">Confirmar Pedido</button>
+            <div id="drivers-list"></div>
+        </div>
+    </div>
+
+    <div id="inventory-view" class="full-screen-panel hidden">
+        <div class="panel-header"><h2>📋 Stock</h2><button onclick="document.getElementById('inventory-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div>
+        <div class="inventory-body"><input type="text" id="inv-search" placeholder="Buscar..." class="input-field" onkeyup="renderInventory()"><div id="inventory-list-container"></div></div>
+    </div>
+
+    <div id="banner-modal" class="modal-overlay" style="display:none; z-index:4000;"><div class="modal-card"><h3>Banners</h3><form id="banner-form"><input type="text" id="ban-img" placeholder="Imagen" class="input-field" required><select id="ban-loc" class="input-field"><option value="top">Arriba</option><option value="mid">Medio</option></select><input type="text" id="ban-cat" placeholder="Categoría" class="input-field" required><button type="submit" class="btn-primary">Guardar</button></form><div id="admin-banner-list"></div><button onclick="closeBannerAdmin()" class="btn-close">Cerrar</button></div></div>
+    
+    <div id="client-orders-view" class="full-screen-panel hidden"><div class="panel-header"><h2>Mis Pedidos</h2><button onclick="document.getElementById('client-orders-view').classList.add('hidden')" class="btn-close-panel">Cerrar</button></div><div id="client-orders-list" class="orders-container"></div></div>
+    
+    <div id="auth-modal" class="modal-overlay" style="display:none;"><div class="modal-card"><h3>Acceso</h3><form id="auth-form"><div id="reg-fields" class="hidden"><input type="text" id="reg-name" placeholder="Nombre" class="input-field"><input type="tel" id="reg-phone" placeholder="Celular" class="input-field"></div><input type="email" id="auth-email" placeholder="Correo" class="input-field"><input type="password" id="auth-pass" placeholder="Pass" class="input-field"><button type="submit" class="btn-primary">Entrar</button></form><p class="text-link" onclick="toggleAuthMode()" style="margin-top:10px; cursor:pointer;">¿Crear cuenta?</p><button onclick="closeAuth()" class="btn-close">Cerrar</button></div></div>
+    
+    <div id="delete-reason-modal" class="modal-overlay" style="display:none;"><div class="modal-card"><h3>Eliminar</h3><textarea id="delete-reason" class="input-field" placeholder="Razón..."></textarea><button onclick="confirmDeleteOrder()" class="btn-primary">Confirmar</button><button onclick="closeDeleteModal()" class="btn-close">Cancelar</button></div></div>
+    
+    <div id="ticket-visual-modal" class="modal-overlay" style="display: none; z-index: 3500;"><div class="modal-card ticket-modal-content"><div class="ticket-visual-header"><h3>Ticket</h3><p id="ticket-folio-display"></p></div><div id="ticket-items-container"></div><div class="ticket-visual-footer"><div class="summary-row">Total: <span id="ticket-total-display"></span></div></div><button onclick="document.getElementById('ticket-visual-modal').style.display='none'" class="btn-close">Cerrar</button></div></div>
+    
+    <div id="driver-stats-modal" class="modal-overlay hidden" style="z-index: 2000;"><div class="modal-box" style="background:#fff; padding:20px; border-radius:10px;"><h3 id="stats-name"></h3><div id="stats-orders"></div><div id="stats-final-pay" style="font-size:1.5rem; font-weight:bold; margin:20px 0;"></div><button id="btn-liquidar-corte" onclick="settleDebt()" class="btn-primary">Liquidar</button><button onclick="closeDriverStats()" class="btn-close">Cerrar</button></div></div>
+
+    <div id="tracking-modal" class="modal-overlay hidden" style="display:none; z-index: 5000;"><div class="modal-card" style="width: 95%; height: 85vh; padding: 0; display:flex; flex-direction:column;"><div style="padding:15px; display:flex; justify-content:space-between;"><h3>📍 Rastreo</h3><button onclick="closeTracking()">✕</button></div><div id="map" style="flex-grow:1;"></div></div></div>
+    
+    <div id="alert-modal" class="modal-overlay" style="display:none; z-index:3000;"><div class="modal-card" style="text-align:center;"><h3 id="alert-title"></h3><p id="alert-msg"></p><button onclick="closeCustomAlert()" class="btn-primary">OK</button></div></div>
+    <div id="confirm-modal" class="modal-overlay" style="display:none; z-index:3001;"><div class="modal-card" style="text-align:center;"><h3 id="confirm-title"></h3><p id="confirm-msg"></p><div style="display:flex; gap:10px;"><button onclick="closeCustomConfirm(false)" class="btn-close">No</button><button onclick="closeCustomConfirm(true)" class="btn-primary">Sí</button></div></div></div>
+
+    <div id="cart-drawer" class="drawer-right">
+        <div class="drawer-header"><h3>Tu Carrito</h3><button onclick="toggleCart()">✕</button></div>
+        <div id="cart-view" class="cart-view" style="display:contents;"><div id="cart-items" class="cart-body"></div><div class="cart-footer"><div class="subtotal-row">Subtotal: <span id="cart-subtotal">$0</span></div><button onclick="goToCheckout()" class="btn-primary">Terminar Compra</button></div></div>
+        <div id="checkout-view" class="checkout-view hidden" style="display:contents;">
+            <div class="checkout-body">
+                <button onclick="backToCart()" class="back-link">← Volver</button>
+                <div class="delivery-switch-container"><button id="btn-mode-delivery" class="btn-mode active" onclick="setDeliveryMode('delivery')">🛵 Domicilio</button><button id="btn-mode-pickup" class="btn-mode" onclick="setDeliveryMode('pickup')">🛍️ Recoger</button></div>
+                <div id="address-section"><input type="text" id="address-street" placeholder="Calle" class="input-checkout"><input type="text" id="address-num" placeholder="#" class="input-checkout"><input type="text" id="address-ref" placeholder="Ref" class="input-checkout"></div>
+                <div id="pickup-msg" class="hidden">Recoger en local.</div>
+                <div class="payment-options"><label class="radio-card"><input type="radio" name="payment" value="Efectivo" checked onchange="handlePaymentChange()">💵 Efectivo</label><label class="radio-card"><input type="radio" name="payment" value="Terminal" onchange="handlePaymentChange()">💳 Terminal</label><label class="radio-card"><input type="radio" name="payment" value="Transferencia" onchange="handlePaymentChange()">📱 Transferencia</label></div>
+                <div id="payment-details" class="hidden"></div>
             </div>
+            <div class="cart-footer"><div class="summary-row">Total: <span id="checkout-total">$0</span></div><button onclick="processOrder()" id="btn-confirm-order" class="btn-success">Confirmar Pedido</button></div>
         </div>
     </div>
     
