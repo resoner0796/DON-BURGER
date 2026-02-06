@@ -1,6 +1,8 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, serverTimestamp, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// --- NUEVO: IMPORTAR STORAGE PARA IMÁGENES ---
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 // ==========================================
 // 1. CONFIGURACIÓN FIREBASE
@@ -17,17 +19,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app); // Inicializar Storage
 
 // ==========================================
-// 1.5. CONSTANTES DE RUTA (SEPARACIÓN DE DATOS)
+// 1.5. CONSTANTES Y RUTAS
 // ==========================================
-// Toda la info se guardará en: Don Burger > App > [coleccion]
 const MAIN_COLLECTION = "Don Burger";
 const MAIN_DOC = "App";
 
-// Helper para crear referencias a colecciones dentro de Don Burger
 const getAppCollection = (colName) => collection(db, MAIN_COLLECTION, MAIN_DOC, colName);
-// Helper para crear referencias a documentos dentro de Don Burger
 const getAppDoc = (colName, docId) => doc(db, MAIN_COLLECTION, MAIN_DOC, colName, docId);
 
 // ==========================================
@@ -45,6 +45,11 @@ const CLABE_NUMBER = "012345678901234567";
 let orderToDeleteId = null; 
 let allBanners = [];
 let ordersCache = {}; 
+
+// --- VARIABLES INGREDIENTES Y PERSONALIZACIÓN ---
+let tempProductToAdd = null; 
+let currentExclusions = [];
+const STANDARD_INGREDIENTS = ["Cebolla", "Tomate", "Lechuga", "Pepinillos", "Mostaza", "Catsup", "Mayonesa", "Queso", "Picante"];
 
 // --- VARIABLES TRACKING ---
 let mapInstance = null;
@@ -116,7 +121,6 @@ if (authForm) {
                 if(!name || !phone) return window.showAlert("Datos", "Nombre y celular requeridos.");
 
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                // RUTA: Don Burger > App > usuarios
                 await setDoc(getAppDoc("usuarios", userCred.user.uid), {
                     nombre: name, telefono: phone, email: email, creado: serverTimestamp()
                 });
@@ -132,7 +136,6 @@ if (authForm) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
-            // RUTA: Don Burger > App > usuarios
             const userDoc = await getDoc(getAppDoc("usuarios", user.uid));
             if(userDoc.exists()) {
                 currentUserData = userDoc.data();
@@ -164,7 +167,6 @@ window.askLogout = () => window.showConfirm("Salir", "¿Cerrar sesión?", () => 
 // ==========================================
 // 5. PRODUCTOS & VISIBILIDAD
 // ==========================================
-// RUTA: Don Burger > App > productos
 onSnapshot(getAppCollection("productos"), (snapshot) => {
     allProducts = [];
     snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
@@ -194,23 +196,126 @@ window.filterProducts = (cat) => {
 };
 
 // ==========================================
-// 6. CARRITO
+// 6. GESTIÓN DE INGREDIENTES Y PERSONALIZACIÓN
 // ==========================================
-window.modifyQty = (id, change) => {
-    const product = allProducts.find(p => p.id === id);
-    if (change > 0 && product.stock !== undefined && product.stock > 0) {
-       const currentInCart = cart.find(i => i.id === id)?.qty || 0;
-       if (currentInCart + 1 > product.stock) return window.showAlert("Stock", "No hay suficiente stock.");
+window.openCustomization = (productId) => {
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    // Si NO es hamburguesa o comida preparada (ej: bebida, postre simple), agrégalo directo
+    const cat = (product.categoria || '').toLowerCase();
+    // Ajusta esta lógica según tus categorías reales. Aquí asumo que solo Burgers llevan ingredientes.
+    if (!cat.includes('burger') && !cat.includes('hamburguesa') && !cat.includes('dog') && !cat.includes('especial')) {
+        addToCartWithExtras(product, [], '');
+        return;
     }
 
-    let cartItem = cart.find(item => item.id === id);
-    if (cartItem) {
-        cartItem.qty += change;
-        if (cartItem.qty <= 0) cart = cart.filter(item => item.id !== id);
-    } else if (change > 0) {
-        cart.push({ ...product, qty: 1 });
+    tempProductToAdd = product;
+    currentExclusions = [];
+    
+    // UI del Modal
+    getEl('custom-title').innerText = `Personalizar ${product.nombre}`;
+    getEl('custom-note').value = '';
+    
+    // Renderizar toggles de ingredientes
+    const container = getEl('ingredients-container');
+    container.innerHTML = STANDARD_INGREDIENTS.map(ing => `
+        <div class="ing-toggle" onclick="toggleIngredient(this, '${ing}')">
+            <span>${ing}</span>
+            <span class="status-icon">✅</span>
+        </div>
+    `).join('');
+
+    getEl('custom-modal').style.display = 'flex';
+};
+
+window.toggleIngredient = (el, ing) => {
+    if (currentExclusions.includes(ing)) {
+        // Estaba excluido, lo volvemos a poner (QUITAR de la lista de exclusiones)
+        currentExclusions = currentExclusions.filter(i => i !== ing);
+        el.classList.remove('excluded');
+        el.querySelector('.status-icon').innerText = '✅';
+    } else {
+        // Lo excluimos (AGREGAR a lista de exclusiones)
+        currentExclusions.push(ing);
+        el.classList.add('excluded');
+        el.querySelector('.status-icon').innerText = '❌';
+    }
+};
+
+window.closeCustomModal = () => {
+    getEl('custom-modal').style.display = 'none';
+    tempProductToAdd = null;
+    currentExclusions = [];
+};
+
+window.confirmAddToCart = () => {
+    if (!tempProductToAdd) return;
+    const note = getEl('custom-note').value.trim();
+    addToCartWithExtras(tempProductToAdd, currentExclusions, note);
+    closeCustomModal();
+    window.showAlert("Agregado", "Producto añadido al carrito");
+};
+
+// ==========================================
+// 7. LÓGICA DEL CARRITO (CORE ACTUALIZADO)
+// ==========================================
+
+function addToCartWithExtras(product, exclusions, note) {
+    // Generamos un ID único para el carrito basado en sus cambios
+    // Así puedes tener una Burger con cebolla y otra sin cebolla como items distintos
+    const cartId = `${product.id}|${exclusions.join(',')}|${note.replace(/\s/g,'_')}`;
+    
+    const existingItem = cart.find(i => i.cartId === cartId);
+
+    if (existingItem) {
+        // Validar stock si es necesario
+        if (product.stock !== undefined && product.stock > 0 && (existingItem.qty + 1 > product.stock)) {
+             return window.showAlert("Stock", "No hay suficiente stock.");
+        }
+        existingItem.qty += 1;
+    } else {
+        if (product.stock !== undefined && product.stock <= 0) {
+             return window.showAlert("Stock", "Producto agotado.");
+        }
+        cart.push({
+            ...product,
+            cartId: cartId, // ID único interno del carrito
+            qty: 1,
+            exclusions: [...exclusions], // Copia del array
+            note: note
+        });
     }
     updateCartUI(); renderProducts();
+}
+
+window.removeFromCart = (cartId) => {
+    cart = cart.filter(i => i.cartId !== cartId);
+    updateCartUI(); renderProducts();
+};
+
+window.changeCartQty = (cartId, change) => {
+    let item = cart.find(i => i.cartId === cartId);
+    if (!item) return;
+
+    if (change > 0) {
+        // Validar stock global del producto padre
+        const parentProduct = allProducts.find(p => p.id === item.id);
+        if (parentProduct && parentProduct.stock !== undefined) {
+             // Contar cuantos de este producto (en todas sus variantes) tengo ya en el carrito
+             const totalInCart = cart.filter(c => c.id === item.id).reduce((sum, c) => sum + c.qty, 0);
+             if (totalInCart + 1 > parentProduct.stock) {
+                 return window.showAlert("Stock", "No hay más stock disponible.");
+             }
+        }
+    }
+
+    item.qty += change;
+    if (item.qty <= 0) {
+        removeFromCart(cartId);
+    } else {
+        updateCartUI();
+    }
 };
 
 window.setDeliveryMode = (mode) => {
@@ -220,7 +325,7 @@ window.setDeliveryMode = (mode) => {
         getEl('btn-mode-delivery').classList.remove('active');
         getEl('btn-mode-pickup').classList.add('active');
         getEl('address-section').classList.add('hidden'); 
-        getEl('pickup-msg').classList.remove('hidden');   
+        getEl('pickup-msg').classList.remove('hidden');    
     } else {
         getEl('btn-mode-pickup').classList.remove('active');
         getEl('btn-mode-delivery').classList.add('active');
@@ -267,19 +372,31 @@ function updateCartUI() {
     const cartItemsContainer = getEl('cart-items');
     if(cartItemsContainer) {
         cartItemsContainer.innerHTML = cart.map(item => {
-            const imgSrc = item.img ? `productos/${item.img}` : fallbackImg;
+            const imgSrc = item.img ? (item.img.startsWith('http') ? item.img : `productos/${item.img}`) : fallbackImg;
+            
+            // Visualizar ingredientes/notas
+            let extrasHtml = '';
+            if (item.exclusions && item.exclusions.length > 0) {
+                extrasHtml += `<div style="color:#E53935; font-size:0.8rem; margin-top:2px;">🚫 Sin: ${item.exclusions.join(', ')}</div>`;
+            }
+            if (item.note) {
+                extrasHtml += `<div style="color:#FFC107; font-size:0.8rem; margin-top:2px;">📝 Nota: ${item.note}</div>`;
+            }
+
             return `
             <div class="cart-item-row">
                 <img src="${imgSrc}" class="cart-img" onerror="this.src='${fallbackImg}'">
                 <div class="cart-info">
                     <h5>${item.nombre}</h5>
+                    ${extrasHtml}
                     <small>$${item.precio} c/u</small>
                     <div><b>Total: $${item.precio * item.qty}</b></div>
                 </div>
                 <div class="cart-qty-selector">
-                    <button class="cart-mini-btn" onclick="modifyQty('${item.id}', -1)">−</button>
+                    <button class="cart-mini-btn" onclick="changeCartQty('${item.cartId}', -1)">−</button>
                     <span class="cart-qty-num">${item.qty}</span>
-                    <button class="cart-mini-btn" onclick="modifyQty('${item.id}', 1)">+</button>
+                    <button class="cart-mini-btn" onclick="changeCartQty('${item.cartId}', 1)">+</button>
+                    <button class="cart-mini-btn" style="margin-left:5px; background:rgba(255,0,0,0.2); color:#ff5555;" onclick="removeFromCart('${item.cartId}')">🗑️</button>
                 </div>
             </div>`;
         }).join('');
@@ -371,7 +488,6 @@ window.copyClabe = () => {
 
 async function generateOrderFolio() {
     try {
-        // RUTA: Don Burger > App > contadores > pedidos
         const counterRef = getAppDoc("contadores", "pedidos");
         const counterSnap = await getDoc(counterRef);
         
@@ -441,7 +557,6 @@ window.processOrder = async () => {
             ...extraData 
         };
 
-        // RUTA: Don Burger > App > pedidos
         await addDoc(getAppCollection("pedidos"), orderData);
         
         cart = []; updateCartUI(); renderProducts(); 
@@ -460,7 +575,7 @@ window.processOrder = async () => {
 };
 
 // ==========================================
-// 7. GESTIÓN DE PEDIDOS
+// 8. GESTIÓN DE PEDIDOS (CON VISUALIZACIÓN INGREDIENTES)
 // ==========================================
 window.openOrdersPanel = () => { getEl('orders-view').classList.remove('hidden'); window.toggleMenu(); loadOrders(true); };
 window.closeOrdersPanel = () => getEl('orders-view').classList.add('hidden');
@@ -470,7 +585,6 @@ function loadOrders(isAdmin) {
     const list = isAdmin ? getEl('orders-list') : getEl('client-orders-list');
     list.innerHTML = '<div class="loader">Cargando...</div>';
     
-    // RUTA: Don Burger > App > pedidos
     const pedidosRef = getAppCollection("pedidos");
     let q;
     
@@ -518,18 +632,26 @@ function loadOrders(isAdmin) {
                 paymentInfo += ` (Pagó: $${o.monto_pago} | Cambio: <b>$${o.cambio ? o.cambio.toFixed(2) : '0.00'}</b>)`;
             }
 
+            // Visualizar items pequeños (fotos)
             let visualItems = '';
             const fallbackItemImg = "https://placehold.co/50?text=x";
             if (o.items && o.items.length > 0) {
                 o.items.forEach(i => {
-                    const img = i.img ? `productos/${i.img}` : fallbackItemImg;
+                    const img = i.img ? (i.img.startsWith('http') ? i.img : `productos/${i.img}`) : fallbackItemImg;
                     visualItems += `<div class="order-product-mini"><img src="${img}"><span class="order-qty-badge">${i.qty}</span></div>`;
                 });
             }
 
+            // Lista detallada con ingredientes
             let textListItems = '';
             if (o.items && o.items.length > 0) {
-                o.items.forEach(i => { textListItems += `<li><strong>${i.qty}x</strong> ${i.nombre}</li>`; });
+                o.items.forEach(i => { 
+                    let extras = '';
+                    if(i.exclusions && i.exclusions.length > 0) extras += `<div style="color:#E53935; font-size:0.8rem;">🚫 Sin: ${i.exclusions.join(', ')}</div>`;
+                    if(i.note) extras += `<div style="color:#FFA000; font-size:0.8rem;">📝 ${i.note}</div>`;
+
+                    textListItems += `<li><strong>${i.qty}x</strong> ${i.nombre} ${extras}</li>`; 
+                });
             }
 
             const ticketBtn = `<button class="btn-view-ticket" style="margin-top:10px;" onclick="openVisualTicket('${id}')">👁️ Ver Ticket</button>`;
@@ -589,7 +711,6 @@ window.updateStatus = async (id, status) => {
                 watchId = navigator.geolocation.watchPosition(async (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    // RUTA: Don Burger > App > pedidos > [ID]
                     updateDoc(getAppDoc("pedidos", id), {
                         ubicacion_repartidor: { lat: lat, lng: lng }
                     }).catch(console.error);
@@ -607,7 +728,6 @@ window.updateStatus = async (id, status) => {
             }
         }
 
-        // RUTA: Don Burger > App > pedidos > [ID]
         await updateDoc(getAppDoc("pedidos", id), data);
     } catch (e) {
         window.showAlert("Error", "Fallo al actualizar: " + e.message);
@@ -631,12 +751,10 @@ window.confirmDeleteOrder = async () => {
     if (!orderToDeleteId) return;
 
     try {
-        // RUTA: Don Burger > App > pedidos > [ID]
         const orderSnap = await getDoc(getAppDoc("pedidos", orderToDeleteId));
         if (!orderSnap.exists()) return window.showAlert("Error", "Pedido no encontrado.");
         const orderData = orderSnap.data();
 
-        // RUTA: Don Burger > App > auditoria_eliminados
         await addDoc(getAppCollection("auditoria_eliminados"), {
             ...orderData,
             deleted_at: serverTimestamp(),
@@ -654,58 +772,94 @@ window.confirmDeleteOrder = async () => {
 };
 
 // ==========================================
-// 8. ADMIN PRODUCTOS & DESCRIPCIÓN
+// 9. ADMIN PRODUCTOS & DESCRIPCIÓN & IMAGENES
 // ==========================================
-window.openAdmin = () => { getEl('admin-form').reset(); getEl('p-id').value = ''; getEl('admin-modal').style.display = 'flex'; window.toggleMenu(); };
+window.openAdmin = () => { 
+    getEl('admin-form').reset(); 
+    getEl('p-id').value = ''; 
+    getEl('upload-progress').style.display = 'none';
+    getEl('admin-modal').style.display = 'flex'; 
+    window.toggleMenu(); 
+};
 window.closeAdmin = () => getEl('admin-modal').style.display = 'none';
 
 window.editProduct = (id) => {
     const p = allProducts.find(prod => prod.id === id); if (!p) return;
     getEl('p-id').value = p.id; 
     getEl('p-name').value = p.nombre; 
-    
-    // CARGAR DESCRIPCIÓN
     const descEl = getEl('p-desc');
     if(descEl) descEl.value = p.descripcion || '';
-
     getEl('p-price').value = p.precio;
     getEl('p-stock').value = p.stock || 0; 
     getEl('p-cat').value = p.categoria; 
-    getEl('p-img').value = p.img || '';
+    getEl('p-img').value = p.img || ''; // Muestra la URL si existe
+    getEl('upload-progress').style.display = 'none';
     getEl('admin-modal').style.display = 'flex';
 };
 
+// --- CAMBIO 4: GUARDAR PRODUCTO CON IMAGEN EN STORAGE ---
 const productForm = getEl('admin-form');
 if (productForm) {
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const btnSave = getEl('btn-save-prod');
+        const originalText = btnSave.innerText;
+        btnSave.innerText = "Guardando..."; 
+        btnSave.disabled = true;
+
         const id = getEl('p-id').value;
-        const descEl = getEl('p-desc'); 
-        const data = { 
-            nombre: getEl('p-name').value, 
-            descripcion: descEl ? descEl.value.trim() : '', 
-            precio: parseFloat(getEl('p-price').value), 
-            stock: parseInt(getEl('p-stock').value) || 0, 
-            categoria: getEl('p-cat').value.trim().toLowerCase(), 
-            img: getEl('p-img').value.trim() 
-        };
-        try { 
-            // RUTA: Don Burger > App > productos
-            id ? await updateDoc(getAppDoc("productos", id), data) : await addDoc(getAppCollection("productos"), { ...data, creado: serverTimestamp() }); 
-            closeAdmin(); window.showAlert("Listo", "Guardado"); 
-        } catch (e) { window.showAlert("Error", e.message); }
+        const fileInput = getEl('p-img-file');
+        const file = fileInput.files[0];
+        
+        let imageUrl = getEl('p-img').value.trim(); // URL manual o anterior
+
+        try {
+            // 1. Si hay archivo nuevo, subirlo a Storage
+            if (file) {
+                getEl('upload-progress').style.display = 'block';
+                // Crear referencia: productos/timestamp_nombre
+                const storageRef = ref(storage, `productos/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                imageUrl = await getDownloadURL(storageRef); // Obtener URL pública
+                getEl('upload-progress').style.display = 'none';
+            }
+
+            // 2. Guardar datos en Firestore
+            const data = { 
+                nombre: getEl('p-name').value, 
+                descripcion: getEl('p-desc').value.trim(), 
+                precio: parseFloat(getEl('p-price').value), 
+                stock: parseInt(getEl('p-stock').value) || 0, 
+                categoria: getEl('p-cat').value.trim().toLowerCase(), 
+                img: imageUrl // Guardamos la URL de Firebase Storage (o la manual)
+            };
+
+            if (id) {
+                await updateDoc(getAppDoc("productos", id), data);
+            } else {
+                await addDoc(getAppCollection("productos"), { ...data, creado: serverTimestamp() });
+            }
+            
+            closeAdmin(); 
+            window.showAlert("Listo", "Producto guardado.");
+        } catch (e) { 
+            console.error(e);
+            window.showAlert("Error", e.message); 
+        } finally {
+            btnSave.innerText = originalText;
+            btnSave.disabled = false;
+        }
     });
 }
 window.deleteProduct = (id) => window.showConfirm("Borrar", "¿Eliminar?", async () => await deleteDoc(getAppDoc("productos", id)));
 
 // ==========================================
-// 9. DASHBOARD VENTAS
+// 10. DASHBOARD VENTAS
 // ==========================================
 window.openSalesDashboard = async () => {
     getEl('sales-dashboard-view').classList.remove('hidden');
     window.toggleMenu();
     
-    // RUTA: Don Burger > App > pedidos
     const q = query(getAppCollection("pedidos"), where("estado", "==", "entregado"), orderBy("fecha", "desc"));
     const snapshot = await getDocs(q);
     
@@ -750,13 +904,12 @@ window.openSalesDashboard = async () => {
 };
 
 // ==========================================
-// 10. TICKET MODAL
+// 11. TICKET MODAL
 // ==========================================
 window.openVisualTicket = (orderId) => {
     const order = ordersCache[orderId];
 
     if (!order) {
-        console.error("No se encontró el pedido en cache:", orderId);
         return window.showAlert("Error", "No se pudo cargar la información del ticket.");
     }
 
@@ -776,12 +929,16 @@ window.openVisualTicket = (orderId) => {
 
     const itemsContainer = getEl('ticket-items-container');
     if (itemsContainer) {
-        itemsContainer.innerHTML = (order.items || []).map(i => `
-            <div class="ticket-item">
-                <span>${i.qty} x ${i.nombre}</span>
+        itemsContainer.innerHTML = (order.items || []).map(i => {
+            let extras = '';
+            if(i.exclusions && i.exclusions.length > 0) extras += `<div><small>🚫 Sin: ${i.exclusions.join(', ')}</small></div>`;
+            if(i.note) extras += `<div><small>📝 ${i.note}</small></div>`;
+            
+            return `<div class="ticket-item">
+                <span>${i.qty} x ${i.nombre} ${extras}</span>
                 <span>$${i.precio * i.qty}</span>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     let payInfo = `<b>Método:</b> ${order.metodo_pago}`;
@@ -799,7 +956,7 @@ window.openVisualTicket = (orderId) => {
 };
 
 // ==========================================
-// 11. INVENTARIO PRO
+// 12. INVENTARIO PRO
 // ==========================================
 window.openInventory = () => {
     getEl('inventory-view').classList.remove('hidden');
@@ -809,7 +966,6 @@ window.openInventory = () => {
 
 window.toggleProductVisibility = async (id, currentStatus) => {
     try {
-        // RUTA: Don Burger > App > productos > [ID]
         await updateDoc(getAppDoc("productos", id), { visible: !currentStatus });
     } catch(e) { window.showAlert("Error", "No se pudo actualizar"); }
 };
@@ -832,7 +988,7 @@ window.renderInventory = () => {
     for (const [cat, prods] of Object.entries(grouped)) {
         html += `<div class="inv-category-header">${cat}</div>`;
         prods.forEach(p => {
-            const imgSrc = p.img ? `productos/${p.img}` : fallbackImg;
+            const imgSrc = p.img ? (p.img.startsWith('http') ? p.img : `productos/${p.img}`) : fallbackImg;
             
             const isVisible = p.visible !== false; 
             const checked = isVisible ? 'checked' : '';
@@ -878,14 +1034,13 @@ window.closeCustomConfirm = (r) => {
 };
 
 // ==========================================
-// 12. BANNERS
+// 13. BANNERS
 // ==========================================
-// RUTA: Don Burger > App > banners
 onSnapshot(getAppCollection("banners"), (snapshot) => {
     allBanners = [];
     snapshot.forEach(doc => allBanners.push({ id: doc.id, ...doc.data() }));
     
-    renderTopBanners();      
+    renderTopBanners();       
     renderAdminBannerList(); 
     renderProducts();        
 });
@@ -944,9 +1099,10 @@ function renderProducts() {
     let htmlContent = '';
 
     filtered.forEach((p, index) => {
-        const imgSrc = p.img ? `productos/${p.img}` : fallbackImg;
-        const cartItem = cart.find(item => item.id === p.id);
-        const qty = cartItem ? cartItem.qty : 0;
+        const imgSrc = p.img ? (p.img.startsWith('http') ? p.img : `productos/${p.img}`) : fallbackImg;
+        
+        // Calcular cantidad en carrito (sumando todas las variantes de este producto ID)
+        const totalQty = cart.filter(c => c.id === p.id).reduce((sum, item) => sum + item.qty, 0);
         
         let badgeColor = '#212121'; 
         const catLower = (p.categoria || '').toLowerCase();
@@ -961,7 +1117,6 @@ function renderProducts() {
         let heladasBadge = '';
         if (catLower.includes('malteada') || catLower.includes('bebida')) { heladasBadge = `<div class="badge-heladas">Bien Helada 🥶</div>`; }
 
-        // --- RENDERIZADO DE DESCRIPCIÓN ---
         const descHTML = p.descripcion 
             ? `<div class="product-desc">${p.descripcion}</div>` 
             : '';
@@ -972,8 +1127,8 @@ function renderProducts() {
         }
 
         let actionBtn;
-        if (qty === 0) actionBtn = `<button class="btn-add-initial" onclick="modifyQty('${p.id}', 1)">Agregar</button>`;
-        else actionBtn = `<div class="qty-controls"><button class="qty-btn" onclick="modifyQty('${p.id}', -1)">−</button><span class="qty-display">${qty}</span><button class="qty-btn" onclick="modifyQty('${p.id}', 1)">+</button></div>`;
+        if (totalQty === 0) actionBtn = `<button class="btn-add-initial" onclick="openCustomization('${p.id}')">Agregar</button>`;
+        else actionBtn = `<div class="qty-controls"><button class="qty-btn" style="width:100%; font-size:0.9rem;" onclick="openCustomization('${p.id}')">Agregar Otra +</button></div>`;
 
         htmlContent += `
             <div class="product-card">
@@ -987,6 +1142,7 @@ function renderProducts() {
                 ${heladasBadge}
                 <span class="price-tag">$${p.precio}</span>
                 ${actionBtn}
+                ${totalQty > 0 ? `<small style="display:block; margin-top:5px; color:var(--primary);">Tienes ${totalQty} en carrito</small>` : ''}
             </div>`;
 
         if (index === 3 && currentCategory === 'all' && midBanners.length > 0) {
@@ -1006,7 +1162,6 @@ if (bannerForm) {
         e.preventDefault();
         try {
             const locVal = getEl('ban-loc') ? getEl('ban-loc').value : 'top';
-            // RUTA: Don Burger > App > banners
             await addDoc(getAppCollection("banners"), {
                 img: getEl('ban-img').value.trim(),
                 ubicacion: locVal,
@@ -1042,7 +1197,7 @@ window.deleteBanner = async (id) => {
 };
 
 // ==========================================
-// 13. RASTREO GPS
+// 14. RASTREO GPS
 // ==========================================
 window.openTracking = (orderId) => {
     const modal = getEl('tracking-modal');
@@ -1081,7 +1236,6 @@ window.openTracking = (orderId) => {
         trackingListener(); 
     }
 
-    // RUTA: Don Burger > App > pedidos > [ID]
     trackingListener = onSnapshot(getAppDoc("pedidos", orderId), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
@@ -1126,7 +1280,7 @@ window.closeTracking = () => {
 };
 
 // ==========================================
-// 14. GESTIÓN DE REPARTIDORES
+// 15. GESTIÓN DE REPARTIDORES
 // ==========================================
 window.openDriversManager = () => {
     getEl('drivers-view').classList.remove('hidden');
@@ -1138,7 +1292,6 @@ function renderDriversList() {
     const list = getEl('drivers-list');
     list.innerHTML = '<div class="loader">Cargando flotilla...</div>';
 
-    // RUTA: Don Burger > App > usuarios
     const usersRef = getAppCollection("usuarios");
     const q = query(usersRef, where("rol", "==", "repartidor"));
 
@@ -1191,7 +1344,6 @@ if (driverForm) {
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             const newUid = userCred.user.uid;
 
-            // RUTA: Don Burger > App > usuarios
             await setDoc(getAppDoc("usuarios", newUid), {
                 nombre: name,
                 telefono: phone,
@@ -1217,7 +1369,6 @@ if (driverForm) {
 window.deleteDriver = (uid, name) => {
     window.showConfirm("Dar de Baja", `¿Eliminar acceso a ${name}?`, async () => {
         try {
-            // RUTA: Don Burger > App > usuarios
             await deleteDoc(getAppDoc("usuarios", uid));
             window.showAlert("Baja Exitosa", "El repartidor ya no tiene acceso.");
         } catch (e) {
@@ -1227,7 +1378,7 @@ window.deleteDriver = (uid, name) => {
 };
 
 // ==========================================
-// 15. AUDITORÍA REPARTIDOR
+// 16. AUDITORÍA REPARTIDOR
 // ==========================================
 let currentDriverOrders = []; 
 
@@ -1235,7 +1386,6 @@ window.openDriverStats = (uid, name) => {
     getEl('stats-name').innerText = name;
     getEl('driver-stats-modal').classList.remove('hidden');
     
-    // RUTA: Don Burger > App > pedidos
     const q = query(getAppCollection("pedidos"), 
         where("repartidor_uid", "==", uid),
         where("estado", "==", "entregado")
@@ -1310,7 +1460,6 @@ window.settleDebt = async () => {
 
     try {
         const batchPromises = currentDriverOrders.map(orderId => 
-            // RUTA: Don Burger > App > pedidos > [ID]
             updateDoc(getAppDoc("pedidos", orderId), { 
                 liquidado: true,
                 fecha_liquidacion: serverTimestamp() 
