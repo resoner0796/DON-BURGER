@@ -202,29 +202,44 @@ window.openCustomization = (productId) => {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
 
-    // Si NO es hamburguesa o comida preparada (ej: bebida, postre simple), agrégalo directo
-    const cat = (product.categoria || '').toLowerCase();
-    // Ajusta esta lógica según tus categorías reales. Aquí asumo que solo Burgers llevan ingredientes.
-    if (!cat.includes('burger') && !cat.includes('hamburguesa') && !cat.includes('dog') && !cat.includes('especial')) {
-        addToCartWithExtras(product, [], '');
-        return;
+    // 1. USAR LOS INGREDIENTES QUE TÚ DEFINISTE EN EL ADMIN
+    let ingredientsList = product.ingredientes;
+
+    // 2. SI NO DEFINISTE NADA (Producto viejo o vacío), USAR FALLBACK
+    // Solo si es una burger/combo usamos una lista estándar para no dejarlo vacío
+    if (!ingredientsList || ingredientsList.length === 0) {
+        const cat = (product.categoria || '').toLowerCase();
+        if (cat.includes('burger') || cat.includes('hamburguesa') || cat.includes('combo')) {
+            ingredientsList = STANDARD_INGREDIENTS; // Usa la lista global por defecto
+        } else {
+            // Si no es burger y no configuraste ingredientes, se agrega directo (ej: Refresco)
+            addToCartWithExtras(product, [], '');
+            return;
+        }
     }
 
     tempProductToAdd = product;
     currentExclusions = [];
     
-    // UI del Modal
     getEl('custom-title').innerText = `Personalizar ${product.nombre}`;
     getEl('custom-note').value = '';
     
-    // Renderizar toggles de ingredientes
     const container = getEl('ingredients-container');
-    container.innerHTML = STANDARD_INGREDIENTS.map(ing => `
-        <div class="ing-toggle" onclick="toggleIngredient(this, '${ing}')">
-            <span>${ing}</span>
-            <span class="status-icon">✅</span>
-        </div>
-    `).join('');
+    
+    // RENDERIZAR TUS INGREDIENTES
+    if (ingredientsList && ingredientsList.length > 0) {
+        container.innerHTML = ingredientsList.map(ing => `
+            <div class="ing-toggle" onclick="toggleIngredient(this, '${ing}')">
+                <span>${ing}</span>
+                <span class="status-icon">✅</span>
+            </div>
+        `).join('');
+        // Mostrar instrucción visual
+        const pInst = getEl('custom-modal').querySelector('p');
+        if(pInst) pInst.style.display = 'block';
+    } else {
+        container.innerHTML = '';
+    }
 
     getEl('custom-modal').style.display = 'flex';
 };
@@ -787,12 +802,18 @@ window.editProduct = (id) => {
     const p = allProducts.find(prod => prod.id === id); if (!p) return;
     getEl('p-id').value = p.id; 
     getEl('p-name').value = p.nombre; 
+    
     const descEl = getEl('p-desc');
     if(descEl) descEl.value = p.descripcion || '';
+    
+    // CARGAR TUS INGREDIENTES DE VUELTA AL TEXTO
+    const ingEl = getEl('p-ingredients');
+    if(ingEl) ingEl.value = (p.ingredientes || []).join(', ');
+
     getEl('p-price').value = p.precio;
     getEl('p-stock').value = p.stock || 0; 
     getEl('p-cat').value = p.categoria; 
-    getEl('p-img').value = p.img || ''; // Muestra la URL si existe
+    getEl('p-img').value = p.img || ''; 
     getEl('upload-progress').style.display = 'none';
     getEl('admin-modal').style.display = 'flex';
 };
@@ -811,27 +832,31 @@ if (productForm) {
         const fileInput = getEl('p-img-file');
         const file = fileInput.files[0];
         
-        let imageUrl = getEl('p-img').value.trim(); // URL manual o anterior
+        let imageUrl = getEl('p-img').value.trim();
+
+        // 1. OBTENER TU LISTA DE INGREDIENTES ESPECÍFICOS
+        const rawIng = getEl('p-ingredients').value;
+        // Convertimos "Carne, Piña, Jamón" en ["Carne", "Piña", "Jamón"]
+        const ingredientesArray = rawIng.split(',').map(i => i.trim()).filter(i => i !== "");
 
         try {
-            // 1. Si hay archivo nuevo, subirlo a Storage
             if (file) {
                 getEl('upload-progress').style.display = 'block';
-                // Crear referencia: productos/timestamp_nombre
                 const storageRef = ref(storage, `productos/${Date.now()}_${file.name}`);
                 await uploadBytes(storageRef, file);
-                imageUrl = await getDownloadURL(storageRef); // Obtener URL pública
+                imageUrl = await getDownloadURL(storageRef);
                 getEl('upload-progress').style.display = 'none';
             }
 
-            // 2. Guardar datos en Firestore
             const data = { 
                 nombre: getEl('p-name').value, 
-                descripcion: getEl('p-desc').value.trim(), 
+                descripcion: getEl('p-desc').value.trim(),
+                // AQUÍ SE GUARDAN LOS INGREDIENTES QUE TÚ DEFINISTE PARA ESTE PRODUCTO
+                ingredientes: ingredientesArray, 
                 precio: parseFloat(getEl('p-price').value), 
                 stock: parseInt(getEl('p-stock').value) || 0, 
                 categoria: getEl('p-cat').value.trim().toLowerCase(), 
-                img: imageUrl // Guardamos la URL de Firebase Storage (o la manual)
+                img: imageUrl 
             };
 
             if (id) {
@@ -841,7 +866,7 @@ if (productForm) {
             }
             
             closeAdmin(); 
-            window.showAlert("Listo", "Producto guardado.");
+            window.showAlert("Listo", "Producto guardado correctamente.");
         } catch (e) { 
             console.error(e);
             window.showAlert("Error", e.message); 
