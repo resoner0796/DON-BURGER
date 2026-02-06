@@ -19,15 +19,11 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // ==========================================
-// 1.5. CONSTANTES DE RUTA (SEPARACIÓN DE DATOS)
+// 1.5. CONSTANTES DE RUTA
 // ==========================================
-// Toda la info se guardará en: Don Burger > App > [coleccion]
 const MAIN_COLLECTION = "Don Burger";
 const MAIN_DOC = "App";
-
-// Helper para crear referencias a colecciones dentro de Don Burger
 const getAppCollection = (colName) => collection(db, MAIN_COLLECTION, MAIN_DOC, colName);
-// Helper para crear referencias a documentos dentro de Don Burger
 const getAppDoc = (colName, docId) => doc(db, MAIN_COLLECTION, MAIN_DOC, colName, docId);
 
 // ==========================================
@@ -73,7 +69,6 @@ window.toggleCart = () => {
     if (drawer) drawer.classList.toggle('open'); 
 };
 
-// Forzar modo oscuro
 if (localStorage.getItem('dark-mode') === null) {
     localStorage.setItem('dark-mode', 'true');
     document.body.classList.add('dark-mode');
@@ -116,7 +111,6 @@ if (authForm) {
                 if(!name || !phone) return window.showAlert("Datos", "Nombre y celular requeridos.");
 
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                // RUTA: Don Burger > App > usuarios
                 await setDoc(getAppDoc("usuarios", userCred.user.uid), {
                     nombre: name, telefono: phone, email: email, creado: serverTimestamp()
                 });
@@ -132,7 +126,6 @@ if (authForm) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         try {
-            // RUTA: Don Burger > App > usuarios
             const userDoc = await getDoc(getAppDoc("usuarios", user.uid));
             if(userDoc.exists()) {
                 currentUserData = userDoc.data();
@@ -164,7 +157,6 @@ window.askLogout = () => window.showConfirm("Salir", "¿Cerrar sesión?", () => 
 // ==========================================
 // 5. PRODUCTOS & VISIBILIDAD
 // ==========================================
-// RUTA: Don Burger > App > productos
 onSnapshot(getAppCollection("productos"), (snapshot) => {
     allProducts = [];
     snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
@@ -208,7 +200,8 @@ window.modifyQty = (id, change) => {
         cartItem.qty += change;
         if (cartItem.qty <= 0) cart = cart.filter(item => item.id !== id);
     } else if (change > 0) {
-        cart.push({ ...product, qty: 1 });
+        // Al agregar al carrito, guardamos también el costo base del producto para el cálculo de ganancias
+        cart.push({ ...product, qty: 1, cost: product.cost || 0 }); 
     }
     updateCartUI(); renderProducts();
 };
@@ -371,7 +364,6 @@ window.copyClabe = () => {
 
 async function generateOrderFolio() {
     try {
-        // RUTA: Don Burger > App > contadores > pedidos
         const counterRef = getAppDoc("contadores", "pedidos");
         const counterSnap = await getDoc(counterRef);
         
@@ -404,6 +396,9 @@ window.processOrder = async () => {
 
     const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
     const subtotal = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
+    // Calcular Costo Total para Ganancia
+    const totalCost = cart.reduce((sum, item) => sum + ((item.cost || 0) * item.qty), 0);
+
     const currentShipping = isPickup ? 0 : DELIVERY_COST;
     const total = subtotal + currentShipping;
 
@@ -430,7 +425,8 @@ window.processOrder = async () => {
             usuario_nombre: currentUserData.nombre || "Cliente",
             usuario_telefono: currentUserData.telefono || "Sin cel",
             items: cart, 
-            subtotal: subtotal, 
+            subtotal: subtotal,
+            totalCost: totalCost, // Nuevo campo para reporte de ganancias
             costo_envio: currentShipping, 
             total: total,
             direccion: direccionData,
@@ -441,7 +437,6 @@ window.processOrder = async () => {
             ...extraData 
         };
 
-        // RUTA: Don Burger > App > pedidos
         await addDoc(getAppCollection("pedidos"), orderData);
         
         cart = []; updateCartUI(); renderProducts(); 
@@ -460,17 +455,60 @@ window.processOrder = async () => {
 };
 
 // ==========================================
-// 7. GESTIÓN DE PEDIDOS
+// 7. GESTIÓN DE PEDIDOS Y COCINA
 // ==========================================
 window.openOrdersPanel = () => { getEl('orders-view').classList.remove('hidden'); window.toggleMenu(); loadOrders(true); };
 window.closeOrdersPanel = () => getEl('orders-view').classList.add('hidden');
 window.openClientOrders = () => { getEl('client-orders-view').classList.remove('hidden'); window.toggleMenu(); loadOrders(false); };
 
+// --- NUEVO: MODO PANTALLA COCINA (KDS) ---
+window.openKitchenMode = () => {
+    getEl('kitchen-view').classList.remove('hidden');
+    window.toggleMenu();
+    
+    // Escuchar solo pedidos "recibido" y "surtiendo"
+    const q = query(getAppCollection("pedidos"), where("estado", "in", ["recibido", "surtiendo"]), orderBy("fecha", "asc"));
+    
+    onSnapshot(q, (snapshot) => {
+        const container = getEl('kitchen-orders-container');
+        container.innerHTML = "";
+        if(snapshot.empty) {
+            container.innerHTML = "<h3 style='color:white; text-align:center; grid-column: 1/-1;'>La parrilla está limpia ✨</h3>";
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const o = doc.data();
+            const itemsList = o.items.map(i => `<li>${i.qty}x ${i.nombre}</li>`).join('');
+            const time = o.fecha ? o.fecha.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Ahora';
+            
+            // Colores según estado
+            const borderColor = o.estado === 'recibido' ? '#D32F2F' : '#FF6F00'; // Rojo (Nuevo) o Naranja (Parrilla)
+            const btnText = o.estado === 'recibido' ? '🔥 A LA PARRILLA' : '✅ LISTO PARA ENTREGA';
+            const nextStatus = o.estado === 'recibido' ? 'surtiendo' : o.tipo_entrega === 'pickup' ? 'entregado' : 'camino'; // Si es pickup pasa a entregado, si es delivery a camino
+
+            container.innerHTML += `
+            <div style="background:#2a2a2a; border-top: 5px solid ${borderColor}; padding:15px; border-radius:8px; color:white; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span style="font-size:1.2rem; font-weight:bold;">${o.folio}</span>
+                        <span style="background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:4px;">${time}</span>
+                    </div>
+                    <ul style="padding-left:20px; font-size:1.1rem; margin-bottom:15px;">${itemsList}</ul>
+                    <div style="font-size:0.9rem; color:#aaa; margin-bottom:10px;">${o.tipo_entrega === 'pickup' ? '🛍️ Para Llevar' : '🛵 Domicilio'}</div>
+                </div>
+                <button onclick="updateStatus('${doc.id}', '${nextStatus}')" style="width:100%; padding:15px; background:${borderColor}; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:1rem;">
+                    ${btnText}
+                </button>
+            </div>`;
+        });
+    });
+};
+
 function loadOrders(isAdmin) {
     const list = isAdmin ? getEl('orders-list') : getEl('client-orders-list');
     list.innerHTML = '<div class="loader">Cargando...</div>';
     
-    // RUTA: Don Burger > App > pedidos
     const pedidosRef = getAppCollection("pedidos");
     let q;
     
@@ -495,36 +533,13 @@ function loadOrders(isAdmin) {
             const statusText = o.estado ? o.estado.toUpperCase() : "RECIBIDO";
             const folioDisplay = o.folio || "SIN FOLIO"; 
             
-            let addressHtml = '';
-            if (o.tipo_entrega === 'pickup') {
-                addressHtml = `
-                    <div class="order-address-box" style="background: #E0F2F1; border: 1px dashed #009688;">
-                        <p style="color:#00796B; margin:0; font-weight:bold; text-align:center;">
-                            🛍️ CLIENTE PASA A RECOGER
-                        </p>
-                    </div>`;
-            } else if (o.direccion) {
-                addressHtml = `
-                    <div class="order-address-box">
-                        <p>📍 <strong>Calle:</strong> ${o.direccion.calle || ''} #${o.direccion.numero || ''}</p>
-                        <p>👀 <strong>Ref:</strong> ${o.direccion.referencia || ''}</p>
-                    </div>`;
-            } else {
-                addressHtml = `<div class="order-address-box"><p>🏪 Venta en Negocio</p></div>`;
-            }
+            let addressHtml = o.tipo_entrega === 'pickup' 
+                ? `<div class="order-address-box" style="background: #E0F2F1; border: 1px dashed #009688; color:#00796B; text-align:center; font-weight:bold;">🛍️ CLIENTE PASA A RECOGER</div>`
+                : `<div class="order-address-box"><p>📍 ${o.direccion?.calle || 'Sin calle'} #${o.direccion?.numero || ''}<br><small>${o.direccion?.referencia || ''}</small></p></div>`;
 
             let paymentInfo = `💳 ${o.metodo_pago}`;
             if (o.metodo_pago === 'Efectivo' && o.monto_pago) {
                 paymentInfo += ` (Pagó: $${o.monto_pago} | Cambio: <b>$${o.cambio ? o.cambio.toFixed(2) : '0.00'}</b>)`;
-            }
-
-            let visualItems = '';
-            const fallbackItemImg = "https://placehold.co/50?text=x";
-            if (o.items && o.items.length > 0) {
-                o.items.forEach(i => {
-                    const img = i.img ? `productos/${i.img}` : fallbackItemImg;
-                    visualItems += `<div class="order-product-mini"><img src="${img}"><span class="order-qty-badge">${i.qty}</span></div>`;
-                });
             }
 
             let textListItems = '';
@@ -545,12 +560,8 @@ function loadOrders(isAdmin) {
                     </div>`;
             }
 
-            let trackBtn = '';
-            if (!isAdmin && o.estado === 'camino' && o.tipo_entrega !== 'pickup') {
-                trackBtn = `<button class="btn-track" onclick="openTracking('${id}')">
-                                📍 SEGUIR REPARTIDOR EN VIVO
-                            </button>`;
-            }
+            let trackBtn = (!isAdmin && o.estado === 'camino' && o.tipo_entrega !== 'pickup') ? 
+                `<button class="btn-track" onclick="openTracking('${id}')">📍 SEGUIR REPARTIDOR EN VIVO</button>` : '';
 
             list.innerHTML += `<div class="order-card status-${o.estado}">
                     <div class="order-header">
@@ -559,7 +570,6 @@ function loadOrders(isAdmin) {
                     </div>
                     ${addressHtml} 
                     <div style="font-size:0.9rem;"><p>${paymentInfo}</p></div>
-                    <div class="order-product-grid">${visualItems}</div>
                     <ul class="order-item-list-text">${textListItems}</ul>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
                         <strong style="font-size:1.1rem;">Total: $${o.total}</strong>
@@ -589,7 +599,6 @@ window.updateStatus = async (id, status) => {
                 watchId = navigator.geolocation.watchPosition(async (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    // RUTA: Don Burger > App > pedidos > [ID]
                     updateDoc(getAppDoc("pedidos", id), {
                         ubicacion_repartidor: { lat: lat, lng: lng }
                     }).catch(console.error);
@@ -607,7 +616,6 @@ window.updateStatus = async (id, status) => {
             }
         }
 
-        // RUTA: Don Burger > App > pedidos > [ID]
         await updateDoc(getAppDoc("pedidos", id), data);
     } catch (e) {
         window.showAlert("Error", "Fallo al actualizar: " + e.message);
@@ -631,12 +639,10 @@ window.confirmDeleteOrder = async () => {
     if (!orderToDeleteId) return;
 
     try {
-        // RUTA: Don Burger > App > pedidos > [ID]
         const orderSnap = await getDoc(getAppDoc("pedidos", orderToDeleteId));
         if (!orderSnap.exists()) return window.showAlert("Error", "Pedido no encontrado.");
         const orderData = orderSnap.data();
 
-        // RUTA: Don Burger > App > auditoria_eliminados
         await addDoc(getAppCollection("auditoria_eliminados"), {
             ...orderData,
             deleted_at: serverTimestamp(),
@@ -654,7 +660,7 @@ window.confirmDeleteOrder = async () => {
 };
 
 // ==========================================
-// 8. ADMIN PRODUCTOS & DESCRIPCIÓN
+// 8. ADMIN PRODUCTOS & COSTO
 // ==========================================
 window.openAdmin = () => { getEl('admin-form').reset(); getEl('p-id').value = ''; getEl('admin-modal').style.display = 'flex'; window.toggleMenu(); };
 window.closeAdmin = () => getEl('admin-modal').style.display = 'none';
@@ -663,12 +669,11 @@ window.editProduct = (id) => {
     const p = allProducts.find(prod => prod.id === id); if (!p) return;
     getEl('p-id').value = p.id; 
     getEl('p-name').value = p.nombre; 
-    
-    // CARGAR DESCRIPCIÓN
-    const descEl = getEl('p-desc');
-    if(descEl) descEl.value = p.descripcion || '';
-
+    getEl('p-desc').value = p.descripcion || '';
     getEl('p-price').value = p.precio;
+    // --- Nuevo Campo Costo ---
+    getEl('p-cost').value = p.cost || ''; 
+    
     getEl('p-stock').value = p.stock || 0; 
     getEl('p-cat').value = p.categoria; 
     getEl('p-img').value = p.img || '';
@@ -680,17 +685,17 @@ if (productForm) {
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = getEl('p-id').value;
-        const descEl = getEl('p-desc'); 
         const data = { 
             nombre: getEl('p-name').value, 
-            descripcion: descEl ? descEl.value.trim() : '', 
+            descripcion: getEl('p-desc').value.trim(), 
             precio: parseFloat(getEl('p-price').value), 
+            // --- Guardar Costo ---
+            cost: parseFloat(getEl('p-cost').value) || 0,
             stock: parseInt(getEl('p-stock').value) || 0, 
             categoria: getEl('p-cat').value.trim().toLowerCase(), 
             img: getEl('p-img').value.trim() 
         };
         try { 
-            // RUTA: Don Burger > App > productos
             id ? await updateDoc(getAppDoc("productos", id), data) : await addDoc(getAppCollection("productos"), { ...data, creado: serverTimestamp() }); 
             closeAdmin(); window.showAlert("Listo", "Guardado"); 
         } catch (e) { window.showAlert("Error", e.message); }
@@ -699,53 +704,85 @@ if (productForm) {
 window.deleteProduct = (id) => window.showConfirm("Borrar", "¿Eliminar?", async () => await deleteDoc(getAppDoc("productos", id)));
 
 // ==========================================
-// 9. DASHBOARD VENTAS
+// 9. DASHBOARD VENTAS & ANALÍTICAS
 // ==========================================
 window.openSalesDashboard = async () => {
     getEl('sales-dashboard-view').classList.remove('hidden');
     window.toggleMenu();
     
-    // RUTA: Don Burger > App > pedidos
     const q = query(getAppCollection("pedidos"), where("estado", "==", "entregado"), orderBy("fecha", "desc"));
     const snapshot = await getDocs(q);
     
-    let totalToday = 0; let ordersToday = 0; let historyHtml = '';
+    let totalSales = 0; 
+    let totalCost = 0;
+    let ordersCount = 0; 
+    let historyHtml = '';
     const todayStr = new Date().toDateString();
+    
+    // Contadores para Producto Estrella
+    const productCounts = {};
 
     snapshot.forEach(doc => {
         const d = doc.data();
         ordersCache[doc.id] = d;
 
         if(!d.fecha) return;
-        
         const start = d.fecha.toDate();
-        const end = d.fecha_entrega ? d.fecha_entrega.toDate() : new Date();
-        const diffMs = end - start;
-        const diffMins = Math.floor(diffMs / 60000);
-        
-        const dateStr = start.toDateString();
-        const amount = d.total || 0;
+        if (start.toDateString() !== todayStr) return; // Filtrar solo hoy en JS por seguridad
 
-        if (dateStr === todayStr) { totalToday += amount; ordersToday++; }
+        totalSales += d.total || 0;
+        totalCost += d.totalCost || 0; // Costo total del pedido
+        ordersCount++;
+
+        // Contar productos vendidos
+        if(d.items) {
+            d.items.forEach(item => {
+                productCounts[item.nombre] = (productCounts[item.nombre] || 0) + item.qty;
+            });
+        }
+
+        const end = d.fecha_entrega ? d.fecha_entrega.toDate() : new Date();
+        const diffMins = Math.floor((end - start) / 60000);
 
         historyHtml += `
         <div class="report-card">
             <div class="report-header">
                 <div><strong>${d.folio || 'S/N'}</strong> <small>${d.usuario_nombre}</small></div>
-                <div style="font-weight:bold; color:var(--primary);">$${amount}</div>
+                <div style="font-weight:bold; color:var(--primary);">$${d.total}</div>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-                <span class="time-pill">🕒 Pedido: ${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                <span class="time-pill">✅ Entrega: ${d.fecha_entrega ? end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Manual'}</span>
+                <span class="time-pill">🕒 ${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                 <span class="time-pill" style="background:var(--primary-light); color:var(--primary);">⏱️ ${diffMins} min</span>
             </div>
             <button class="btn-view-ticket" onclick="openVisualTicket('${doc.id}')">👁️ Ver Ticket</button>
         </div>`;
     });
 
-    getEl('kpi-sales-today').innerText = `$${totalToday.toFixed(2)}`;
-    getEl('kpi-orders-today').innerText = ordersToday;
-    getEl('kpi-ticket-avg').innerText = ordersToday > 0 ? `$${(totalToday/ordersToday).toFixed(2)}` : "$0";
+    // Calcular Estrella y Menos Vendido
+    let bestSeller = "--";
+    let worstSeller = "--";
+    let maxCount = 0;
+    let minCount = Infinity;
+
+    const productNames = Object.keys(productCounts);
+    if(productNames.length > 0) {
+        productNames.forEach(name => {
+            const count = productCounts[name];
+            if(count > maxCount) { maxCount = count; bestSeller = `${name} (${count})`; }
+            if(count < minCount) { minCount = count; worstSeller = `${name} (${count})`; }
+        });
+        if(productNames.length === 1) worstSeller = bestSeller;
+    }
+
+    const netProfit = totalSales - totalCost;
+
+    getEl('kpi-sales-today').innerText = `$${totalSales.toFixed(2)}`;
+    getEl('kpi-profit-today').innerText = `$${netProfit.toFixed(2)}`; // Ganancia Neta
+    getEl('kpi-orders-today').innerText = ordersCount;
+    
+    getEl('kpi-best-seller').innerText = bestSeller;
+    getEl('kpi-worst-seller').innerText = worstSeller;
+
     getEl('sales-history-list').innerHTML = historyHtml || '<p style="text-align:center; padding:20px;">Sin ventas entregadas hoy.</p>';
 };
 
@@ -809,7 +846,6 @@ window.openInventory = () => {
 
 window.toggleProductVisibility = async (id, currentStatus) => {
     try {
-        // RUTA: Don Burger > App > productos > [ID]
         await updateDoc(getAppDoc("productos", id), { visible: !currentStatus });
     } catch(e) { window.showAlert("Error", "No se pudo actualizar"); }
 };
@@ -880,25 +916,18 @@ window.closeCustomConfirm = (r) => {
 // ==========================================
 // 12. BANNERS
 // ==========================================
-// RUTA: Don Burger > App > banners
 onSnapshot(getAppCollection("banners"), (snapshot) => {
     allBanners = [];
     snapshot.forEach(doc => allBanners.push({ id: doc.id, ...doc.data() }));
-    
-    renderTopBanners();      
-    renderAdminBannerList(); 
-    renderProducts();        
+    renderTopBanners(); renderAdminBannerList(); renderProducts();        
 });
 
 function renderTopBanners() {
     const container = getEl('promo-carousel');
     if (!container) return;
-    
     const topBanners = allBanners.filter(b => b.ubicacion === 'top' || !b.ubicacion);
-
     if(topBanners.length === 0) { container.style.display = 'none'; return; }
     container.style.display = 'flex';
-
     container.innerHTML = topBanners.map(b => `
         <div class="banner-card" onclick="filterProducts('${b.categoria}'); if(window.innerWidth < 768) window.toggleMenu();">
             <img src="banners/${b.img}" class="banner-img" alt="Banner" onerror="this.style.display='none'">
@@ -914,11 +943,9 @@ function renderProducts() {
     const filtered = allProducts.filter(p => {
         if (p.visible === false) return false;
         if ((p.stock !== undefined && p.stock <= 0) && p.visible !== true) return false; 
-        
         const pCat = (p.categoria || '').toLowerCase().trim();
         const currCat = (currentCategory || '').toLowerCase().trim();
         const matchesCat = currCat === 'all' || pCat === currCat;
-        
         const matchesSearch = p.nombre.toLowerCase().includes(searchTerm);
         return matchesCat && matchesSearch;
     });
@@ -932,13 +959,7 @@ function renderProducts() {
                 <img src="banners/${b.img}" class="mid-banner-img" onerror="this.style.display='none'">
             </div>
         `).join('');
-        
-        midCarouselHTML = `
-            <div class="mid-carousel-wrapper">
-                <div class="mid-carousel-container">
-                    ${cardsHTML}
-                </div>
-            </div>`;
+        midCarouselHTML = `<div class="mid-carousel-wrapper"><div class="mid-carousel-container">${cardsHTML}</div></div>`;
     }
 
     let htmlContent = '';
@@ -950,7 +971,6 @@ function renderProducts() {
         
         let badgeColor = '#212121'; 
         const catLower = (p.categoria || '').toLowerCase();
-        
         if (catLower.includes('papas') || catLower.includes('sides')) badgeColor = '#F57C00';      
         else if (catLower.includes('burger')) badgeColor = '#795548'; 
         else if (catLower.includes('bebida')) badgeColor = '#0097A7'; 
@@ -961,10 +981,7 @@ function renderProducts() {
         let heladasBadge = '';
         if (catLower.includes('malteada') || catLower.includes('bebida')) { heladasBadge = `<div class="badge-heladas">Bien Helada 🥶</div>`; }
 
-        // --- RENDERIZADO DE DESCRIPCIÓN ---
-        const descHTML = p.descripcion 
-            ? `<div class="product-desc">${p.descripcion}</div>` 
-            : '';
+        const descHTML = p.descripcion ? `<div class="product-desc">${p.descripcion}</div>` : '';
 
         let adminBtns = '';
         if (currentUserData && currentUserData.email === ADMIN_EMAIL) {
@@ -1006,7 +1023,6 @@ if (bannerForm) {
         e.preventDefault();
         try {
             const locVal = getEl('ban-loc') ? getEl('ban-loc').value : 'top';
-            // RUTA: Don Burger > App > banners
             await addDoc(getAppCollection("banners"), {
                 img: getEl('ban-img').value.trim(),
                 ubicacion: locVal,
@@ -1022,7 +1038,6 @@ if (bannerForm) {
 function renderAdminBannerList() {
     const list = getEl('admin-banner-list');
     if (!list) return;
-
     list.innerHTML = allBanners.map(b => `
         <div style="display:flex; align-items:center; justify-content:space-between; border:1px solid #eee; padding:5px; border-radius:5px; background: #fff;">
             <div style="display:flex; align-items:center; gap:10px;">
@@ -1059,53 +1074,34 @@ window.openTracking = (orderId) => {
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                const clientPos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+                const clientPos = { lat: position.coords.latitude, lng: position.coords.longitude };
                 new google.maps.Marker({
                     position: clientPos,
                     map: mapInstance,
                     title: "Mi Ubicación",
-                    icon: {
-                        url: "https://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png", 
-                        scaledSize: new google.maps.Size(40, 40)
-                    }
+                    icon: { url: "https://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png", scaledSize: new google.maps.Size(40, 40) }
                 });
                 mapInstance.panTo(clientPos);
             });
         }
     }
 
-    if (trackingListener) {
-        trackingListener(); 
-    }
+    if (trackingListener) { trackingListener(); }
 
-    // RUTA: Don Burger > App > pedidos > [ID]
     trackingListener = onSnapshot(getAppDoc("pedidos", orderId), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
-            
             if (data.ubicacion_repartidor) {
-                const pos = { 
-                    lat: data.ubicacion_repartidor.lat, 
-                    lng: data.ubicacion_repartidor.lng 
-                };
-
+                const pos = { lat: data.ubicacion_repartidor.lat, lng: data.ubicacion_repartidor.lng };
                 if (!markerRepartidor && mapInstance) {
                     markerRepartidor = new google.maps.Marker({
                         position: pos,
                         map: mapInstance,
                         title: "Repartidor",
-                        icon: {
-                            url:"banners/morenitamoto.png",
-                            scaledSize: new google.maps.Size(50, 50) 
-                        },
+                        icon: { url:"banners/morenitamoto.png", scaledSize: new google.maps.Size(50, 50) },
                         animation: google.maps.Animation.DROP
                     });
-                } else if(markerRepartidor) {
-                    markerRepartidor.setPosition(pos);
-                }
+                } else if(markerRepartidor) { markerRepartidor.setPosition(pos); }
             }
         }
     });
@@ -1113,42 +1109,24 @@ window.openTracking = (orderId) => {
 
 window.closeTracking = () => {
     getEl('tracking-modal').style.display = 'none';
-    
-    if (trackingListener) {
-        trackingListener(); 
-        trackingListener = null;
-    }
-    
-    if (markerRepartidor) {
-        markerRepartidor.setMap(null);
-        markerRepartidor = null;
-    }
+    if (trackingListener) { trackingListener(); trackingListener = null; }
+    if (markerRepartidor) { markerRepartidor.setMap(null); markerRepartidor = null; }
 };
 
 // ==========================================
 // 14. GESTIÓN DE REPARTIDORES
 // ==========================================
-window.openDriversManager = () => {
-    getEl('drivers-view').classList.remove('hidden');
-    window.toggleMenu();
-    renderDriversList();
-};
+window.openDriversManager = () => { getEl('drivers-view').classList.remove('hidden'); window.toggleMenu(); renderDriversList(); };
 
 function renderDriversList() {
     const list = getEl('drivers-list');
     list.innerHTML = '<div class="loader">Cargando flotilla...</div>';
-
-    // RUTA: Don Burger > App > usuarios
     const usersRef = getAppCollection("usuarios");
     const q = query(usersRef, where("rol", "==", "repartidor"));
 
     onSnapshot(q, (snapshot) => {
         list.innerHTML = "";
-        if (snapshot.empty) {
-            list.innerHTML = "<p style='text-align:center; color:#999;'>No tienes repartidores registrados.</p>";
-            return;
-        }
-
+        if (snapshot.empty) { list.innerHTML = "<p style='text-align:center; color:#999;'>No tienes repartidores registrados.</p>"; return; }
         snapshot.forEach(doc => {
             const u = doc.data();
             list.innerHTML += `
@@ -1158,15 +1136,10 @@ function renderDriversList() {
                         <small>📧 ${u.email}</small>
                     </div>
                     <div class="driver-actions" style="display:flex; gap:5px;">
-                        <button onclick="openDriverStats('${doc.id}', '${u.nombre}')" style="background:#E3F2FD; color:#1565C0;">
-                            📊 Auditoría
-                        </button>
-                        <button onclick="deleteDriver('${doc.id}', '${u.nombre}')">
-                            🗑️ Baja
-                        </button>
+                        <button onclick="openDriverStats('${doc.id}', '${u.nombre}')" style="background:#E3F2FD; color:#1565C0;">📊 Auditoría</button>
+                        <button onclick="deleteDriver('${doc.id}', '${u.nombre}')">🗑️ Baja</button>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     });
 }
@@ -1178,7 +1151,6 @@ if (driverForm) {
         const btn = e.target.querySelector('button');
         const originalText = btn.innerText;
         btn.innerText = "Registrando..."; btn.disabled = true;
-
         const name = getEl('drv-name').value.trim();
         const phone = getEl('drv-phone').value.trim();
         const email = getEl('drv-email').value.trim();
@@ -1187,42 +1159,25 @@ if (driverForm) {
         try {
             const secondaryApp = initializeApp(firebaseConfig, "Secondary");
             const secondaryAuth = getAuth(secondaryApp);
-
             const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             const newUid = userCred.user.uid;
-
-            // RUTA: Don Burger > App > usuarios
             await setDoc(getAppDoc("usuarios", newUid), {
-                nombre: name,
-                telefono: phone,
-                email: email,
-                rol: "repartidor", 
-                creado: serverTimestamp()
+                nombre: name, telefono: phone, email: email, rol: "repartidor", creado: serverTimestamp()
             });
-
             await signOut(secondaryAuth);
-            
             window.showAlert("¡Éxito!", `Repartidor ${name} registrado correctamente.`);
             getEl('driver-register-form').reset();
-
         } catch (error) {
             console.error(error);
             window.showAlert("Error", "No se pudo registrar: " + error.message);
-        } finally {
-            btn.innerText = originalText; btn.disabled = false;
-        }
+        } finally { btn.innerText = originalText; btn.disabled = false; }
     });
 }
 
 window.deleteDriver = (uid, name) => {
     window.showConfirm("Dar de Baja", `¿Eliminar acceso a ${name}?`, async () => {
-        try {
-            // RUTA: Don Burger > App > usuarios
-            await deleteDoc(getAppDoc("usuarios", uid));
-            window.showAlert("Baja Exitosa", "El repartidor ya no tiene acceso.");
-        } catch (e) {
-            window.showAlert("Error", e.message);
-        }
+        try { await deleteDoc(getAppDoc("usuarios", uid)); window.showAlert("Baja Exitosa", "El repartidor ya no tiene acceso."); }
+        catch (e) { window.showAlert("Error", e.message); }
     });
 };
 
@@ -1235,35 +1190,21 @@ window.openDriverStats = (uid, name) => {
     getEl('stats-name').innerText = name;
     getEl('driver-stats-modal').classList.remove('hidden');
     
-    // RUTA: Don Burger > App > pedidos
-    const q = query(getAppCollection("pedidos"), 
-        where("repartidor_uid", "==", uid),
-        where("estado", "==", "entregado")
-    );
-
+    const q = query(getAppCollection("pedidos"), where("repartidor_uid", "==", uid), where("estado", "==", "entregado"));
     getEl('stats-orders').innerText = "...";
     
     onSnapshot(q, (snapshot) => {
-        let totalOrders = 0;
-        let driverEarnings = 0;
-        let cashCollected = 0;
-        
+        let totalOrders = 0; let driverEarnings = 0; let cashCollected = 0;
         currentDriverOrders = []; 
 
         snapshot.forEach(doc => {
             const o = doc.data();
-            
             if (o.liquidado === true) return;
-
             currentDriverOrders.push(doc.id);
-
             totalOrders++;
             const shipping = o.costo_envio || 0;
             driverEarnings += shipping;
-
-            if (o.metodo_pago === 'Efectivo') {
-                cashCollected += (o.total || 0);
-            }
+            if (o.metodo_pago === 'Efectivo') { cashCollected += (o.total || 0); }
         });
 
         getEl('stats-orders').innerText = totalOrders; 
@@ -1278,19 +1219,15 @@ window.openDriverStats = (uid, name) => {
         if (finalBalance > 0) {
             finalEl.innerText = "$" + finalBalance.toFixed(2);
             finalEl.style.color = "#EF6C00";
-            
             btnLiquidar.disabled = false;
             btnLiquidar.innerText = `💸 Recibir $${finalBalance.toFixed(2)} y Liquidar`;
             btnLiquidar.style.display = "block"; 
-
         } else if (finalBalance < 0) {
             finalEl.innerText = "Pagar al Repartidor: $" + Math.abs(finalBalance).toFixed(2);
             finalEl.style.color = "#2E7D32";
-            
             btnLiquidar.disabled = false;
             btnLiquidar.innerText = `✅ Pagar $${Math.abs(finalBalance).toFixed(2)} y Liquidar`;
             btnLiquidar.style.display = "block";
-
         } else {
             finalEl.innerText = "$0.00";
             finalEl.style.color = "#333";
@@ -1301,26 +1238,14 @@ window.openDriverStats = (uid, name) => {
 
 window.settleDebt = async () => {
     if (currentDriverOrders.length === 0) return;
-    
     if(!confirm("⚠️ ¿Confirmas que el dinero ha cambiado de manos?\n\nEsta acción pondrá el saldo del repartidor en $0.00 y no se puede deshacer.")) return;
-
     const btn = getEl('btn-liquidar-corte');
     btn.innerText = "Procesando...";
     btn.disabled = true;
-
     try {
-        const batchPromises = currentDriverOrders.map(orderId => 
-            // RUTA: Don Burger > App > pedidos > [ID]
-            updateDoc(getAppDoc("pedidos", orderId), { 
-                liquidado: true,
-                fecha_liquidacion: serverTimestamp() 
-            })
-        );
-
+        const batchPromises = currentDriverOrders.map(orderId => updateDoc(getAppDoc("pedidos", orderId), { liquidado: true, fecha_liquidacion: serverTimestamp() }));
         await Promise.all(batchPromises);
-        
         window.showAlert("¡Corte Exitoso!", "El saldo se ha reiniciado correctamente.");
-        
     } catch (e) {
         console.error(e);
         window.showAlert("Error", "Falló la liquidación: " + e.message);
@@ -1328,6 +1253,4 @@ window.settleDebt = async () => {
     }
 };
 
-window.closeDriverStats = () => {
-    getEl('driver-stats-modal').classList.add('hidden');
-};
+window.closeDriverStats = () => { getEl('driver-stats-modal').classList.add('hidden'); };
