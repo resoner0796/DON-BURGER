@@ -287,26 +287,43 @@
     <div id="admin-modal" class="modal-overlay" style="display: none; z-index: 2000;">
         <div class="modal-card">
             <h3 id="admin-title">Producto</h3>
-            <form id="admin-form">
-                <input type="hidden" id="p-id"> 
-                <input type="text" id="p-name" placeholder="Nombre (Ej: Doble con Queso)" required class="input-field">
-                
-                <textarea id="p-desc" placeholder="Descripción (Ej: -Carne Angus&#10;-Doble Queso&#10;-Tocino)" class="input-field" rows="3" style="resize: none;"></textarea>
-                
-                <input type="number" id="p-price" placeholder="Precio" required class="input-field">
-                <input type="number" id="p-stock" placeholder="Stock Inicial" class="input-field">
-                <input type="text" id="p-cat" placeholder="Categoría" required list="cat-suggestions" class="input-field">
-                <datalist id="cat-suggestions"></datalist>
+          <form id="admin-form">
+    <input type="hidden" id="p-id"> 
+    
+    <label style="font-size:0.8rem; color:var(--primary); font-weight:bold;">Nombre del Producto:</label>
+    <input type="text" id="p-name" placeholder="Ej: Burger Hawaiana" required class="input-field">
+    
+    <label style="font-size:0.8rem; color:#aaa;">Descripción (Marketing):</label>
+    <textarea id="p-desc" placeholder="Ej: ¡La favorita de la casa con piña asada!" class="input-field" rows="2" style="resize: none;"></textarea>
+    
+    <label style="font-size:0.8rem; color:var(--primary); font-weight:bold;">Ingredientes (Separados por coma):</label>
+    <textarea id="p-ingredients" placeholder="Ej: Carne, Queso, Piña, Jamón, Mayonesa" class="input-field" rows="2" style="resize: none; border: 1px solid var(--primary);"></textarea>
+    <small style="display:block; color:#666; margin-bottom:10px;">* Estos son los opciones que el cliente podrá quitar/poner.</small>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div>
+            <label style="font-size:0.8rem; color:#aaa;">Precio:</label>
+            <input type="number" id="p-price" placeholder="$" required class="input-field">
+        </div>
+        <div>
+            <label style="font-size:0.8rem; color:#aaa;">Stock:</label>
+            <input type="number" id="p-stock" placeholder="#" class="input-field">
+        </div>
+    </div>
 
-                <label style="display:block; margin-bottom:5px; color:#aaa; font-size:0.9rem;">Imagen del Producto:</label>
-                <div style="display:flex; gap:5px; margin-bottom:15px;">
-                    <input type="file" id="p-img-file" class="input-field" accept="image/*" style="padding: 10px;">
-                    <input type="text" id="p-img" placeholder="URL (Opcional)" class="input-field" style="display:none;"> 
-                </div>
-                <div id="upload-progress" style="font-size:0.8rem; color:var(--primary); margin-bottom:10px; display:none;">Subiendo imagen...</div>
+    <label style="font-size:0.8rem; color:#aaa;">Categoría:</label>
+    <input type="text" id="p-cat" placeholder="Ej: Burgers" required list="cat-suggestions" class="input-field">
+    <datalist id="cat-suggestions"></datalist>
 
-                <button type="submit" id="btn-save-prod" class="btn-primary">Guardar</button>
-            </form>
+    <label style="display:block; margin-bottom:5px; color:#aaa; font-size:0.9rem;">Foto:</label>
+    <div style="display:flex; gap:5px; margin-bottom:15px;">
+        <input type="file" id="p-img-file" class="input-field" accept="image/*" style="padding: 10px;">
+        <input type="text" id="p-img" placeholder="URL Manual" class="input-field" style="display:none;"> 
+    </div>
+    <div id="upload-progress" style="font-size:0.8rem; color:var(--primary); margin-bottom:10px; display:none;">Subiendo imagen...</div>
+
+    <button type="submit" id="btn-save-prod" class="btn-primary">Guardar Producto</button>
+</form>
             <button onclick="closeAdmin()" class="btn-close">Cancelar</button>
         </div>
     </div>
