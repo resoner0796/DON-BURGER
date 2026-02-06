@@ -646,3 +646,4 @@ input[type="radio"]:checked + label, .radio-card:has(input:checked) { border-col
 .ing-toggle:hover {
     background: rgba(255,255,255,0.1);
 }
+
