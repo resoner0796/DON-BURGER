@@ -296,13 +296,16 @@
     <label style="font-size:0.8rem; color:#aaa;">Descripción (Marketing):</label>
     <textarea id="p-desc" placeholder="Ej: ¡La favorita de la casa con piña asada!" class="input-field" rows="2" style="resize: none;"></textarea>
     
-    <label style="font-size:0.8rem; color:var(--primary); font-weight:bold;">Ingredientes (Separados por coma):</label>
+    <label style="font-size:0.8rem; color:var(--primary); font-weight:bold;">Ingredientes (Para quitar/poner):</label>
     <textarea id="p-ingredients" placeholder="Ej: Carne, Queso, Piña, Jamón, Mayonesa" class="input-field" rows="2" style="resize: none; border: 1px solid var(--primary);"></textarea>
-    <small style="display:block; color:#666; margin-bottom:10px;">* Estos son los opciones que el cliente podrá quitar/poner.</small>
     
+    <label style="font-size:0.8rem; color:var(--blue); font-weight:bold;">Opciones / Variantes (Costo Extra):</label>
+    <textarea id="p-options" placeholder="Sintaxis: Titulo: Opcion(PrecioExtra), Opcion2(Precio)&#10;Ej Papas: Tamaño: Chica(0), Grande(15)&#10;Ej Combo: Bebida: Coca(0), Sprite(0) | Papas: Chicas(0), Grandes(15)" class="input-field" rows="3" style="resize: none; border: 1px dashed var(--blue); background: rgba(33, 150, 243, 0.05);"></textarea>
+    <small style="display:block; color:#666; margin-bottom:10px;">* Usa " | " para separar grupos (Ej: Bebida | Tamaño). Pon el precio extra entre paréntesis (0) si es gratis.</small>
+
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
         <div>
-            <label style="font-size:0.8rem; color:#aaa;">Precio:</label>
+            <label style="font-size:0.8rem; color:#aaa;">Precio Base:</label>
             <input type="number" id="p-price" placeholder="$" required class="input-field">
         </div>
         <div>
